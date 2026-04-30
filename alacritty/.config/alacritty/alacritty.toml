@@ -24,7 +24,7 @@ multiplier = 3
 # 字体（必须 Nerd Font）
 # =========================
 [font]
-size = 20.0
+size = 14.0
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
