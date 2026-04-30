@@ -120,4 +120,4 @@ error_symbol = "[❯](red)[❯](red)[❯](red)"
 # 1 组件安装
 https://codeberg.org/lzhb527/dotfiles.github
 
-sudo apt install git  zip unzip  curl nala stow ncdu xwayland nwg-look picard power-profiles-daemon terminator fastfetch cmatrix kitty zsh bat eza zoxide fzf starship  fish mpd mpc foot ncmpcpp mpdris2 papirus-icon-theme  xfce4-panel-profiles xfce4-docklike-plugin xfce4-mpc-plugin deja-dup fcitx5 fcitx5-pinyin fcitx5-rime pipes-sh fd-find lightdm-settings axel aria2 tilix dconf-cli chrony flameshot alacritty ffmpeg mpv
+sudo apt install git  zip unzip  curl nala stow ncdu xwayland nwg-look picard power-profiles-daemon terminator fastfetch cmatrix kitty zsh bat eza zoxide fzf starship  fish mpd mpc foot ncmpcpp mpdris2 papirus-icon-theme  xfce4-panel-profiles xfce4-docklike-plugin xfce4-mpc-plugin deja-dup fcitx5 fcitx5-pinyin fcitx5-rime pipes-sh fd-find lightdm-settings axel aria2 tilix dconf-cli chrony flameshot alacritty cava ffmpeg mpv

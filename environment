@@ -4,3 +4,15 @@
 # Syntax: simple "KEY=VAL" pairs on separate lines
 #
 WLR_NO_HARDWARE_CURSORS=1
+
+# 核心设置：让 Kitty 通过 IBus 协议连接 Fcitx
+export GLFW_IM_MODULE=ibus
+
+# 基础设置：告诉系统使用 Fcitx
+export IM_MODULE=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+
+# 可选：解决某些 Java 应用或旧软件的兼容性
+export SDL_IM_MODULE=fcitx
