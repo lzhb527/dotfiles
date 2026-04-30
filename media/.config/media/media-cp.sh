@@ -10,8 +10,7 @@ cp def-wallpapers/* ~/Pictures/
 cp lishenjin.mp4 ~/Videos/
 cp never-say-never.mp3 ~/Music/
 tar -xvf ~/.local/share/fonts/jetbrain.tar.xz -C ~/.local/share/fonts/ 2>/dev/null
-tar -xvf ~/.local/share/icons/Flat-Remix-Green.tar.xz -C ~/.local/share/icons/ 2>/dev/null
-tar -xvf ~/.local/share/themes/Skeuos-Green-Dark.tar.xz -C ~/.local/share/themes/ 2>/dev/null
+tar -xvf ~/.local/share/themes/Kali.tar.xz -C ~/.local/share/themes/ 2>/dev/null
 
 starship  preset nerd-font-symbols -o ~/.config/starship.toml
 
