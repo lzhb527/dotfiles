@@ -1,0 +1,123 @@
+
+
+#fcitx5 设置
+# im-config 选择 fcitx5
+# spawn-at-startup "fcitx5" "-d"
+
+# opi jetbrain niri quickshell dms dms-greeter codecs mpv
+
+# gnome-shell-extensions gnome-shell-extension-manager google-noto-sans-cjk-fonts
+
+# 2 用户服务
+
+systemctl --user enable dsearch.service
+systemctl --user enable mpDris2.service
+systemctl --user enable mpd.service
+systemctl --user enable dms.service
+systemctl --user daemon-reload
+
+# 3 系统服务
+
+sudo systemctl enable --now power-profiles-daemon.service
+sudo systemctl start power-profiles-daemon.service --now
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=22/tcp
+sudo firewall-cmd --permanent --add-service=ssh
+sudo systemctl start --now  sshd.service
+sudo systemctl enable sshd.service
+
+sudo firewall-cmd --reload
+sudo systemctl daemon-reload
+
+# 4 xfce4-panel-profiles 状态栏导入
+# 进入 media/.config/media/
+media/.config/media/Backup_xfce-panel-suse.tar.bz2
+
+git config --globle core.compression 0
+# debian 13 ustc
+# 默认注释了源码仓库，如有需要可自行取消注释
+deb http://mirrors.ustc.edu.cn/debian trixie main contrib non-free non-free-firmware
+# deb-src http://mirrors.ustc.edu.cn/debian trixie main contrib non-free non-free-firmware
+deb http://mirrors.ustc.edu.cn/debian trixie-updates main contrib non-free non-free-firmware
+# deb-src http://mirrors.ustc.edu.cn/debian trixie-updates main contrib non-free non-free-firmware
+
+# backports 软件源，请按需启用
+# deb http://mirrors.ustc.edu.cn/debian trixie-backports main contrib non-free non-free-firmware
+# deb-src http://mirrors.ustc.edu.cn/debian trixie-backports main contrib non-free non-free-firmware
+
+#################   debian 13 dms #################################
+
+# DankLinux repository
+curl -fsSL https://download.opensuse.org/repositories/home:AvengeMedia:danklinux/Debian_13/Release.key | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/danklinux.gpg
+echo "deb [signed-by=/etc/apt/keyrings/danklinux.gpg] https://download.opensuse.org/repositories/home:/AvengeMedia:/danklinux/Debian_13/ /" | \
+  sudo tee /etc/apt/sources.list.d/danklinux.list
+
+# DMS stable repository
+curl -fsSL https://download.opensuse.org/repositories/home:/AvengeMedia:/dms/Debian_13/Release.key | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/avengemedia-dms.gpg
+echo "deb [signed-by=/etc/apt/keyrings/avengemedia-dms.gpg] https://download.opensuse.org/repositories/home:/AvengeMedia:/dms/Debian_13/ /" | \
+  sudo tee /etc/apt/sources.list.d/avengemedia-dms.list
+
+# DMS development repository
+curl -fsSL https://download.opensuse.org/repositories/home:/AvengeMedia:/dms-git/Debian_13/Release.key | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/avengemedia-dms-git.gpg
+echo "deb [signed-by=/etc/apt/keyrings/avengemedia-dms-git.gpg] https://download.opensuse.org/repositories/home:/AvengeMedia:/dms-git/Debian_13/ /" | \
+  sudo tee /etc/apt/sources.list.d/avengemedia-dms-git.list
+sudo apt update
+
+# Install Packages
+# Install the stable release:
+
+sudo apt install dms niri dms-greeter
+
+# Install the latest development build:
+
+sudo apt install dms-git
+
+
+
+
+
+# 5 niri debian 13
+#
+# 安装依赖
+
+sudo apt install rustup gcc clang \
+libudev-dev libgbm-dev libxkbcommon-dev libegl1-mesa-dev \
+libwayland-dev libinput-dev libdbus-1-dev libsystemd-dev \
+libseat-dev libpipewire-0.3-dev libpango1.0-dev libdisplay-info-dev
+
+rustup default stable
+cargo install cargo-deb
+
+# 构建niri
+
+git clone https://github.com/YaLTeR/niri.git
+cd niri
+cargo deb
+
+# 安装niri
+
+sudo dpkg -i target/debian/niri_25.5.1-1_amd64.deb
+sudo apt install -f
+
+sudo nala install xwayland-satellite xwayland
+
+display-setup-script=xrandr --output Virtual-1 --mode 1440x900 --rate 60
+
+[character]
+success_symbol = "[❯](red)[❯](yellow)[❯](green)"
+error_symbol = "[❯](red)[❯](red)[❯](red)"
+
+#1 sudo apt install git stow nala
+#2 stow 安装 dotfiles media/.config/media/install
+#3 组件安装
+#4 组件安装后配置 media/.config/media/media-cp.sh 
+#5 dconf load /com/gexperts/Tilix/ < tilix_backup.dconf
+#6 kitty kitten quick-access-terminal --debug-rendering
+#7 bash -c "$(curl -sLo- https://superfile.dev/install.sh)"
+# 1 组件安装
+https://codeberg.org/lzhb527/dotfiles.github
+
+sudo apt install git  zip unzip  curl nala stow ncdu xwayland nwg-look picard power-profiles-daemon terminator fastfetch cmatrix kitty zsh bat eza zoxide fzf starship  fish mpd mpc foot ncmpcpp mpdris2 papirus-icon-theme  xfce4-panel-profiles xfce4-docklike-plugin xfce4-mpc-plugin deja-dup fcitx5 fcitx5-pinyin fcitx5-rime pipes-sh fd-find lightdm-settings axel aria2 tilix dconf-cli chrony flameshot ffmpeg mpv

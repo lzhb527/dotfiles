@@ -1,0 +1,111 @@
+# =========================
+# 基础
+# =========================
+
+[window]
+opacity = 0.99
+padding = { x = 10, y = 10 }
+decorations = "Buttonless" # macOS 可用，Linux 可删
+startup_mode = "Windowed"
+dimensions = { columns = 120, lines = 40 }
+position = { x = 100, y = 100 }
+
+[cursor]
+# 设置光标为方块（可以选择 Block 或 Underline）
+style = { shape = "Block", blinking = "On" }
+blink_interval = 500
+unfocused_hollow = true
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+# =========================
+# 字体（必须 Nerd Font）
+# =========================
+[font]
+size = 20.0
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.offset]
+x = 0
+y = 1
+
+
+# =========================
+# Molokai 风格配色
+# =========================
+[colors.primary]
+background = "#161616"
+foreground = "#f8f8f2"
+
+[colors.cursor]
+text = "#1b1d1e"
+cursor = "#f8f8f2"
+
+[colors.normal]
+black   = "#1b1d1e"
+red     = "#f92672"
+green   = "#a6e22e"
+yellow  = "#f4bf75"
+blue    = "#66d9ef"
+magenta = "#ae81ff"
+cyan    = "#a1efe4"
+white   = "#f8f8f2"
+
+[colors.bright]
+black   = "#75715e"
+red     = "#f92672"
+green   = "#a6e22e"
+yellow  = "#f4bf75"
+blue    = "#66d9ef"
+magenta = "#ae81ff"
+cyan    = "#a1efe4"
+white   = "#f9f8f5"
+
+# =========================
+# 键位（可选）
+# =========================
+[[keyboard.bindings]]
+key = "V"
+mods = "Control|Shift"
+action = "Paste"
+
+[[keyboard.bindings]]
+key = "C"
+mods = "Control|Shift"
+action = "Copy"
+
+# ======================
+# 鼠标 & 选择
+# ======================
+
+[selection]
+save_to_clipboard = true
+
+[mouse]
+hide_when_typing = true
+
+[[mouse.bindings]]
+mouse = "Left"
+mods = "Shift"
+action = "Copy"
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "None"
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "Paste"

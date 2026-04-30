@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# 编辑器 (Neovim / VS Code)
+.swp
+.swo
+.vscode/
+.idea/
+.netrwhist
+
+# 虚拟环境
+.venv/
+venv/
+ENV/
+
+# Python 字节码与缓存
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# 打包文件 (PyInstaller)
+build/
+dist/
+*.spec
+

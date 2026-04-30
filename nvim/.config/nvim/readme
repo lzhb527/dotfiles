@@ -1,0 +1,31 @@
+# 先创建目录（执行终端命令）
+# sudo npm -g install pyright
+mkdir -p ~/.config/nvim/lua/{base,plugins,keymaps,autocmds,ui}
+mkdir -p ~/.config/nvim/undo  # 撤销文件目录（对应配置中的 undodir）
+
+~/.config/nvim/
+├── init.lua                # 入口文件（仅加载各模块，无业务逻辑）
+├── lua/
+│   ├── base/               # 基础环境配置
+│   │   └── init.lua        # 基础设置（行号、缩进、编码等）
+│   ├── plugins/            # 插件相关
+│   │   ├── init.lua        # Lazy.nvim 插件列表
+│   │   ├── configs/        # 各插件的具体配置
+│   │   │   ├── cmp.lua     # nvim-cmp 补全配置
+│   │   │   ├── lsp.lua     # LSP 核心配置（pyright/venv-selector）
+│   │   │   ├── ui.lua      # UI 插件（lualine/bufferline/which-key 等）
+│   │   │   ├── editor.lua  # 编辑增强（autopairs/commenter/rainbow 等）
+│   │   │   └── tools.lua   # 工具插件（fzf/ale/tagbar/easymotion 等）
+│   ├── keymaps/            # 快捷键配置
+│   │   ├── init.lua        # 快捷键入口（加载所有子模块）
+│   │   ├── common.lua      # 通用快捷键
+│   │   ├── lsp.lua         # LSP 快捷键
+│   │   ├── tools.lua       # 工具插件快捷键（fzf/ale/终端等）
+│   │   └── which-key.lua   # which-key 配置
+│   ├── autocmds/           # 自动命令配置
+│   │   ├── init.lua        # 自动命令入口
+│   │   ├── filetype.lua    # 文件类型相关 autocmd（python/sh 缩进/文件头）
+│   │   └── ui.lua          # UI 相关 autocmd（光标线/缩进线/dashboard 等）
+│   └── ui/                 # UI 美化（主题/透明/高亮）
+│       └── init.lua        # 主题/透明/高亮配置
+└── undo/                   # 撤销文件存储目录

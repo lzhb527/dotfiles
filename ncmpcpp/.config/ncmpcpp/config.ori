@@ -1,0 +1,50 @@
+ncmpcpp_directory = ~/.ncmpcpp
+lyrics_directory = ~/.ncmpcpp/lyrics
+mpd_music_dir = ~/Music
+
+#visualizer_in_stereo = "yes"
+#visualizer_fifo_path = "/tmp/mpd.fifo"
+#visualizer_data_source = "/tmp/mpd.fifo"
+#visualizer_output_name = "my_fifo"
+#visualizer_sync_interval = "10"
+#visualizer_type = "spectrum" #spectrum/wave/wave_filled/ellipse
+visualizer_data_source = /tmp/mpd.fifo
+visualizer_output_name = Visualizer feed
+visualizer_in_stereo = yes
+#visualizer_sync_interval = 30
+visualizer_type = wave
+visualizer_look = ●▮
+#visualizer_look = +|
+visualizer_color = blue, cyan, green, yellow, magenta, red
+
+autocenter_mode = yes
+message_delay_time = "1"
+song_list_format = "{{%a %t}|{%f}}{$R%l}"
+current_item_prefix = $b$7
+current_item_inactive_column_prefix = $b$(white)$r
+now_playing_prefix = "$b$3"
+now_playing_suffix = "$b$9"
+main_window_color = white
+#execute_on_song_change = notify-send "♫ Now Playing" "$(mpc current)"
+#execute_on_song_change="~/.config/ncmpcpp/art.sh"
+song_window_title_format = "ncmpcpp{ - %A}{ - %t}"
+#song_list_format = "                                      │ {%A - }|{%a - }{%t}|{$8%f$9}$R{$3(%l)$9}"
+song_status_format = {{{%A}|{%a}{ "%b"{ (%y)}} ● }{%t}}|{%f}
+
+
+playlist_display_mode = "classic"
+user_interface = classic
+header_visibility = "no"
+titles_visibility = "no"
+
+mouse_support = "yes"
+
+follow_now_playing_lyrics = yes
+fetch_lyrics_for_current_song_in_background = yes
+
+[statusbar]
+progressbar_look = "─╼"
+progressbar_color = "black"
+progressbar_elapsed_color = "cyan"
+statusbar_visibility = "no"
+statusbar_color = "default"

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=kitty
+Comment=
+Exec=env GLFW_IM_MODULE=ibus kitty
+Icon=kitty
+Path=
+Terminal=false
+StartupNotify=false
