@@ -62,8 +62,9 @@ keys = [
     Key(
         [mod],
         "o",
-        lazy.spawn("rofi -show drun"),
-        )
+        lazy.spawn("rofi -show drun -show-icons"),
+        ),
+    Key([mod], "Slash",lazy.spawn("kitten quick-access-terminal"),)
 ]
 
 # Add key bindings to switch VTs in Wayland.
@@ -236,23 +237,32 @@ idle_timers = []  # type: list
 idle_inhibitors = []  # type: list
 
 
-@hook.subscribe.startup_once
-def autostart():
-    home = os.path.expanduser('~')
+#  def autostart():
+    #  home = os.path.expanduser('~')
     
     # 1. 解决光标不可见问题 (Nvidia 必备)
-    os.environ['WLR_NO_HARDWARE_CURSORS'] = '1'
+    #  os.environ['WLR_NO_HARDWARE_CURSORS'] = '1'
     
     # 2. 设置分辨率 (请将 HDMI-A-1 替换为你 wlr-randr 查到的名称)
     # 注意：使用 Popen 异步运行，不会阻塞 Qtile 启动
-    subprocess.Popen(['wlr-randr', '--output', 'HDMI-A-1', '--mode', '1920x1080@60'])
+    #  subprocess.Popen(['wlr-randr', '--output', 'HDMI-A-1', '--mode', '1920x1080@60'])
+    #  subprocess.Popen(['xrandr', '--output', 'Virtual-1', '--mode', '1440x900'])
     
     # 3. 设置壁纸
-    subprocess.Popen(['swaybg', '-i', f'{home}/Pictures/flower.jpg', '-m', 'fill'])
+    #  subprocess.Popen(['swaybg', '-i', f'{home}/Pictures/flower.jpg', '-m', 'fill'])
+    #  subprocess.Popen(['feh', '--bg-fill', f'{home}/Pictures/flower.jpg'])
 
     # 4. 如果你需要 wofi 等其他后台服务也可以写在这里
+    # 路径根据你的实际情况修改
 
-
+@hook.subscribe.startup_once
+def autostart():
+       # 设置输入法 (如果是 Fcitx5)
+    os.environ['XMODIFIERS'] = '@im=fcitx'
+    os.environ['QT_IM_MODULE'] = 'fcitx'
+    home = os.path.expanduser('~')
+    #  subprocess.Popen(['feh', '--bg-fill', os.path.expanduser('~/Pictures/flower.jpg')])
+    subprocess.Popen([home + '/.config/qtile/autostart.sh'])
 # XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
 # string besides java UI toolkits; you can see several discussions on the
 # mailing lists, GitHub issues, and other WM documentation that suggest setting
