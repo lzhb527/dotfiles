@@ -9,7 +9,8 @@ cp 星晴.mp3  ~/Music/
 cp def-wallpapers/* ~/Pictures/
 cp lishenjin.mp4 ~/Videos/
 cp never-say-never.mp3 ~/Music/
-bash tools/papirus-folders -C teal -t Papirus-Dark
+bash ./tools/xfce4-init.sh
+bash ./tools/papirus-folders -C teal -t Papirus-Dark
 tar -xvf ~/.local/share/fonts/jetbrain.tar.xz -C ~/.local/share/fonts/ 2>/dev/null
 tar -xvf ~/.local/share/themes/Kali.tar.xz -C ~/.local/share/themes/ 2>/dev/null
 

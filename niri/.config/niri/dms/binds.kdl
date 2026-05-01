@@ -126,7 +126,8 @@ binds {
     Print { screenshot; }
     XF86Launch1 { screenshot; }
     Mod+Shift+E { quit; }
-    Super+Return hotkey-overlay-title="Open Terminal" { spawn "footclient"; }
+    Super+Return hotkey-overlay-title="Open Terminal" { spawn "kitty"; }
+    Super+Slash { spawn "kitten" "quick-access-terminal"; }
     Mod+D repeat=false { toggle-overview; }
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+Slash { show-hotkey-overlay; }
