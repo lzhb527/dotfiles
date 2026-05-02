@@ -24,5 +24,5 @@ then
 fi
 used="${used}"
 
-echo "<img>${ICON_PATH}</img><txt><span foreground="\'$color\'"> $used </span></txt>"
+echo "<img>${ICON_PATH}</img><txt><span foreground="\'$color\'">$used</span></txt>"
 echo -e "<tool>mem: \t$used used\n\t\t$free free\n\t\t$shared shared\n\t\t$avail avail</tool>"

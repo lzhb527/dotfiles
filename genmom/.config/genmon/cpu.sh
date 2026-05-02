@@ -20,5 +20,5 @@ then
 fi
 cpu="${cpu}%"
 
-echo "<img>${ICON_PATH}</img><txt><span foreground="\'$color\'"> $cpu </span></txt>"
+echo "<img>${ICON_PATH}</img><txt><span foreground="\'$color\'">$cpu</span></txt>"
 echo -e "<tool>cpu: $cpu</tool>"
