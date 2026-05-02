@@ -3,11 +3,12 @@
 REMOTE_GH="git@github.com:lzhb527/dotfiles.git"
 REMOTE_CB="git@codeberg.org:lzhb527/dotfiles.git"
 
+
 git remote remove origin 2>/dev/null
 git remote add origin $REMOTE_GH
 git remote set-url --add --push origin $REMOTE_CB
 git remote set-url --add --push origin $REMOTE_GH
-
+git remote set-url --add --push origin  lizhengbei@127.0.0.1:lzhb527/dotfiles.git
 echo "Remote configured: Push to BOTH, Fetch from GitHub."
 
 # 两个平台设置独立的别名
