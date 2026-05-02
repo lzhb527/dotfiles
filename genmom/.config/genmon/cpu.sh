@@ -10,7 +10,7 @@ alarm=90
 
 cpu=$(top -bn 2 -d 0.2 | grep -i '^%Cpu' | tail -n 1 | awk '{printf "%02d", $2+$4+$6}')
 
-color='lightgrey'
+color='white'
 if [ $cpu -gt $alarm ]
 then
     color='red'

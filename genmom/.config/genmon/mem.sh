@@ -14,7 +14,7 @@ free=$(free --human --giga | sed -n '2p' | awk '{printf "%s", $4}')
 shared=$(free --human --giga | sed -n '2p' | awk '{printf "%s", $5}')
 avail=$(free --human --giga | sed -n '2p' | awk '{printf "%s", $7}')
 
-color='lightgrey'
+color='white'
 if [ $used -gt $alarm ]
 then
     color='red'
