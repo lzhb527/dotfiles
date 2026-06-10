@@ -1,0 +1,58 @@
+{
+  "required_api_version": "^2.0.0",
+  "name": "QuickFind2",
+  "description": "Find files and folders using fd",
+  "developer_name": "chrizbee",
+  "icon": "images/icon.svg",
+  "options": {
+    "query_debounce": 0.1
+  },
+  "preferences": [
+    {
+      "id": "key_files",
+      "type": "keyword",
+      "name": "Find files",
+      "description": "Keyword to find files only",
+      "default_value": "ff"
+    },
+    {
+      "id": "key_folders",
+      "type": "keyword",
+      "name": "Find folders",
+      "description": "Keyword to find folders only",
+      "default_value": "fo"
+    },
+    {
+      "id": "search_path",
+      "type": "text",
+      "name": "Search path",
+      "description": "Search for files/folders inside this directory",
+      "default_value": "~"
+    },
+    {
+      "id": "fd_options",
+      "type": "text",
+      "name": "Additional fd options",
+      "description": "Add additional options to the fd call",
+      "default_value": "--hidden"
+    },
+    {
+      "id": "num_results",
+      "type": "input",
+      "name": "Number of results",
+      "description": "Limit fd by passing '--max-results'",
+      "default_value": 10
+    },
+    {
+      "id": "query_icons",
+      "type": "select",
+      "name": "Query system icons",
+      "description": "Show filetype icons or default icons",
+      "default_value": "yes",
+      "options": [
+        "yes",
+        "no"
+      ]
+    }
+  ]
+}

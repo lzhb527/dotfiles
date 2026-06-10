@@ -1,0 +1,34 @@
+.xfce4-panel {
+    font-weight: 900;
+    text-shadow: 0.2px 0 0 currentcolor, -0.2px 0 0 currentcolor, 0 0.2px 0 currentcolor,
+}
+
+
+/* 针对所有窗口的装饰层强制加边框 */
+window, .window-frame, .background {
+    border: 2px solid #1abc9c !important;
+    border-radius: 8px !important;
+}
+
+/* 移除阴影可能导致的边框遮盖 */
+window decoration {
+    margin: 2px;
+    border: 2px solid #1abc9c !important;
+    background-color: transparent;
+}
+
+/* 专门针对 Xfce4-terminal 等窗口 */
+terminal-window {
+    border: 2px solid #1abc9c !important;
+}
+
+window.maximized {
+    border-radius: 12px !important;
+    margin: 2px !important; /* 留出一点空隙，圆角才看得出来 */
+}
+
+/* 针对窗口装饰（阴影层） */
+window.maximized decoration {
+    border-radius: 12px !important;
+}
+

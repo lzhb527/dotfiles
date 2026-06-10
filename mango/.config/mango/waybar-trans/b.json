@@ -1,0 +1,208 @@
+{
+    "layer": "top", 
+    "position": "top", 
+    "height": 33, 
+    "spacing": 4, 
+    "margin-top": 5,
+    "margin-left": 5,
+    "margin-right": 5,
+
+    // 1. 修正了数组格式，将模块分开引用
+    "modules-left": ["custom/launcher", "ext/workspaces", "wlr/taskbar"],
+    "modules-center": [],
+    "modules-right": ["network", "mpd", "cpu", "memory", "battery", "tray", "power-profiles-daemon", "custom/mako", "clock", "pulseaudio", "custom/showdesktop", "custom/logout"],
+
+     "custom/launcher": {
+        "format": " ", 
+        "on-click": "fuzzel",
+        "tooltip": false
+    },
+
+        // "on-click": "bash /home/lee/.config/rofi/launchers/launcher.sh",
+
+"custom/logout": {
+    "format": "⏻",
+    "on-click": "bash /home/lee/.config/waybar/scripts/powermenu-fuzzel.sh", 
+    "tooltip-format": "注销登录"
+},
+
+
+    // 2. 任务栏配置
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 20,
+        "tooltip-format": "{title}",
+        "on-click": "minimize-raise",
+        "on-click-middle": "close",
+        "ignore-list": ["Rofi"],
+    },
+
+    "clock": {
+        "format": " {:%H:%M}",
+        "format-alt": "  {:%Y-%m-%d}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": " {usage}%",
+        "tooltip": false,
+        "on-click": "",
+         "states": {
+         "critical": 50
+    }
+    },
+
+    "memory": {
+        "format": " {percentage}%",
+          "states": {
+          "critical": 80
+    }
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging":"󱊥 {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    },
+
+    "tray": {
+        "icon-size": 24,
+        "spacing": 10
+    },
+
+    
+    "custom/mako": {
+    "format": "{}",
+    "return-type": "json",
+    "interval": 2, 
+    // 每 2 秒自动执行脚本更新一次数字
+    "exec": "~/.config/waybar/scripts/mako.sh",
+
+    // 鼠标交互动作控制：
+    "on-click": "~/.config/waybar/scripts/mako-history-fuzzel.sh",       
+    // 左键点击：消除当前最上面的一条通知
+    "on-click-right": "makoctl dismiss -a", 
+    // 右键点击：一键消除所有通知（数字归零）
+    "on-click-middle": "makoctl restore"   
+    // 中键点击：恢复显示上一条被关闭的通知
+},
+"custom/email": {
+    "format": "{}",  // 图标已经写在 Python 的 text 里了，这里直接 {} 即可
+    "return-type": "json",
+    "interval": 30,
+    "exec": "~/.config/waybar/scripts/mail_unseen.py",
+    "on-click": "thunderbird"
+},
+
+    "power-profiles-daemon": {
+      "format": "{icon}",
+      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+      "tooltip": true,
+      "format-icons": {
+        "default": " ",
+        "performance": " ",
+        "balanced": " ",
+        "power-saver": " "
+      }
+    },
+
+"network": {
+    // "interface": "wlan0", // 如果有多个网卡，可以指定具体的，否则会自动检测
+    "format-wifi": "  {bandwidthDownBytes} ↓ {bandwidthUpBytes} ↑",
+    "format-ethernet": "{bandwidthDownBytes} ↓ {bandwidthUpBytes} ↑",
+    "format-linked": "{ifname} (No IP) ",
+    "format-disconnected": "⚠  Disconnected",
+    "tooltip-format": "{ifname} via {gwaddr} ",
+    "on-click": "mmsg dispatch toggleoverview",
+    "interval": 2 
+    // 每 2 秒更新一次流量，建议不要太快以节省 CPU
+},
+
+          "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " ",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": ""
+    },
+
+
+     "mpd": {
+        "format": "{stateIcon} ({songPosition}|{queueLength})",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 5,
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "on-click": "mpc toggle",
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+ "ext/workspaces": {
+        "format": "{icon}",
+        "sort-by-id": true,
+        "on-click": "activate",
+        // 可选：如果希望使用固定图标代替数字
+        "format-icons": {
+            "default": "",
+            "active": "",
+            "default": ""
+        }
+    },
+
+        "custom/showdesktop": {
+        "format": " ", 
+        "on-click": "wlrctl toplevel minimize state:unminimized",
+        "tooltip": false
+    },
+
+           "group/group-tools":
+      {
+          "orientation": "inherit",
+          "drawer":
+          {
+              "transition-duration": 500,
+              "children-class": "other-apps",
+              "transition-left-to-right": false
+          },
+          "modules": [
+              "mpd",
+              "network",
+          ]
+      },
+
+},
+

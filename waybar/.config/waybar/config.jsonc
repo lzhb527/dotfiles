@@ -1,0 +1,237 @@
+{
+    "layer": "top", 
+    "position": "top", 
+    "height": 33, 
+    "spacing": 4, 
+    "margin-top": 5,
+    "margin-left": 5,
+    "margin-right": 5,
+
+    // --- 1. 模块布局定义 ---
+    "modules-left": [
+        "custom/launcher", 
+        "ext/workspaces", 
+        "wlr/taskbar"
+    ],
+    "modules-center": [],
+    "modules-right": [
+        "custom/weather", 
+        "mpd", 
+        "cpu", 
+        "memory",
+        "group/sysstatus",
+        "custom/mako", 
+        "clock", 
+        "group/audio",
+        "custom/showdesktop", 
+        "custom/logout"
+    ],
+
+    // --- 2. 左侧模块配置 ---
+    "custom/launcher": {
+        "format": " ", 
+        "on-click": "fuzzel",
+        "tooltip": false
+    },
+
+    "ext/workspaces": {
+        "format": "{icon}",
+        "sort-by-id": true,
+        "on-click": "activate",
+        "format-icons": {
+            "default": "",
+            "active": ""
+        }
+    },
+
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 20,
+        "icon-theme": "Papirus-Dark",
+        "tooltip-format": "{title}",
+        "on-click": "minimize-raise",
+        "on-click-middle": "close",
+        "ignore-list": [
+            "",
+        ]
+    },
+
+    // --- 3. 右侧音频组合抽屉 (Audio Group) ---
+    "group/audio": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "transition-left-to-right": true 
+        },
+        "modules": [
+            "pulseaudio",
+            "pulseaudio/slider"
+        ]
+    },
+
+    // --- 网络、电量、托盘组合抽屉 ---
+    "group/sysstatus": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "battery",
+            "power-profiles-daemon",
+            "network", 
+            "tray"
+        ]
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " ",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal" 
+    },
+
+    // --- 4. 右侧基础系统组件 ---
+    "clock": {
+        "format": " {:%H:%M}",
+        "format-alt": "  {:%Y-%m-%d}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": "{icon} {usage}%",
+        "format-icons": ["󰝦","󰪞","󰪟","󰪠","󰪡","󰪢","󰪣","󰪤","󰪥"],
+        "tooltip": false,
+        "on-click": "sh /home/lee/.config/waybar/scripts/toggle-sys.sh",
+        "states": {
+            "critical": 50
+        }
+    },
+
+    "memory": {
+        "format": " {percentage}%",
+        "on-click": "nwg-clipman",
+        "states": {
+            "critical": 80
+        }
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󱊥  {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    },
+
+    "network": {
+        "format": "󰤢 ",
+        "format-alt": "{bandwidthDownBytes} ↓ {bandwidthUpBytes} ↑",
+        "format-wifi": "  {bandwidthDownBytes} ↓ {bandwidthUpBytes} ↑",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "⚠  Disconnected",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "interval": 2 
+    },
+
+    "tray": {
+        "icon-size": 24,
+        "spacing": 10
+    },
+
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": " ",
+            "performance": " ",
+            "balanced": " ",
+            "power-saver": " "
+        }
+    },
+
+    // --- 5. 独有脚本多媒体及自定义组件 ---
+    "mpd": {
+        "format": "{stateIcon} ({songPosition}|{queueLength})",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 5,
+        "consume-icons": { "on": " " },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": { "on": " " },
+        "single-icons": { "on": "1 " },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "on-click": "/home/lee/.config/waybar/scripts/toggle-media.sh",
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+
+    "custom/mako": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 2, 
+        "exec": "~/.config/waybar/scripts/mako.sh",
+        "on-click": "~/.config/waybar/scripts/mako-history-fuzzel.sh",       
+        "on-click-right": "makoctl dismiss -a", 
+        "on-click-middle": "makoctl restore"   
+    },
+
+    "custom/email": {
+        "format": "{}", 
+        "return-type": "json",
+        "interval": 30,
+        "exec": "~/.config/waybar/scripts/mail_unseen.py",
+        "on-click": "thunderbird"
+    },
+
+    "custom/weather": {
+        "exec": "bash ~/.config/waybar/scripts/weather-zh.sh",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "foot --hold -e cat /tmp/weather_report.txt",
+        "spacing": 10,
+        "tooltip": true,
+        "interval": 900
+    },
+
+    "custom/showdesktop": {
+        "format": " ", 
+        "on-click": "wlrctl toplevel minimize state:unminimized",
+        "tooltip": false
+    },
+
+    "custom/logout": {
+        "format": "⏻",
+        "on-click": "bash /home/lee/.config/waybar/scripts/powermenu-fuzzel.sh", 
+        "tooltip-format": "注销登录"
+    }
+}

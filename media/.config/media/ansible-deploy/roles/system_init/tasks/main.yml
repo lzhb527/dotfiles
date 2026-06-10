@@ -1,0 +1,459 @@
+---
+# ==========================================
+# 1. 基础设施：替换清华大学 Debian Testing 官方软件源
+# ==========================================
+- name: 配置清华大学 Debian Testing 官方源及安全更新源
+  become: true
+  copy:
+    dest: /etc/apt/sources.list
+    content: |
+      # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ testing main contrib non-free non-free-firmware
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ testing main contrib non-free non-free-firmware
+
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-updates main contrib non-free non-free-firmware
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-updates main contrib non-free non-free-firmware
+
+      deb https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-backports main contrib non-free non-free-firmware
+      # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-backports main contrib non-free non-free-firmware
+
+      # 以下安全更新软件源为官方源配置
+      deb https://security.debian.org/debian-security testing-security main contrib non-free non-free-firmware
+      # deb-src https://security.debian.org/debian-security testing-security main contrib non-free non-free-firmware
+
+    owner: root
+    group: root
+    mode: "0644"
+
+# ==========================================
+# 2. 清理步骤：暴力拔除所有残留的旧第三方软件源与密钥
+# ==========================================
+- name: 强制清理历史残留的第三方源配置文件与安全密钥
+  become: true
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/sources.list.d/danklinux.list
+    - /etc/apt/sources.list.d/avengemedia-dms.list
+    - /etc/apt/sources.list.d/avengemedia-dms-git.list
+    - /etc/apt/keyrings/danklinux.gpg
+    - /etc/apt/keyrings/avengemedia-dms.gpg
+    - /etc/apt/keyrings/avengemedia-dms-git.gpg
+
+# ==========================================
+# 3. 软件安装：自愈、刷新缓存并一键安装海量原生软件包
+# ==========================================
+- name: 【自愈】自动修复可能被意外中断的 dpkg 状态
+  become: true
+  command: dpkg --configure -a
+
+# - name: 强制刷新 APT 官方源缓存
+# become: true
+# command: apt update
+
+# - name: 批量安装官方源中的所有系统及桌面组件
+# become: true
+# command: >
+# apt install -y
+# git zip unzip curl nala stow ncdu xwayland nwg-look
+# picard power-profiles-daemon terminator fastfetch cmatrix kitty
+# zsh bat eza zoxide fzf starship fish mpd mpc foot
+# ncmpcpp mpdris2 papirus-icon-theme xfce4-panel-profiles
+# xfce4-docklike-plugin xfce4-mpc-plugin deja-dup fcitx5
+# fcitx5-pinyin fcitx5-rime pipes-sh fd-find lightdm-gtk-greeter-settings
+# axel aria2 dconf-cli flameshot alacritty bibata-cursor-theme
+# swaybg swayidle waybar labwc neovim wlr-randr jq cava
+# ripgrep ffmpeg lxpolkit gnome-keyring nwg-bar hyprlock
+# pulseaudio-utils wlrctl playerctl rofi feh openssh-server
+# lrzsz greetd tuigreet wofi mako-notifier ymuse apt-listbugs fuzzel
+# python3-pypinyin grim slurp imagemagick wl-clipboard
+# notify-osd libnotify-bin swappy
+# xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-wlr mpv
+
+- name: "批量安装官方源中的所有系统及桌面组件（智能刷新缓存）"
+  ansible.builtin.apt:
+    name:
+      - git
+      - zip
+      - unzip
+      - curl
+      - nala
+      - stow
+      - ncdu
+      - xwayland
+      - nwg-look
+      - picard
+      - power-profiles-daemon
+      - terminator
+      - fastfetch
+      - cmatrix
+      - kitty
+      - zsh
+      - bat
+      - eza
+      - zoxide
+      - fzf
+      - starship
+      - fish
+      - mpd
+      - mpc
+      - foot
+      - ncmpcpp
+      - mpdris2
+      - papirus-icon-theme
+      - xfce4-panel-profiles
+      - xfce4-docklike-plugin
+      - xfce4-mpc-plugin
+      - deja-dup
+      - fcitx5
+      - fcitx5-pinyin
+      - fcitx5-rime
+      - pipes-sh
+      - fd-find
+      - lightdm-gtk-greeter-settings
+      - aria2
+      - dconf-cli
+      - flameshot
+      - alacritty
+      - bibata-cursor-theme
+      - swaybg
+      - swayidle
+      - waybar
+      - labwc
+      - wlr-randr
+      - jq
+      - cava
+      - ripgrep
+      - ffmpeg
+      - lxpolkit
+      - gnome-keyring
+      - nwg-bar
+      - hyprlock
+      - pulseaudio-utils
+      - wlrctl
+      - playerctl
+      - rofi
+      - feh
+      - openssh-server
+      - lrzsz
+      - greetd
+      - tuigreet
+      - wofi
+      - mako-notifier
+      - ymuse
+      - apt-listbugs
+      - fuzzel
+      - python3-pypinyin
+      - grim
+      - slurp
+      - imagemagick
+      - wl-clipboard
+      - libnotify-bin
+      - swappy
+      - xdg-desktop-portal
+      - xdg-desktop-portal-gtk
+      - xdg-desktop-portal-wlr
+      - fonts-noto-cjk
+      - fonts-noto-color-emoji
+      - mpv
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+# ==========================================
+# 4. 点文件管理：直接调用你最完美的本地自动化 Stow 脚本
+# ==========================================
+- name: 给本地的 stow 自动化脚本赋予可执行权限
+  file:
+    path: "/home/lee/Templates/dotfiles/install.sh"
+    mode: "0755"
+
+- name: 一键运行你的专属 Stow 自动化安装脚本
+  shell: "./install.sh"
+  args:
+    # 物理锁定上下文！让当前终端死死站在你的脚本所在的绝对目录下执行
+    chdir: "/home/lee/Templates/dotfiles"
+    executable: /bin/bash
+
+# ==========================================
+# 5. 静态媒体文件与系统基础配置（原 media-cp.sh 逻辑）
+# ==========================================
+- name: 确保 user 媒体目录存在
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
+    state: directory
+  loop:
+    - Music
+    - Pictures
+    - Videos
+    - .local/share/fonts
+    - .local/share/themes
+
+- name: 拷贝壁纸、音乐与视频文件
+  copy:
+    src: "{{ playbook_dir }}/../{{ item.src }}"
+    # src: "/home/lee/Templates/dotfiles/media/.config/media/{{ item.src }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/{{ item.dest }}"
+  loop:
+    - { src: "星晴.mp3", dest: "Music/" }
+    - { src: "never-say-never.mp3", dest: "Music/" }
+    - { src: "lishenjin.mp4", dest: "Videos/" }
+    - { src: "def-wallpapers/opensuse-ice.png", dest: "Pictures/" }
+
+- name: 拷贝默认桌面壁纸到系统目录
+  become: true
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../def-wallpapers/opensuse-ice.png"
+    dest: /usr/share/images/desktop-base/opensuse-ice.png
+    mode: "0644"
+
+- name: 复制 environment 到 /etc/ 目录
+  ansible.builtin.copy:
+    src: environment
+    dest: /etc/environment
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: 复制 SDDM 主题目录
+  ansible.builtin.copy:
+    src: sddm-astronaut-theme
+    dest: /usr/share/sddm/themes/
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: 复制 SDDM 配置文件到 sddm.conf.d 目录
+  ansible.builtin.copy:
+    src: "sddm.conf.d/{{ item }}"
+    dest: /etc/sddm.conf.d/
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - kde_settings.conf
+    - virtualkbd.conf
+  become: true
+
+- name: 复制 sddm.conf 到 /etc 目录并备份旧文件
+  ansible.builtin.copy:
+    src: sddm.conf
+    dest: /etc/sddm.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  become: true
+
+- name: 修改 GRUB 启动参数以锁定分辨率
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT=" # 正则匹配以这一开头的行
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"' # 替换为全新内容
+    backrefs: no
+  become: true # 使用 root 权限
+  notify: 更新 GRUB 配置 # 如果文件发生改变，触发更新命令
+
+- name: 复制 wl-colorpicker 和 wl-screenshot 到 /usr/local/bin/ 并赋予执行权限
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: "0755" # 👈 0755 确保脚本具有可执行权限 (rwxr-xr-x)
+  loop:
+    - wl-colorpicker
+    - wl-screenshot
+    - lyricspot
+  become: yes
+
+- name: 为 fdfind 创建 fd 符号链接
+  ansible.builtin.file:
+    src: /usr/bin/fdfind
+    dest: /usr/bin/fd
+    state: link
+    force: yes
+  become: yes
+
+# ==========================================
+# 5.1. 统一复制所有文件（利用循环合并代码）
+# ==========================================
+- name: 批量复制脚本和配置文件到临时目录
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "/tmp/{{ item.src }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: "papirus-folders", mode: "0755" }
+    - { src: "xfce4-init.sh", mode: "0755" }
+    - { src: "fix_icons_flat.py", mode: "0755" }
+    - { src: "v4.tar.bz2", mode: "0644" }
+
+# ==========================================
+# 5.2. 需要 Root 权限执行的任务 (become: true)
+# ==========================================
+- name: "[Root] 执行 papirus-folders 修改图标颜色"
+  ansible.builtin.command:
+    cmd: bash /tmp/papirus-folders -C teal -t Papirus-Dark
+  become: true
+  register: papirus_result
+  changed_when: "'is already' not in papirus_result.stdout"
+
+- name: "[Debug] 显示 papirus-folders 脚本的输出内容"
+  ansible.builtin.debug:
+    var: papirus_result.stdout_lines
+
+# ==========================================
+# 5.3. 普通用户权限执行的任务（配置当前桌面环境）
+# ==========================================
+- name: 执行 xfce4-init.sh 脚本
+  ansible.builtin.command:
+    cmd: /tmp/xfce4-init.sh
+
+- name: 导入 XFCE 面板配置
+  ansible.builtin.command:
+    cmd: xfce4-panel-profiles load /tmp/v4.tar.bz2
+
+- name: 执行 fix_icons_flat.py 修复图标
+  ansible.builtin.command:
+    cmd: python3 /tmp/fix_icons_flat.py
+
+# ==========================================
+# 5.4. 统一清理临时文件（利用循环合并代码）
+# ==========================================
+- name: 批量清理临时文件
+  ansible.builtin.file:
+    path: "/tmp/{{ item }}"
+    state: absent
+  loop:
+    - papirus-folders
+    - xfce4-init.sh
+    - v4.tar.bz2
+    - fix_icons_flat.py
+
+- name: 解压字体与主题包
+  unarchive:
+    src: "{{ playbook_dir }}/../../../../local/.local/share/{{ item.src }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/share/{{ item.dest }}"
+    remote_src: yes
+  loop:
+    - { src: "fonts/jetbrain.tar.xz", dest: "fonts/" }
+    - { src: "themes/Kali.tar.xz", dest: "themes/" }
+
+# ==========================================
+# 6. 配置环境与特定软件设置
+# ==========================================
+- name: 配置 Git 全局压缩参数
+  git_config:
+    name: core.compression
+    value: "0"
+    scope: global
+
+- name: 更改当前用户的默认 Shell 为 Fish
+  ansible.builtin.user:
+    name: "{{ ansible_facts.env.USER }}"
+    shell: /usr/bin/fish
+  become: true
+
+- name: 确保 ~/.config 目录存在
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config"
+    state: directory
+    mode: "0755"
+
+- name: 获取 Starship Nerd Font 预设配置
+  ansible.builtin.shell: starship preset nerd-font-symbols
+  register: starship_preset
+  changed_when: false
+
+- name: 将预设写入 starship.toml
+  ansible.builtin.copy:
+    content: "{{ starship_preset.stdout }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    mode: "0644"
+
+- name: 注入并定制 Starship 提示符
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    create: true
+    block: |
+      [character]
+      success_symbol = "[❯](red)[❯](yellow)[❯](green)"
+      error_symbol = "[❯](red)[❯](red)[❯](red)"
+
+- name: 将 starship 配置插入到文件开头
+  ansible.builtin.lineinfile:
+    path: "~/.config/starship.toml"
+    line: "add_newline = false"
+    insertbefore: BOF # 👈 核心参数：强制插入到文件最开头
+    create: true # 如果文件不存在，则自动创建该文件
+    mode: "0644"
+
+- name: 取消 locale.gen 中 zh_CN.UTF-8 的注释
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: '^#\s*zh_CN\.UTF-8\s+UTF-8'
+    line: "zh_CN.UTF-8 UTF-8"
+    state: present
+  become: yes
+  register: locale_config
+
+- name: 生成语言环境
+  ansible.builtin.command: locale-gen
+  become: yes
+  when: locale_config.changed
+
+- name: 设置系统默认语言为中文（可选）
+  ansible.builtin.lineinfile:
+    path: /etc/locale.conf
+    regexp: "^LANG="
+    line: "LANG=zh_CN.UTF-8"
+    create: yes
+  become: yes
+
+- name: 配置 greetd 使用 tuigreet 登录环境
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/greetd/config.toml
+    regexp: '^command\s*='
+    line: 'command = "tuigreet --time --time-format %H:%M --remember --asterisks  --power-shutdown ''systemctl poweroff'' --power-reboot ''systemctl reboot'' --cmd labwc"'
+    state: present
+
+# ==========================================
+# 7. 服务管理：系统级与用户级 Systemd 服务
+# ==========================================
+- name: 禁用 lightdm 服务并停止当前运行
+  ansible.builtin.systemd:
+    name: lightdm
+    enabled: false
+  become: true
+
+- name: 启用并启动系统级服务 (需要 sudo)
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - power-profiles-daemon
+    - ssh
+    - greetd
+
+- name: 【自愈】强制刷新用户级 Systemd 守护进程内存缓存
+  systemd:
+    daemon_reload: yes
+    scope: user
+
+- name: 启用用户级守护服务 (不需要 sudo，移除了损坏的 dms 服务)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    scope: user
+  loop:
+    - mpDris2.service
+    - mpd.service
+    - foot-server.service
+    - mako.service

@@ -1,0 +1,75 @@
+fcitx5 -d
+
+# Desktop Login sound
+aplay -q ~/.config/labwc/sound/desktop-login.wav >/dev/null 2>&1 &
+
+swaybg -i /home/lee/Pictures/opensuse-ice.png -m fill &
+wlr-randr --output Virtual-1 --mode 1440x900 &
+
+/home/lee/.config/waybar/scripts/weather7-zh.sh > /tmp/weather_report.txt 2>&1 &
+# 启动一个后台循环，每 15 分钟更新一次（替代 crontab 的一种简易方案）
+while true; do
+    sleep 900
+    /home/lee/.config/waybar/scripts/weather7-zh.sh > /tmp/weather_report.txt 2>&1 &
+done &
+# xfce4-panel
+waybar -c ~/.config/waybar/b.json -s ~/.config/waybar/d.css &
+nm-applet &
+pcmanfm-qt --desktop &
+# xrdb -merge ~/.Xresources
+# Device plugged audio
+# bash ~/.config/labwc/device-monitor.sh >/dev/null 2>&1 &
+
+# Alarm Daemon
+# ~/.config/waybar/scripts/clock_calendar/alarm/alarm.sh start-daemon
+
+# Set background, prefer awww if available as it has better transitions 
+# if command -v awww >/dev/null 2>&1; then
+	# awww-daemon >/dev/null 2>&1 &
+# else
+	# swww-daemon >/dev/null 2>&1 &
+# fi
+
+# Keyring
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh >/dev/null 2>&1 &
+
+# Polkit 
+/usr/bin/lxpolkit >/dev/null 2>&1 &
+
+# Gtk Theme Refresh
+# bash ~/.config/labwc/gtk.sh >/dev/null 2>&1 &
+
+# Clipboard
+# wl-clip-persist --clipboard regular &
+# wl-paste --type text --watch cliphist store &
+# wl-paste --type image --watch cliphist store &
+
+# Waybar
+# (sleep 0.5; waybar --log-level off >/dev/null 2>&1 &)
+# bash /home/lee/.config/waybar/waybar-gap.sh >/dev/null 2>&1;sleep 3
+# (sleep 3; waybar -c /home/lee/.config/waybar/left.json -s /home/lee/.config/waybar/style.css.1) &
+# (sleep 3; waybar -c /home/lee/.config/waybar/right.json -s /home/lee/.config/waybar/style.css.1) &
+# (sleep 3; waybar -c /home/lee/.config/waybar/bottom.json -s  /home/lee/.config/waybar/style.css.1) &
+# Notification 
+# To use swaync replace dunst with swaync
+# dunst >/dev/null 2>&1 &
+
+# Idle device manager
+# swayidle -w \
+    # timeout 300 "~/.config/labwc/idle/brightness_ctrl.sh --fade-out" \
+    # resume "~/.config/labwc/idle/brightness_ctrl.sh --fade-in" \
+    # timeout 600 "loginctl lock-session" \
+    # timeout 1800 "systemctl suspend" \
+    # lock "~/.config/labwc/idle/lock_ctrl.sh" \
+    # before-sleep "~/.config/labwc/idle/sleep_ctrl.sh" \
+    # after-resume "~/.config/labwc/idle/brightness_ctrl.sh --fade-in" \
+    # >/dev/null 2>&1 &
+swayidle -w \
+    timeout 600 "loginctl lock-session" \
+    lock 'hyprlock' \
+    before-sleep 'loginctl lock-session' \
+    >/dev/null 2>&1 &
+
+# dms run
+sleep 5
+systemctl --user start waybar.service

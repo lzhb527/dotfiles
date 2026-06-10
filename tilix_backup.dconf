@@ -1,0 +1,23 @@
+[/]
+copy-on-select=true
+paste-advanced-default=true
+prompt-on-delete-profile=true
+quake-height-percent=45
+quake-hide-headerbar=true
+quake-hide-lose-focus=true
+quake-specific-monitor=0
+quake-width-percent=99
+terminal-title-show-when-single=false
+use-tabs=true
+window-style='disable-csd-hide-toolbar'
+
+[profiles]
+list=['2b7c4080-0ddd-46c5-8f23-563fd3ba789d']
+
+[profiles/2b7c4080-0ddd-46c5-8f23-563fd3ba789d]
+badge-text='${iconTitle}'
+cursor-blink-mode='on'
+font='JetBrainsMono Nerd Font 14'
+show-scrollbar=false
+use-system-font=false
+visible-name='默认'

@@ -1,0 +1,17 @@
+{
+    "position": "bottom",
+    "height": 24,
+    "modules-left": [
+        "labwc/workspace",
+        "labwc/mode"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "memory",
+        "battery",
+        "tray",
+        "cpu"
+    ]
+}

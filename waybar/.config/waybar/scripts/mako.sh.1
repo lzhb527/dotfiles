@@ -1,0 +1,26 @@
+#!/bin/bash
+# Filename：mako.sh
+# Author：lizhengbei
+# Contact：lizhengbei@gmail.com
+# Created Time：2026-05-14
+# Description：
+# Copyright (C) 2026  Ltd. All rights reserved.
+#!/usr/bin/env bash
+#!/usr/bin/env bash
+#!/usr/bin/env bash
+
+# 直接计算返回的 JSON 数组内元素的总个数
+COUNT=$(makoctl list -j | jq 'length' 2>/dev/null)
+
+# 如果变量为空（如发生意外报错），则强制归零防止后续逻辑崩溃
+if [ -z "$COUNT" ]; then
+    COUNT=0
+fi
+
+# 根据数量输出对应的 Waybar 标准 JSON 格式
+if [ "$COUNT" -eq 0 ]; then
+    echo '{"text": "", "alt": "none", "class": "none", "tooltip": "没有未读通知"}'
+else
+    echo "{\"text\": \"󰅸 $COUNT\", \"alt\": \"has-notifications\", \"class\": \"has-notifications\", \"tooltip\": \"当前有 $COUNT 条未读通知\"}"
+fi
+

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://github.com",
+  "display": {
+    "separator": " ➜ ",
+    "color": "cyan"
+  },
+  "logo": {
+    "source": "~/.config/fastfetch/logo.tx",
+    "type": "auto",
+    "width": 5,
+    "color": {
+      "1": "cyan",
+      "2": "cyan",
+      "3": "cyan",
+      "4": "cyan",
+      "5": "cyan",
+      "6": "cyan"
+    },
+    "padding": {
+      "top": 2,
+      "right": 4,
+      "left": 3
+    }
+  },
+  "modules": [
+    {
+      "type": "os",
+      "key": "            OS" // 9空格 + 1图标(占2) + 2字符 = 14
+    },
+    {
+      "type": "host",
+      "key": "          Host" // 7空格 + 1图标(占2) + 4字符 = 14
+    },
+    {
+      "type": "kernel",
+      "key": "        Kernel" // 5空格 + 1图标(占2) + 6字符 = 14
+    },
+    {
+      "type": "command",
+      "key": "        OS Age", // 5空格 + 1图标(占2) + 6字符 = 14
+      "text": "echo \"$(( ($(date +%s) - $(stat -c %W /)) / 86400 )) days\""
+    },
+    {
+      "type": "uptime",
+      "key": "        Uptime" // 5空格 + 1图标(占2) + 6字符 = 14
+    },
+    {
+      "type": "packages",
+      "key": "      Packages" // 3空格 + 1图标(占2) + 8字符 = 14
+    },
+    {
+      "type": "shell",
+      "key": "         Shell" // 6空格 + 1图标(占2) + 5字符 = 14
+    },
+    {
+      "type": "display",
+      "key": "       Display" // 4空格 + 1图标(占2) + 7字符 = 14
+    },
+    {
+      "type": "de",
+      "key": "            DE" // 9空格 + 1图标(占2) + 2字符 = 14
+    },
+    {
+      "type": "wm",
+      "key": "            WM" // 9空格 + 1图标(占2) + 2字符 = 14
+    },
+    {
+      "type": "cursor",
+      "key": "        Cursor" // 5空格 + 1图标(占2) + 6字符 = 14
+    },
+    {
+      "type": "terminal",
+      "key": "      Terminal" // 3空格 + 1图标(占2) + 8字符 = 14
+    },
+    {
+      "type": "terminalfont",
+      "key": "     Term Font" // 0空格 + 1图标(占2) + 12字符 = 14 (微调缩写为 Term Font 避免超长)
+    },
+    {
+      "type": "cpu",
+      "key": "           CPU" // 8空格 + 1图标(占2) + 3字符 = 14
+    },
+    {
+      "type": "gpu",
+      "key": "           GPU" // 8空格 + 1图标(占2) + 3字符 = 14
+    },
+    {
+      "type": "localip",
+      "key": "      Local IP" // 3空格 + 1图标(占2) + 8字符 = 14
+    },
+    {
+      "type": "locale",
+      "key": "        Locale" // 5空格 + 1图标(占2) + 6字符 = 14
+    },
+    {
+      "type": "swap",
+      "key": "          Swap" // 7空格 + 1图标(占2) + 4字符 = 14
+    },
+    {
+      "type": "disk",
+      "key": "          Disk" // 7空格 + 1图标(占2) + 4字符 = 14
+    },
+    {
+      "type": "battery",
+      "key": "       Battery" // 4空格 + 1图标(占2) + 7字符 = 14
+    },
+    {
+      "type": "memory",
+      "key": "        Memory" // 5空格 + 1图标(占2) + 6字符 = 14
+    }
+  ]
+}
+

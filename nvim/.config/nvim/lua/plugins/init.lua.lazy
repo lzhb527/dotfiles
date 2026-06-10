@@ -1,0 +1,178 @@
+-- =============================================================================
+-- 现代 Neovim 插件矩阵总表 (完全体・极致延迟加载版)
+-- =============================================================================
+
+-- 1. 自动引导安装 Lazy.nvim 插件大管家
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- 2. 核心全局行为预设 (前置 Leader 键，防止 Which-key 映射断链)
+vim.g.mapleader = " "
+vim.opt.termguicolors = true
+
+-- 3. 配置引擎引导
+require("lazy").setup({
+
+  -- =========================================================================
+  -- 3.1 核心配色主题 (一开机必须立刻加载，所以 lazy = false)
+  -- =========================================================================
+  { "loctvl842/monokai-pro.nvim" },
+  { "UtkarshVerma/molokai.nvim", lazy = false, priority = 1000 }, 
+
+  -- =========================================================================
+  -- 3.2 语法高亮与代码语义感知
+  -- =========================================================================
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    event = { "BufReadPost", "BufNewFile" }, -- 延迟加载：打开文件时才启动
+    config = function()
+      -- 🌟 无损接管：调用你原本在 configs/editor.lua 里的 Treesitter 详细配置
+      require("plugins.configs.editor")
+    end,
+  },
+
+  -- =========================================================================
+  -- 3.3 LSP、代码补全、现代异步格式化矩阵
+  -- =========================================================================
+  { 
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = { "hrsh7th/cmp-nvim-lsp" },
+    config = function()
+      -- 🌟 无损接管：只有当打开代码文件触发 LSP 时，才加载你的 configs/lsp.lua
+      require("plugins.configs.lsp")
+    end,
+  },
+
+  {
+    "williamboman/mason.nvim",
+    cmd = { "Mason", "MasonInstall" }, -- 极致延迟：只有敲 :Mason 命令时才载入
+    dependencies = { 
+      "williamboman/mason-lspconfig.nvim",
+      "WhoIsSethDaniel/mason-tool-installer.nvim",
+    },
+    config = true,
+  },
+
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter", -- 极致延迟：只有进入插入模式写代码时，补全引擎才进内存
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-path", "hrsh7th/cmp-buffer",
+      "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip", "rafamadriz/friendly-snippets",
+    },
+    config = function()
+      -- 🌟 无损接管：只有当你真正开始写代码弹补全窗时，才去加载你的 configs/cmp.lua
+      require("plugins.configs.cmp")
+    end,
+  },
+
+  { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+
+  { 
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" }, -- 保存文件前自动唤醒格式化引擎
+    cmd = { "ConformInfo" },
+    opts = {
+      formatters_by_ft = {
+        lua = { "stylua" },
+        python = { "black" },
+      },
+    },
+  },
+
+  { 
+    "linux-cultist/venv-selector.nvim", 
+    branch = "regexp", 
+    dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+    ft = "python", -- 只有打开 Python 文件时才唤醒虚拟环境选择器
+    opts = { name = { "venv", ".venv", "env", ".env" } },
+  },
+
+  -- =========================================================================
+  -- 3.4 极客核心导航、检索、侧边栏
+  -- =========================================================================
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    cmd = "Neotree", -- 只有触发快捷键或敲击命令时才唤醒侧边文件树
+    dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+  },
+
+  { "folke/flash.nvim", event = "VeryLazy" },
+
+  {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope", -- 只有用 leader+f 进行全局搜索时才载入 Telescope
+    dependencies = { 
+      "nvim-lua/plenary.nvim",
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+    }
+  },
+
+  { "lewis6991/gitsigns.nvim", event = { "BufReadPost", "BufNewFile" }, config = true },
+  { "stevearc/aerial.nvim", cmd = { "AerialToggle" }, config = true },
+
+  -- =========================================================================
+  -- 3.5 编辑增强与小工具
+  -- =========================================================================
+  { "NvChad/nvim-colorizer.lua", event = { "BufReadPost" } }, 
+  { "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost" }, main = "ibl" }, 
+  { "numToStr/Comment.nvim", keys = { { "<leader>cc", mode = { "n", "x" } } }, config = true },
+  { "HiPhish/rainbow-delimiters.nvim", event = { "BufReadPost" } },
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    cmd = { "ToggleTerm", "ToggleTermToggleAll" },
+    config = function()
+      -- 🌟 无损接管：托管你原本在 configs/tools.lua 里的全部内置终端配置
+      require("plugins.configs.tools")
+    end,
+  },
+
+  -- =========================================================================
+  -- 3.6 全局 UI 视觉表现 (由于涉及状态栏、标签页，开机立刻让 ui.lua 全盘渲染)
+  -- =========================================================================
+  { 
+    "nvim-lualine/lualine.nvim", 
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      -- 🌟 无损接管：开机立刻执行你的 configs/ui.lua，把状态栏、启动页、彩虹括号完美初始化
+      require("plugins.configs.ui")
+    end
+  },
+  { "nvimdev/dashboard-nvim", event = "VimEnter" },
+  { "karb94/neoscroll.nvim", event = { "BufReadPost" }, config = true },
+  { "akinsho/bufferline.nvim", dependencies = { 'nvim-tree/nvim-web-devicons' } },
+  { "folke/which-key.nvim", event = "VeryLazy" },
+
+}, {
+  -- Lazy.nvim 的全局圆角美化外观 UI 窗口预设
+  ui = { border = "rounded" },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "netrw", "netrwPlugin", "netrwSettings", "netrwFileHandlers",
+        "gzip", "zip", "zipPlugin", "tar", "tarPlugin", "getscript",
+        "getscriptPlugin", "vimball", "vimballPlugin", "2html_plugin",
+        "logiPat", "rrhelper", "spellfile_plugin", "matchit",
+      },
+    },
+  },
+})
+
+-- =============================================================================
+-- 😎 完美！原本底部的暴力加载 require 全部被安全抹除。
+-- 现在你的 Neovim 拥有了纯正的按需延迟加载能力，快去体验吧！
+-- =============================================================================
