@@ -16,7 +16,7 @@ lxqt-policykit-agent >/dev/null 2>&1 &
 
 # 休眠与锁屏管理 (使用 hyprlock 锁屏)
 swayidle -w \
-    timeout 10 'pidof hyprlock || hyprlock' \
+    timeout 600 'pidof hyprlock || hyprlock' \
     before-sleep 'pidof hyprlock || hyprlock' &
 >/dev/null 2>&1 &
 
