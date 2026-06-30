@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# ==========================================
+# 1. 硬件、屏幕与环境基础设置
+# ==========================================
+# 优先初始化分辨率，防止后续组件拉伸错位
+wlr-randr --output Virtual-1 --mode 1440x900 &
+
+# 播放登录音效
+aplay -q ~/.config/labwc/sound/desktop-login.wav >/dev/null 2>&1 &
+
+# 权限认证与密钥环管理
+# /usr/bin/lxpolkit >/dev/null 2>&1 &
+lxqt-policykit-agent >/dev/null 2>&1 &
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh >/dev/null 2>&1 &
+
+# 休眠与锁屏管理 (使用 hyprlock 锁屏)
+swayidle -w \
+    timeout 600 "loginctl lock-session" \
+    lock 'pkill hyprlock || hyprlock' \
+    before-sleep 'loginctl lock-session' \
+    >/dev/null 2>&1 &
+
+# ==========================================
+# 2. 后端核心常驻服务
+# ==========================================
+# 输入法守护进程 (修复了原脚本漏掉 & 的严重问题)
+fcitx5 -d &
+
+# 网络状态图标
+nm-applet &
+
+# cliphist 剪贴板历史监听
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
+# ==========================================
+# 3. 桌面环境与 UI 组件
+# ==========================================
+waybar 2>&1 >/dev/null &
+# 渲染桌面壁纸
+swaybg -i /home/lee/Pictures/opensuse-ice.png -m fill &
+
+# PCManFM-Qt 负责管理桌面图标
+pcmanfm-qt --desktop &
+
+# 启动 Waybar 状态栏
+waybar -c ~/.config/waybar/b.json -s ~/.config/waybar/d.css &
+
+# ==========================================
+# 4. 定时任务与特殊脚本
+# ==========================================
+# 天气预报初始化并开启 15 分钟定时轮询循环
+/home/lee/.config/waybar/scripts/weather7-zh.sh >/tmp/weather_report.txt 2>&1 &
+while true; do
+    sleep 900
+    /home/lee/.config/waybar/scripts/weather7-zh.sh >/tmp/weather_report.txt 2>&1 &
+done &
+
+# 延迟触发用户级 systemd 服务（保留原脚本逻辑）
+(
+    sleep 5
+    systemctl --user start waybar.service
+) &

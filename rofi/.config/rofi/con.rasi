@@ -1,0 +1,141 @@
+configuration {
+      /* 1. 强制声明为最顶层覆盖层，这允许 Rofi 捕获全局失去焦点（blur）事件 */
+    layer: "top";
+
+    /* 2. 核心：强制开启 Wayland 键盘和鼠标焦点自动捕获 */
+    // auto-select: false; 
+    
+    /* 3. 防止因 XWayland 兼容残留导致失焦失效 */
+    // steal-focus: true;
+
+
+    /* 启用应用模式与 combi 模式 */
+    modes: [ drun, combi ];
+    sidebar-mode: true;
+    show-icons: true;
+    
+    /* 快捷键定制：解绑并释放 \ 键，将其绑定为标签页切换 */
+    kb-clear-line: "";
+    kb-mode-next: "slash";
+    kb-mode-previous: "Shift+Tab";
+    
+    /* 修复 Wayland 环境下的窗口字段警告 */
+    window-format: "{w} · {c} · {t}";
+}
+
+/* 全局变量定义块（仅保留纯粹的颜色与数字基础变量） */
+* {
+    /* 背景色：161616，0.85 代表 85% 半透明 */
+    bg-color:            rgba(22, 22, 22, 0.9);
+    /* 选中的高亮色：08bdba 极客青 */
+    accent-color:        #08bdba;
+    /* 选中条目的背景色：08bdba 赋予 40% 的微透高亮 */
+    selected-bg:         rgba(8, 189, 186, 1);
+    
+    /* 常规文本颜色 */
+    fg-color:            #ffffff;
+    fg-alt:              #ffffff;
+}
+
+/* 主窗口容器 */
+window {
+    font:               "Segoe UI, Noto Sans CJK SC 14";
+    background-color:   @bg-color;
+    // border:             2px solid @accent-color; 
+    /* 极客青外边框 */
+    border-radius:      12px;
+    width:              850px;
+    padding:            15px;
+}
+
+/* 内部纵向基础布局 */
+mainbox {
+    spacing:            10px;
+    background-color:   transparent;
+    children:           [ inputbar, listview, mode-switcher ];
+}
+
+/* 搜索输入框包裹区 */
+inputbar {
+    spacing:            8px;
+    padding:            8px 12px;
+    background-color:   rgba(255, 255, 255, 0.05); 
+    /* 微弱的浅色输入框背景 */
+    border-radius:      6px;
+    // border:             1px solid rgba(255, 255, 255, 0.1);
+    children:           [ prompt, entry ];
+}
+
+/* 输入框前缀提示符（如 "drun" 或 "文件搜索"） */
+prompt {
+    background-color:   transparent;
+    text-color:         @accent-color; 
+    /* 提示符显示为极客青 */
+}
+
+/* 文本输入区域 */
+entry {
+    background-color:   transparent;
+    placeholder:        "搜索...";
+    placeholder-color:  @fg-alt;
+    text-color:         @fg-color;
+}
+
+/* 滚动条目列表区域 */
+listview {
+    background-color:   transparent;
+    fixed-height:       true;
+    lines:              5;
+    spacing:            4px;
+    scrollbar:          false;
+}
+
+/* 单个渲染条目 */
+element {
+    padding:            8px 10px;
+    border-radius:      6px;
+    spacing:            12px;
+    background-color:   transparent;
+}
+
+/* 当前被键盘或鼠标选中的条目 */
+element selected {
+    background-color:   @selected-bg;
+    text-color:         @fg-color;
+    // border:             1px solid @accent-color; 
+    /* 选中项加一层极客青微边框 */
+}
+
+/* 列表条目中的图标 */
+element-icon {
+    size:               24px;
+    background-color:   transparent;
+}
+
+/* 列表条目中的文本 */
+element-text {
+    vertical-align:     0.5;
+    background-color:   transparent;
+    text-color:         @fg-alt;
+}
+
+/* 底部用于 \ 键切换的标签页/底部控制栏样式 */
+mode-switcher {
+    spacing:            10px;
+    background-color:   transparent;
+}
+
+/* 标签页按钮基础样式 */
+button {
+    padding:            6px;
+    border-radius:      6px;
+    background-color:   rgba(255, 255, 255, 0.05);
+    text-color:         @fg-alt;
+}
+
+/* 当前处于激活状态的模式标签页 */
+button selected {
+    background-color:   @accent-color;
+    text-color:         #161616; /* 选中激活时字色变暗，确保在青色背景下的清晰度 */
+}
+

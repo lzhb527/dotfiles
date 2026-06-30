@@ -1,0 +1,6 @@
+[Greeter][LnF][General]
+alwaysShowClock=false
+
+[Greeter][Wallpaper][org.kde.image][General]
+Image=/home/lee/Pictures/5120x2880.jpg
+PreviewImage=/home/lee/Pictures/5120x2880.jpg

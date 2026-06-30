@@ -1,0 +1,18 @@
+~/.config/nvim/
+├── init.lua                        # 唯一的核心总入口
+├── lazy-lock.json                  # 插件锁版本文件（自动生成）
+└── lua/
+    ├── configs/                    # 存放所有编辑器自身的“基础行为”配置
+    │   ├── base.lua                # 🌟 替代原 base/init.lua，管理行号、缩进、透明背景等
+    │   ├── keymaps.lua             # 🌟 集中管理所有通用快捷键、保存、分屏、LSP 导航跳转
+    │   └── filetype.lua            # 🌟 集中管理文件头、光标线智能切换、Dashboard 降噪
+    |   └── theme.lua               # neovim 主题 molokai
+    │
+    └── plugins/                    # 存放所有与“插件”相关的代码
+        ├── init.lua                # 🌟 纯净的插件清单表（只写插件地址，不写任何 setup 逻辑）
+        └── configs/                # 🌟 存放每个现代化插件具体的个性化 Lua 配置
+            ├── cmp.lua             # 自动补全、括号空格联动、Jinja2大括号优化
+            ├── lsp.lua             # 桥接 Mason 并激活 pyright、ansiblels 实例
+            ├── ui.lua              # 状态栏(Lualine)、多标签顶栏(Bufferline)、启动页配置
+            └── tools.lua           # Telescope、Flash、ToggleTerm、Aerial 等工具配置
+

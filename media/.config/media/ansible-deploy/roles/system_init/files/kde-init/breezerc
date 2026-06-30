@@ -1,0 +1,12 @@
+[Common]
+ShadowColor=85,170,255
+
+[Style]
+DockWidgetDrawFrame=true
+MenuItemDrawStrongFocus=false
+ScrollBarAddLineButtons=1
+ScrollBarSubLineButtons=1
+SidePanelDrawFrame=true
+
+[Windeco]
+DrawBorderOnMaximizedWindows=true

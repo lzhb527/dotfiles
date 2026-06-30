@@ -1,0 +1,302 @@
+---
+# ==========================================
+# 1. 基础设施：替换清华大学 Debian Testing 官方软件源
+# ==========================================
+
+# ==========================================
+# 2. 清理步骤：暴力拔除所有残留的旧第三方软件源与密钥
+# ==========================================
+
+# ==========================================
+# 3. 软件安装：自愈、刷新缓存并一键安装海量原生软件包
+# ==========================================
+
+# ==========================================
+# 4. 点文件管理：直接调用你最完美的本地自动化 Stow 脚本
+# ==========================================
+- name: 给本地的 stow 自动化脚本赋予可执行权限
+  file:
+    path: "/home/lee/Templates/dotfiles/install.sh"
+    mode: "0755"
+
+- name: 一键运行你的专属 Stow 自动化安装脚本
+  shell: "./install.sh"
+  args:
+    # 物理锁定上下文！让当前终端死死站在你的脚本所在的绝对目录下执行
+    chdir: "/home/lee/Templates/dotfiles"
+    executable: /bin/bash
+
+# ==========================================
+# 5. 静态媒体文件与系统基础配置
+# ==========================================
+
+- name: 确保用户媒体及配置目录存在
+  ansible.builtin.file:
+    path: "~/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - Music
+    - Pictures
+    - Videos
+    - .local/share/fonts
+    - .local/share/themes
+
+- name: 拷贝壁纸、音乐与视频文件
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "~/{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - { src: "星晴.mp3", dest: "Music/" }
+    - { src: "never-say-never.mp3", dest: "Music/" }
+    - { src: "lishenjin.mp4", dest: "Videos/" }
+    - { src: "def-wallpapers/5120x2880.jpg", dest: "Pictures/" }
+
+- name: 复制系统级配置文件与可执行脚本
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: "environment", dest: "/etc/environment", mode: "0644" }
+    - {
+        src: "wl-colorpicker",
+        dest: "/usr/local/bin/wl-colorpicker",
+        mode: "0755",
+      }
+    - {
+        src: "wl-screenshot",
+        dest: "/usr/local/bin/wl-screenshot",
+        mode: "0755",
+      }
+    - { src: "lyricspot", dest: "/usr/local/bin/lyricspot", mode: "0755" }
+  become: true
+
+- name: 修改 GRUB 启动参数以锁定分辨率
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"'
+  become: true
+  notify: 更新 GRUB 配置
+
+- name: 解压并安装字体与主题包
+  ansible.builtin.unarchive:
+    src: "{{ item.src }}"
+    dest: "~/.local/share/{{ item.dest }}"
+  loop:
+    - { src: "fonts/jetbrain.tar.xz", dest: "fonts/" }
+    - { src: "themes/Kali.tar.xz", dest: "themes/" }
+
+# ==========================================
+# 5.1. 确保普通用户目录存在并分发配置文件（直接到位）
+# ==========================================
+- name: 批量创建所需的配置目录
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "~/.config/autostart"
+    - "~/.local/share/konsole"
+    - "~/.local/share/plasma/plasmoids"
+
+- name: 直接分发 KDE/Konsole 配置文件
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - { src: "kde-init/konsolerc", dest: "~/.config/konsolerc" }
+    - { src: "kde-init/breezerc", dest: "~/.config/breezerc" }
+    - { src: "kde-init/kscreenlockerrc", dest: "~/.config/kscreenlockerrc" }
+    - {
+        src: "kde-init/plasma-org.kde.plasma.desktop-appletsrc",
+        dest: "~/.config/plasma-org.kde.plasma.desktop-appletsrc",
+      }
+    - {
+        src: "kde-init/autostart.sh.desktop",
+        dest: "~/.config/autostart/autostart.sh.desktop",
+      }
+    - {
+        src: "kde-init/conf1.profile",
+        dest: "~/.local/share/konsole/conf1.profile",
+      }
+
+# ==========================================
+# 5.2. 复制执行/安装类文件到临时目录（必要中转）
+# ==========================================
+- name: 复制脚本与 Applet 安装包到临时目录
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: "papirus-folders", dest: "/tmp/papirus-folders", mode: "0755" }
+    - { src: "fix_icons_flat.py", dest: "/tmp/fix_icons_flat.py", mode: "0755" }
+    - {
+        src: "weather.widget.plus.plasmoid",
+        dest: "/tmp/weather.widget.plus.plasmoid",
+        mode: "0644",
+      }
+    - {
+        src: "commandoutput-v14-plasma6-0.plasmoid",
+        dest: "/tmp/commandoutput-v14-plasma6-0.plasmoid",
+        mode: "0644",
+      }
+
+# ==========================================
+# 5.3. 执行脚本与组件安装
+# ==========================================
+- name: "[Root] 执行 papirus-folders 修改图标颜色"
+  ansible.builtin.command:
+    cmd: bash /tmp/papirus-folders -C teal -t Papirus-Dark
+  become: true
+  register: papirus_result
+  changed_when: "'is already' not in papirus_result.stdout"
+
+- name: "[Debug] 显示 papirus-folders 脚本的输出内容"
+  ansible.builtin.debug:
+    var: papirus_result.stdout_lines
+
+- name: 安装 Plasma Applet：weather.widget.plus.plasmoid
+  ansible.builtin.command:
+    cmd: kpackagetool6 --type Plasma/Applet --install /tmp/weather.widget.plus.plasmoid
+  register: weather_install
+  changed_when: "'is already' not in weather_install.stdout"
+  failed_when: false
+
+- name: 安装 Plasma Applet：commandoutput-v14-plasma6-0.plasmoid
+  ansible.builtin.command:
+    cmd: kpackagetool6 --type Plasma/Applet --install /tmp/commandoutput-v14-plasma6-0.plasmoid
+  register: command_install
+  changed_when: "'is already' not in command_install.stdout"
+  failed_when: false
+
+- name: 执行 fix_icons_flat.py 修复图标
+  ansible.builtin.command:
+    cmd: python3 /tmp/fix_icons_flat.py
+
+# ==========================================
+# 5.4. 清理临时文件
+# ==========================================
+- name: 批量清理临时文件
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/papirus-folders
+    - /tmp/fix_icons_flat.py
+    - /tmp/weather.widget.plus.plasmoid
+    - /tmp/commandoutput-v14-plasma6-0.plasmoid
+
+# ==========================================
+# 6. 配置环境与特定软件设置
+# ==========================================
+- name: archlinunxcn
+  ansible.builtin.blockinfile:
+    path: /etc/pacman.conf
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGE BLOCK: ARCHLINUXCN"
+    block: |
+      [archlinuxcn]
+      SigLevel = Never
+      Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
+  become: true
+
+# 1. 创建用户账户（不直接设密码，避免 passlib 报错）
+- name: 创建普通用户 lee
+  ansible.builtin.user:
+    name: lee
+    shell: /bin/bash
+    groups: wheel,video,tty
+    append: yes
+    create_home: yes
+    state: present
+  become: true
+
+- name: 更改当前用户的默认 Shell 为 Fish
+  ansible.builtin.user:
+    name: "{{ ansible_facts.env.USER }}"
+    shell: /usr/bin/fish
+  become: true
+
+# 2. 通过 chpasswd 设置明文密码（不需要本地安装 passlib）
+- name: 设置用户 lee 的明文密码
+  ansible.builtin.shell: echo "lee:lee" | chpasswd
+  become: true
+  # 提示：为了安全，建议以后改为 password_hash
+  changed_when: false # 避免每次执行都显示 changed
+
+# 3. 配置 wheel 组的免密 sudo 权限
+- name: 允许 wheel 组用户免密执行 sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^#\s*%wheel\s+ALL=\(ALL:ALL\)\s+NOPASSWD'
+    line: "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "visudo -cf %s"
+  become: true
+
+- name: 配置 Git 全局压缩参数
+  git_config:
+    name: core.compression
+    value: "0"
+    scope: global
+
+- name: 获取 Starship Nerd Font 预设配置
+  ansible.builtin.shell: starship preset nerd-font-symbols
+  register: starship_preset
+  changed_when: false
+
+- name: 将预设写入 starship.toml
+  ansible.builtin.copy:
+    content: "{{ starship_preset.stdout }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    mode: "0644"
+
+- name: 注入并定制 Starship 提示符
+  blockinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    create: yes
+    block: |
+      [character]
+      success_symbol = "[❯](red)[❯](yellow)[❯](green)"
+      error_symbol = "[❯](red)[❯](red)[❯](red)"
+
+- name: 设置系统默认语言为中文（可选）
+  ansible.builtin.lineinfile:
+    path: /etc/locale.conf
+    regexp: "^LANG="
+    line: "LANG=zh_CN.UTF-8"
+    create: yes
+  become: yes
+
+# ==========================================
+# 7. 服务管理：系统级与用户级 Systemd 服务
+# ==========================================
+
+- name: 【自愈】强制刷新用户级 Systemd 守护进程内存缓存
+  systemd:
+    daemon_reload: yes
+    scope: user
+
+- name: 启用用户级守护服务 (不需要 sudo，移除了损坏的 dms 服务)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    scope: user
+  loop:
+    - mpd.service
+    - foot-server.service
+    - mpd-mpris.service
+
+- name: 将本地的 folder_colors.tar.gz 上传并解压至用户家目录
+  ansible.builtin.unarchive:
+    src: folder_colors.tar.gz # 确保这个文件放在你 Role 的 files/ 目录下
+    dest: "{{ ansible_facts['env']['HOME'] }}/" # 解压到目标机的家目录
+    remote_src: no # 说明源文件在 Ansible 控制机（本地），需要上传
+

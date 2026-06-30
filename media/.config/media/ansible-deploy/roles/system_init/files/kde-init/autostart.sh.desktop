@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=/home/lee/.config/waybar/autostart.sh
+Icon=application-x-shellscript
+Name=autostart.sh
+Type=Application
+X-KDE-AutostartScript=true

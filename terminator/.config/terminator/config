@@ -1,0 +1,22 @@
+[global_config]
+[keybindings]
+[profiles]
+  [[default]]
+    background_darkness = 0.91
+    font = JetBrainsMono Nerd Font Medium 14
+    show_titlebar = False
+    scrollbar_position = hidden
+    scrollback_lines = 50000
+    use_system_font = False
+    use_theme_colors = True
+    bold_is_bright = True
+    copy_on_selection = True
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+[plugins]

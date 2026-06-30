@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <!-- <maximizedDecoration>border</maximizedDecoration> -->
+    <gap>1</gap>
+    <adaptiveSync>no</adaptiveSync>
+    <allowTearing>no</allowTearing>
+    <autoEnableOutputs>yes</autoEnableOutputs>
+    <reuseOutputMode>no</reuseOutputMode>
+    <xwaylandPersistence>no</xwaylandPersistence>
+    <primarySelection>yes</primarySelection>
+    <margin top="5" bottom="5" left="5" right="5"/>
+  </core>
+  <placement>
+    <policy>cascade</policy>
+    <!--"automatic" <cascadeOffset x="40" y="30"   /> -->
+  </placement>
+  <dropShadows>no</dropShadows>
+  <dropShadowsOnTiled>no</dropShadowsOnTiled>
+  <theme>
+    <name>Raven-Cyan</name>
+    <font name="Roboto" size="10"/>
+    <cornerRadius>10</cornerRadius>
+    <icon>Papirus-Dark</icon>
+    <dropShadows>yes</dropShadows>
+    <dropShadowsOnTiled>yes</dropShadowsOnTiled>
+    <!-- <maximizedDecoration>titlebar</maximizedDecoration> -->
+    <maximizedDecoration>titlebar</maximizedDecoration>
+    <keepBorder>yes</keepBorder>
+    <titlebar>
+      <!-- iconify=最小化, max=最大化, shade=收起按钮, close=关闭 -->
+      <layout>label : shade,iconify,max,close</layout>
+    </titlebar>
+  </theme>
+  <focus>
+    <!-- 确保鼠标点击其他地方时，焦点会立刻转移，从而完美配合 Rofi 的退出机制 -->
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+    <followMouseRequiresMovement>no</followMouseRequiresMovement>
+    <raiseOnFocus>no</raiseOnFocus>
+  </focus>
+  <!-- Key bindings -->
+  <!-- W is the Super key (windows), A is the Alt key, S is the Shift key -->
+  <!-- s and S are different, s is a alphabetic character -->
+  <keyboard>
+    <default/>
+    <keybind key="W-Return">
+      <action name="Execute" command="kitty"/>
+    </keybind>
+    <keybind key="f11">
+      <action name="ToggleFullscreen"/>
+    </keybind>
+    <!-- Rofi app launcher -->
+    <keybind key="W-d">
+      <action name="Execute" command="/home/lee/.config/fuzzel/search.sh"/>
+    </keybind>
+    <!-- customize desktop -->
+    <!-- Wallpaper -->
+    <keybind key="W-b">
+      <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/wallselect/wallselect.sh'"/>
+    </keybind>
+    <!-- power menu -->
+    <keybind key="W-Delete">
+      <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/powermenu/powermenu.sh'"/>
+    </keybind>
+    <!-- generate apps menu -->
+    <!-- <keybind key="W-g"> -->
+    <!-- <action name="Execute" command="sh -c 'killall rofi || ~/.config/labwc/menu-generator.sh'" /> -->
+    <!-- </keybind> -->
+    <!-- screenshot tool -->
+    <!-- <keybind key="W-s"> -->
+    <!-- <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/screen-tool/screen-tool.sh'" /> -->
+    <!-- </keybind> -->
+    <!-- screenshot tool -->
+    <keybind key="W-y">
+      <action name="Execute" command="sh -c 'killall rofi || python3 ~/.config/rofi/rofi-tube/rofi-tube.py'"/>
+    </keybind>
+    <!-- Lock screen -->
+    <keybind key="W-l">
+      <action name="Execute" command="sh -c 'pidof hyprlock || hyprlock'"/>
+    </keybind>
+    <!-- Reload labwc config -->
+    <keybind key="W-r">
+      <action name="Reconfigure"/>
+    </keybind>
+    <keybind key="A-Tab">
+      <action name="NextWindow"/>
+    </keybind>
+    <keybind key="A-S-Tab">
+      <action name="PreviousWindow"/>
+    </keybind>
+    <!-- Switch between workspaces -->
+    <keybind key="W-1">
+      <action name="GoToDesktop" to="1"/>
+    </keybind>
+    <keybind key="W-2">
+      <action name="GoToDesktop" to="2"/>
+    </keybind>
+    <keybind key="W-3">
+      <action name="GoToDesktop" to="3"/>
+    </keybind>
+    <keybind key="W-4">
+      <action name="GoToDesktop" to="4"/>
+    </keybind>
+    <!-- Move active window to workspace -->
+    <keybind key="W-S-1">
+      <action name="SendToDesktop" to="1"/>
+    </keybind>
+    <keybind key="W-S-2">
+      <action name="SendToDesktop" to="2"/>
+    </keybind>
+    <keybind key="W-S-3">
+      <action name="SendToDesktop" to="3"/>
+    </keybind>
+    <keybind key="W-S-4">
+      <action name="SendToDesktop" to="4"/>
+    </keybind>
+    <!-- Snap windows to halves/corners -->
+    <keybind key="W-Left">
+      <action name="SnapToEdge" direction="left"/>
+    </keybind>
+    <keybind key="W-Right">
+      <action name="SnapToEdge" direction="right"/>
+    </keybind>
+    <keybind key="W-Up">
+      <action name="SnapToEdge" direction="up"/>
+    </keybind>
+    <keybind key="W-Down">
+      <action name="SnapToEdge" direction="down"/>
+    </keybind>
+    <!-- You Change 5+, 5- to any number e.g. 10+, 10- for both volume and brightness -->
+    <!-- Volume/microphone Control -->
+    <keybind key="XF86AudioRaiseVolume">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh 5+'"/>
+    </keybind>
+    <keybind key="XF86AudioLowerVolume">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh 5-'"/>
+    </keybind>
+    <keybind key="XF86AudioMute">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute speaker'"/>
+    </keybind>
+    <keybind key="XF86AudioMicMute">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute microphone'"/>
+    </keybind>
+    <!-- Brightness Control -->
+    <keybind key="XF86MonBrightnessUp">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh 5+'"/>
+    </keybind>
+    <keybind key="XF86MonBrightnessDown">
+      <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh 5-'"/>
+    </keybind>
+    <keybind key="W-c">
+      <action name="Execute" command="sh -c '/usr/local/bin/wl-colorpicker'"/>
+    </keybind>
+    <keybind key="W-o">
+      <action name="Execute" command="fuzzel"/>
+    </keybind>
+    <keybind key="W-/">
+      <action name="Execute" command="kitten quick-access-terminal"/>
+    </keybind>
+    <keybind key="W-f">
+      <!-- <action name="ToggleFullscreen"  /> -->
+      <action name="ToggleMaximize"/>
+    </keybind>
+    <keybind key="W-g">
+      <action name="Execute" command="/usr/local/bin/wl-screenshot area"/>
+    </keybind>
+    <keybind key="Super_L" onRelease="yes">
+      <action name="NextWindow"/>
+    </keybind>
+    <keybind key="Super_R" onRelease="yes">
+      <action name="NextWindow"/>
+    </keybind>
+    <keybind key="W-e">
+      <action name="ToggleShade"/>
+    </keybind>
+  </keyboard>
+  <!-- mouse binding -->
+  <mouse>
+    <default/>
+    <!-- Show apps menu on desktop right click -->
+    <context name="Root">
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu" menu="root-menu"/>
+      </mousebind>
+      <mousebind button="Left" action="Press">
+        <action name="Execute" command="killall -q fuzzel"/>
+      </mousebind>
+    </context>
+  </mouse>
+  <!-- workspace settings -->
+  <desktops number="2"/>
+  <desktops>
+    <popupTime>1000</popupTime>
+    <names>
+      <name>WS 1</name>
+      <name>WS 2</name>
+      <!-- <name>WS 3</name> -->
+      <!-- <name>WS 4</name> -->
+    </names>
+  </desktops>
+  <libinput>
+    <!-- TOUCHPAD: laptop trackpads -->
+    <device category="touchpad">
+      <pointerSpeed>0</pointerSpeed>
+      <!-- -1.0(slowest) to 1.0(fastest) -->
+      <accelProfile>adaptive</accelProfile>
+      <!-- adaptive, flat -->
+      <naturalScroll>no</naturalScroll>
+      <scrollFactor>0.3</scrollFactor>
+      <scrollMethod>twoFinger</scrollMethod>
+      <!-- twoFinger, edge -->
+      <tap>yes</tap>
+      <tapButtonMap>lrm</tapButtonMap>
+      <tapAndDrag>yes</tapAndDrag>
+      <dragLock>no</dragLock>
+      <disableWhileTyping>yes</disableWhileTyping>
+      <clickMethod>buttonAreas</clickMethod>
+      <!-- buttonAreas, clickfinger, none -->
+    </device>
+    <!-- NON-TOUCH: physical/external mice -->
+    <device category="non-touch">
+      <pointerSpeed>0</pointerSpeed>
+      <accelProfile>adaptive</accelProfile>
+      <naturalScroll>no</naturalScroll>
+      <scrollFactor>1.0</scrollFactor>
+      <leftHanded>no</leftHanded>
+    </device>
+  </libinput>
+  <windowSwitcher>
+    <osd style="thumbnail"/>
+    <!-- preview 设置为 yes，切换时背景窗口也会高亮预览 -->
+    <preview>yes</preview>
+  </windowSwitcher>
+  <!--windows rule -->
+  <windowRules>
+    <windowRule title="Attention">
+      <action name="ToggleAlwaysOnTop"/>
+    </windowRule>
+    <windowRules>
+      <windowRule identifier="ulauncher" serverDecoration="no" border="no"/>
+    </windowRules>
+  </windowRules>
+</labwc_config>
