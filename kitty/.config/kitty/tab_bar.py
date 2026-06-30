@@ -5,13 +5,19 @@
 import datetime
 
 from kitty.fast_data_types import Screen, get_options
-from kitty.tab_bar import (DrawData, ExtraData, TabBarData, as_rgb,
-                           draw_tab_with_powerline, draw_title)
+from kitty.tab_bar import (
+    DrawData,
+    ExtraData,
+    TabBarData,
+    as_rgb,
+    draw_tab_with_powerline,
+    draw_title,
+)
 from kitty.utils import color_as_int
 
 opts = get_options()
 
-ICON: str = "   "
+ICON: str = "   "
 ICON_LENGTH: int = len(ICON)
 ICON_FG: int = 0
 # ICON_BG: int = as_rgb(color_as_int(opts.color16))
@@ -20,7 +26,7 @@ ICON_BG: int = 0
 CLOCK_FG = 0
 CLOCK_BG = 0
 DATE_FG = 0
-DATE_BG = as_rgb(color_as_int(opts.color16))
+DATE_BG = as_rgb(color_as_int(opts.color8))
 
 
 def _draw_icon(screen: Screen, index: int) -> int:
@@ -65,9 +71,9 @@ def _draw_left_status(
 ) -> int:
     if use_kitty_render_function:
         # Use `kitty` function render tab
-        end = draw_tab_with_powerline(draw_data, screen, tab, before,
-                                      max_title_length, index, is_last,
-                                      extra_data)
+        end = draw_tab_with_powerline(
+            draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+        )
         return end
 
     if draw_data.leading_spaces:
@@ -119,8 +125,7 @@ def _draw_right_status(screen: Screen, is_last: bool) -> int:
     screen.cursor.fg = 0
     screen.cursor.bg = 0
 
-    screen.cursor.x = max(screen.cursor.x,
-                          screen.columns - right_status_length)
+    screen.cursor.x = max(screen.cursor.x, screen.columns - right_status_length)
     return screen.cursor.x
 
 
