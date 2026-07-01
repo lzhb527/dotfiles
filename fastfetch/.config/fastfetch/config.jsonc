@@ -141,11 +141,6 @@
         },
 
         {
-            "key": "│ {#36}󰃠 bright  {#keys}│",
-            "type": "brightness"
-        },
-
-        {
             "key": "│ {#36}󰉉 disk    {#keys}│",
             "type": "disk",
             "folders": "/"
