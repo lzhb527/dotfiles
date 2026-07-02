@@ -17,7 +17,7 @@ from kitty.utils import color_as_int
 
 opts = get_options()
 
-ICON: str = "   "
+ICON: str = " ARCH "
 ICON_LENGTH: int = len(ICON)
 ICON_FG: int = 0
 # ICON_BG: int = as_rgb(color_as_int(opts.color16))

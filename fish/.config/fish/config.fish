@@ -13,7 +13,8 @@ end
 set -g fish_greeting ""
 alias vim='nvim'
 alias ls='eza --icons'
-alias cat='batcat --paging never --plain'
+alias cat='bat --paging never --plain'
+alias kt='kitten @ launch --type=tab'
 # alias mpv 'flatpak run io.mpv.Mpv'
 alias c='clear'
 # 快捷操作 zypper
