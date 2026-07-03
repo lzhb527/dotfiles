@@ -67,7 +67,7 @@ tee /boot/loader/entries/arch.conf <<EOF
 title   Arch Linux
 linux   /Image
 initrd  /initramfs-linux.img
-options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rootflags=subvol=@,rw,noatime,compress=zstd,ssd,space_cache=v2 rw
+options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rootflags=subvol=@,rw,noatime,compress=zstd,ssd,space_cache=v2 rw video=1440x900@60
 EOF
 
 # 创建普通用户并设置密码（请将 username 替换为您想要的用户名）
