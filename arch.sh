@@ -69,8 +69,6 @@ lsblk
 # 使用 pacstrap 安装初始包（在此处加入了 btrfs-progs 管理工具和 terminus-font）
 pacstrap /mnt base base-devel linux btrfs-progs grub efibootmgr bash-completion neovim terminus-font git networkmanager
 
-systemctl enable NetworkManager
-
 # ==============================================================================
 # 4. 生成配置并进入 chroot 新系统环境
 # ==============================================================================
@@ -155,8 +153,7 @@ EOF
 # 3. 生成启动条目（自动注入 PARTUUID 与 Btrfs 优化挂载参数）
 tee /boot/loader/entries/arch.conf <<EOF
 title   Arch Linux
-linux   /vmlinuz-linux
-initrd  /amd-ucode.img
+linux   /Image
 initrd  /initramfs-linux.img
 options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rootflags=subvol=@,rw,noatime,compress=zstd,ssd,space_cache=v2 rw
 EOF

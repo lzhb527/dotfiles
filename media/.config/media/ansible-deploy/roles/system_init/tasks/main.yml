@@ -75,13 +75,6 @@
     - { src: "lyricspot", dest: "/usr/local/bin/lyricspot", mode: "0755" }
   become: true
 
-- name: 修改 GRUB 启动参数以锁定分辨率
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"'
-  become: true
-  notify: 更新 GRUB 配置
 
 - name: 解压并安装字体与主题包
   ansible.builtin.unarchive:
@@ -125,6 +118,41 @@
         src: "kde-init/conf1.profile",
         dest: "~/.local/share/konsole/conf1.profile",
       }
+
+- name: 批量创建所需的系统配置目录
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "/etc/pacman.d/hooks"
+
+- name: 批量分发快照引导自动化脚本及钩子
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - {
+        src: "update-systemd-boot-snapshots",
+        dest: "/usr/local/bin/update-systemd-boot-snapshots",
+        mode: "0755",
+      }
+    - {
+        src: "95-systemd-boot-snapper.hook",
+        dest: "/etc/pacman.d/hooks/95-systemd-boot-snapper.hook",
+        mode: "0644",
+      }
+
+- name: 首次手动触发刷新 systemd-boot 快照菜单
+  ansible.builtin.command: /usr/local/bin/update-systemd-boot-snapshots
+  changed_when: true
+
+
 
 # ==========================================
 # 5.2. 复制执行/安装类文件到临时目录（必要中转）

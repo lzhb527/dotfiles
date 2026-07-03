@@ -1,0 +1,63 @@
+#!/bin/bash
+# ==============================================================================
+# 脚本名称: update-systemd-boot-snapshots (最近3个快照优化版)
+# ==============================================================================
+
+ENTRY_DIR="/boot/loader/entries"
+PARTUUID="57ce2508-14cc-4161-9c51-6c5c7f17acc5"
+ROOTFLAGS_BASE="rw,noatime,compress=zstd,ssd,space_cache=v2"
+VIDEO_PARAM="video=1440x900@60"
+
+# 1. 深度清理旧的引导文件与内核备份，防止空间膨胀
+rm -f "${ENTRY_DIR}/arch-snapshot-"*.conf
+rm -rf /boot/snapshot-kernels/
+mkdir -p /boot/snapshot-kernels/
+
+# 2. 获取最近的 3 个物理快照编号（按数字大小逆序排列，取前3个）
+if [ -d "/.snapshots" ]; then
+    RECENT_SNAPS=$(ls /.snapshots/ | grep -E '^[0-9]+$' | sort -rn | head -n 3)
+
+    # 3. 循环遍历这 3 个最新的快照
+    for snap in ${RECENT_SNAPS}; do
+        SNAP_SUBVOL="/.snapshots/${snap}/snapshot"
+        
+        if [ -d "${SNAP_SUBVOL}" ]; then
+            # 动态解除快照的只读属性
+            btrfs property set "${SNAP_SUBVOL}" ro false 2>/dev/null
+
+            # 4. 获取快照的描述信息
+            INFO_FILE="/.snapshots/${snap}/info.xml"
+            DESC="Snapshot #${snap}"
+            if [ -f "${INFO_FILE}" ]; then
+                DESC_TEXT=$(grep -oP '(?<=<description>).*?(?=</description>)' "${INFO_FILE}" | head -n1)
+                [ ! -z "${DESC_TEXT}" ] && DESC="Snap #${snap} (${DESC_TEXT})"
+            fi
+
+            # 5. 物理隔离内核与 initrd
+            SNAP_KERNEL_DIR="/boot/snapshot-kernels/${snap}"
+            mkdir -p "${SNAP_KERNEL_DIR}"
+            
+            if [ -f "${SNAP_SUBVOL}/boot/Image" ]; then
+                cp "${SNAP_SUBVOL}/boot/Image" "${SNAP_KERNEL_DIR}/Image"
+                cp "${SNAP_SUBVOL}/boot/initramfs-linux.img" "${SNAP_KERNEL_DIR}/initramfs-linux.img"
+            else
+                cp /boot/Image "${SNAP_KERNEL_DIR}/Image"
+                cp /boot/initramfs-linux.img "${SNAP_KERNEL_DIR}/initramfs-linux.img"
+            fi
+
+            # 6. 使用绝对稳固的 Arch+Snapper 树路径解析
+            RAW_PATH="@/.snapshots/${snap}/snapshot"
+
+            # 7. 生成 .conf 配置文件
+            cat <<EOF > "${ENTRY_DIR}/arch-snapshot-${snap}.conf"
+title   Arch Linux (${DESC})
+linux   /snapshot-kernels/${snap}/Image
+initrd  /snapshot-kernels/${snap}/initramfs-linux.img
+options root=PARTUUID=${PARTUUID} rootflags=subvol=${RAW_PATH},${ROOTFLAGS_BASE} rw ${VIDEO_PARAM} systemd.debug-shell=1
+EOF
+        fi
+    done
+fi
+
+echo ">> systemd-boot 最近3个快照菜单更新完成！"
+
