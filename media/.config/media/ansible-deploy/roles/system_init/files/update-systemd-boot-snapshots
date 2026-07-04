@@ -1,32 +1,49 @@
 #!/bin/bash
-# ==============================================================================
-# 脚本名称: update-systemd-boot-snapshots (最近3个快照优化版)
-# ==============================================================================
 
 ENTRY_DIR="/boot/loader/entries"
-PARTUUID="57ce2508-14cc-4161-9c51-6c5c7f17acc5"
-ROOTFLAGS_BASE="rw,noatime,compress=zstd,ssd,space_cache=v2"
-VIDEO_PARAM="video=1440x900@60"
+TARGET_PART="/dev/sda3"  # 您要获取 PARTUUID 的目标根分区
+
+# ========================================================
+# ⚙️ 核心修复与动态获取
+# =========================================================
+# 1. 自动动态获取目标分区的 PARTUUID
+PARTUUID=$(blkid -s PARTUUID -o value "${TARGET_PART}")
+
+# 安全检查：如果获取失败则退出，防止生成错误的配置文件
+if [ -z "${PARTUUID}" ]; then
+    echo "❌ 错误：无法获取 ${TARGET_PART} 的 PARTUUID，请检查分区是否存在！"
+    exit 1
+fi
+echo "✅ 成功动态获取 ${TARGET_PART} 的 PARTUUID: ${PARTUUID}"
+
+# 2. 修复核心：将 Btrfs 的优化挂载参数用【逗号】连接，因为它们必须和 subvol 拼在一起
+BTRFS_OPTS="noatime,compress=zstd,ssd,space_cache=v2"
+
+# 3. 修复核心：将视频和读写等通用参数用【空格】独立分开
+KERNEL_PARAMS="rw video=1440x900@60 systemd.debug-shell=1"
+# ========================================================
+
 
 # 1. 深度清理旧的引导文件与内核备份，防止空间膨胀
 rm -f "${ENTRY_DIR}/arch-snapshot-"*.conf
 rm -rf /boot/snapshot-kernels/
 mkdir -p /boot/snapshot-kernels/
 
-# 2. 获取最近的 3 个物理快照编号（按数字大小逆序排列，取前3个）
-if [ -d "/.snapshots" ]; then
-    RECENT_SNAPS=$(ls /.snapshots/ | grep -E '^[0-9]+$' | sort -rn | head -n 3)
+# 💡 优化点 1：自动适配真实快照挂载点
+SNAP_BASE_DIR="/.snapshots"
+[ ! -d "${SNAP_BASE_DIR}" ] && [ -d "/boot/.snapshots" ] && SNAP_BASE_DIR="/boot/.snapshots"
 
-    # 3. 循环遍历这 3 个最新的快照
+# 2. 获取最近的 5 个物理快照编号
+if [ -d "${SNAP_BASE_DIR}" ]; then
+    RECENT_SNAPS=$(ls "${SNAP_BASE_DIR}" | grep -E '^[0-9]+$' | sort -rn | head -n 5)
+
+    # 3. 循环遍历最新的快照
     for snap in ${RECENT_SNAPS}; do
-        SNAP_SUBVOL="/.snapshots/${snap}/snapshot"
+        SNAP_SUBVOL="${SNAP_BASE_DIR}/${snap}/snapshot"
         
         if [ -d "${SNAP_SUBVOL}" ]; then
-            # 动态解除快照的只读属性
-            btrfs property set "${SNAP_SUBVOL}" ro false 2>/dev/null
-
             # 4. 获取快照的描述信息
-            INFO_FILE="/.snapshots/${snap}/info.xml"
+            INFO_FILE="${SNAP_BASE_DIR}/${snap}/info.xml"
             DESC="Snapshot #${snap}"
             if [ -f "${INFO_FILE}" ]; then
                 DESC_TEXT=$(grep -oP '(?<=<description>).*?(?=</description>)' "${INFO_FILE}" | head -n1)
@@ -37,6 +54,7 @@ if [ -d "/.snapshots" ]; then
             SNAP_KERNEL_DIR="/boot/snapshot-kernels/${snap}"
             mkdir -p "${SNAP_KERNEL_DIR}"
             
+            # 💡 优化点 2：优先从快照内部复制内核
             if [ -f "${SNAP_SUBVOL}/boot/Image" ]; then
                 cp "${SNAP_SUBVOL}/boot/Image" "${SNAP_KERNEL_DIR}/Image"
                 cp "${SNAP_SUBVOL}/boot/initramfs-linux.img" "${SNAP_KERNEL_DIR}/initramfs-linux.img"
@@ -49,15 +67,16 @@ if [ -d "/.snapshots" ]; then
             RAW_PATH="@/.snapshots/${snap}/snapshot"
 
             # 7. 生成 .conf 配置文件
+            # 💡 最终修复形式：rootflags 后面通过逗号完美拼接子卷路径和 Btrfs 参数，其余参数用空格独立
             cat <<EOF > "${ENTRY_DIR}/arch-snapshot-${snap}.conf"
 title   Arch Linux (${DESC})
 linux   /snapshot-kernels/${snap}/Image
 initrd  /snapshot-kernels/${snap}/initramfs-linux.img
-options root=PARTUUID=${PARTUUID} rootflags=subvol=${RAW_PATH},${ROOTFLAGS_BASE} rw ${VIDEO_PARAM} systemd.debug-shell=1
+options root=PARTUUID=${PARTUUID} rootflags=subvol=${RAW_PATH},${BTRFS_OPTS} ${KERNEL_PARAMS}
 EOF
         fi
     done
 fi
 
-echo ">> systemd-boot 最近3个快照菜单更新完成！"
+echo ">> 🎉 systemd-boot 最近 5 个快照菜单动态更新完成！"
 
