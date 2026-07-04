@@ -22,7 +22,7 @@
       "type": "os",
       "key": "󰣇  OS       ",
       "keyWidth": 16,
-      "keyColor": "34"
+      "keyColor": "36"
     },
     {
       "type": "kernel",
@@ -34,26 +34,26 @@
       "type": "terminal",
       "key": "󰞷  Terminal ",
       "keyWidth": 16,
-      "keyColor": "32"
+      "keyColor": "36"
     },
     {
       "type": "packages",
       "key": "󰏖  Packages ",
       "keyWidth": 16,
-      "keyColor": "33"
+      "keyColor": "36"
     },
     {
       "type": "command",
       "key": "  OS Age   ",
       "keyWidth": 16,
       "text": "birthd=$(stat -c %W /); echo $(( ( $(date +%s) - birthd ) / 86400 )) days",
-      "keyColor": "31"
+      "keyColor": "36"
     },
     {
       "type": "wm",
       "key": "󱂬  Env      ",
       "keyWidth": 16,
-      "keyColor": "35"
+      "keyColor": "36"
     },
     {
         "type": "battery",
@@ -65,13 +65,13 @@
         "type": "disk",
         "key": "󰉉  Disk     ",
         "keyWidth": 16,
-        "keyColor": "37"
+        "keyColor": "36"
     },
     {
         "type": "memory",
         "key": "  Mem      ",
         "keyWidth": 16,
-        "keyColor": "38"
+        "keyColor": "36"
     },
     "break",
     {
