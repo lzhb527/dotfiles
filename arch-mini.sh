@@ -59,7 +59,7 @@ bootctl install
 # 2. 生成加载配置
 tee /boot/loader/loader.conf <<EOF
 default   arch.conf
-timeout   5
+timeout   10
 console-mode max
 EOF
 # 3. 生成启动条目（自动注入 PARTUUID 与 Btrfs 优化挂载参数）
