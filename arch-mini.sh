@@ -1,5 +1,6 @@
 #!/bin/bash
 # /dev/sda1 为 EFI 分区、/dev/sda2 为 SWAP 交换分区、/dev/sda3 为真正的系统根分区。pacstrap 阶段 Btrfs 必须的文件系统管理工具 btrfs-progs
+# vim.o.clipboard = "unnamedplus"
 fdisk -l
 mkfs.fat -F 32 /dev/sda1
 mkswap /dev/sda2
@@ -37,6 +38,17 @@ arch-chroot /mnt
 ln -sf /usr/share/zoneinfo/America/Detroit /etc/localtime
 hwclock --systohc
 
+pacman -S zram-generator
+
+cat <<EOF >/etc/systemd/zram-generator.conf
+[zram0]
+zram-size = min(ram / 2, 4096)
+compression-algorithm = zstd
+swap-priority = 100
+EOF
+
+echo "vm.swappiness = 100" >/etc/sysctl.d/99-zram.conf
+
 # 运行：nvim /etc/locale.gen
 locale-gen
 
@@ -59,7 +71,7 @@ bootctl install
 # 2. 生成加载配置
 tee /boot/loader/loader.conf <<EOF
 default   arch.conf
-timeout   10
+timeout   15
 console-mode max
 EOF
 # 3. 生成启动条目（自动注入 PARTUUID 与 Btrfs 优化挂载参数）
@@ -67,7 +79,7 @@ tee /boot/loader/entries/arch.conf <<EOF
 title   Arch Linux
 linux   /Image
 initrd  /initramfs-linux.img
-options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rootflags=subvol=@,rw,noatime,compress=zstd,ssd,space_cache=v2 rw video=1440x900@60
+options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rootflags=subvol=@,rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2 video=1440x900@60
 EOF
 
 # 创建普通用户并设置密码（请将 username 替换为您想要的用户名）

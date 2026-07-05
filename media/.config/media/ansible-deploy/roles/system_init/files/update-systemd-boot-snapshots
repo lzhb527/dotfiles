@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ENTRY_DIR="/boot/loader/entries"
-TARGET_PART="/dev/sda3"  # 您要获取 PARTUUID 的目标根分区
+TARGET_PART="/dev/sda3" # 您要获取 PARTUUID 的目标根分区
 
 # ========================================================
 # ⚙️ 核心修复与动态获取
@@ -17,12 +17,11 @@ fi
 echo "✅ 成功动态获取 ${TARGET_PART} 的 PARTUUID: ${PARTUUID}"
 
 # 2. 修复核心：将 Btrfs 的优化挂载参数用【逗号】连接，因为它们必须和 subvol 拼在一起
-BTRFS_OPTS="noatime,compress=zstd,ssd,space_cache=v2"
+BTRFS_OPTS="rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2"
 
 # 3. 修复核心：将视频和读写等通用参数用【空格】独立分开
 KERNEL_PARAMS="rw video=1440x900@60 systemd.debug-shell=1"
 # ========================================================
-
 
 # 1. 深度清理旧的引导文件与内核备份，防止空间膨胀
 rm -f "${ENTRY_DIR}/arch-snapshot-"*.conf
@@ -40,7 +39,7 @@ if [ -d "${SNAP_BASE_DIR}" ]; then
     # 3. 循环遍历最新的快照
     for snap in ${RECENT_SNAPS}; do
         SNAP_SUBVOL="${SNAP_BASE_DIR}/${snap}/snapshot"
-        
+
         if [ -d "${SNAP_SUBVOL}" ]; then
             # 4. 获取快照的描述信息
             INFO_FILE="${SNAP_BASE_DIR}/${snap}/info.xml"
@@ -53,7 +52,7 @@ if [ -d "${SNAP_BASE_DIR}" ]; then
             # 5. 物理隔离内核与 initrd
             SNAP_KERNEL_DIR="/boot/snapshot-kernels/${snap}"
             mkdir -p "${SNAP_KERNEL_DIR}"
-            
+
             # 💡 优化点 2：优先从快照内部复制内核
             if [ -f "${SNAP_SUBVOL}/boot/Image" ]; then
                 cp "${SNAP_SUBVOL}/boot/Image" "${SNAP_KERNEL_DIR}/Image"
@@ -68,7 +67,7 @@ if [ -d "${SNAP_BASE_DIR}" ]; then
 
             # 7. 生成 .conf 配置文件
             # 💡 最终修复形式：rootflags 后面通过逗号完美拼接子卷路径和 Btrfs 参数，其余参数用空格独立
-            cat <<EOF > "${ENTRY_DIR}/arch-snapshot-${snap}.conf"
+            cat <<EOF >"${ENTRY_DIR}/arch-snapshot-${snap}.conf"
 title   Arch Linux (${DESC})
 linux   /snapshot-kernels/${snap}/Image
 initrd  /snapshot-kernels/${snap}/initramfs-linux.img
@@ -79,4 +78,3 @@ EOF
 fi
 
 echo ">> 🎉 systemd-boot 最近 5 个快照菜单动态更新完成！"
-
