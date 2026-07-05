@@ -305,9 +305,38 @@
     create: yes
   become: yes
 
+
+
 # ==========================================
 # 7. 服务管理：系统级与用户级 Systemd 服务
 # ==========================================
+
+- name: 【安全修复】利用白名单修复 accounts-daemon 无法保存头像的问题
+  become: true  # 必须使用 root 权限修改系统级配置
+  block:
+    - name: 创建 accounts-daemon 服务配置覆盖目录
+      ansible.builtin.file:
+        path: /etc/systemd/system/accounts-daemon.service.d
+        state: directory
+        mode: '0755'
+
+    - name: 写入覆盖配置（通过 ReadWritePaths 精准放行路径，保持沙盒开启）
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/accounts-daemon.service.d/override.conf
+        content: |
+          [Service]
+          # 保持原有的沙盒保护不变：
+          # ProtectSystem=strict
+          # PrivateTmp=true
+          # 显式允许服务读写头像存储目录和公共临时目录，不降低整体沙盒安全等级
+          ReadWritePaths=/var/lib/AccountsService/ /tmp/
+        mode: '0644'
+
+    - name: 刷新系统级 Systemd 并重启 accounts-daemon
+      ansible.builtin.systemd_service:
+        name: accounts-daemon
+        state: restarted
+        daemon_reload: true
 
 - name: 【自愈】强制刷新用户级 Systemd 守护进程内存缓存
   systemd:
@@ -323,6 +352,8 @@
     - mpd.service
     - foot-server.service
     - mpd-mpris.service
+
+
 
 - name: 将本地的 folder_colors.tar.gz 上传并解压至用户家目录
   ansible.builtin.unarchive:
