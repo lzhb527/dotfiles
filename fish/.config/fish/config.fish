@@ -30,7 +30,8 @@ if status is-interactive
 
     if type -q eza
         alias ls='eza --icons --group-directories-first'
-        alias ll='eza -lh --icons --group-directories-first'
+        alias ll='eza -lh --icons -o --git --group-directories-first'
+        alias lt="eza -T -L 2 --icons -A --group-directories-first"
     end
 
     alias kt='kitten @ launch --type=tab'
