@@ -17,6 +17,23 @@ if status is-interactive
         starship init fish | source
     end
 
+    if type -q fzf
+        fzf --fish | source
+    end
+
+    function fish_user_key_bindings
+        # 先清除 fzf 默认的所有旧绑定（避免按键冲突）
+        bind \ct ''  # 清除默认的 Ctrl+T (搜文件)
+        bind \ec ''  # 清除默认的 Alt+C (改目录)
+        bind \cr ''  # 清除默认的 Ctrl+R (历史记录)
+        bind \ed ''
+
+        # 再绑定你自己的自定义快捷键
+        bind \eh fzf-history-widget  # Alt + H: 搜历史记录
+        bind \ef fzf-file-widget     # Alt + F: 搜文件
+        bind \ed fzf-cd-widget       # Alt + G: 切换目录
+    end
+
     # -------------------------------------------------------------------------
     # 3. 现代化别名设置 (Aliases)
     # -------------------------------------------------------------------------
@@ -41,16 +58,16 @@ if status is-interactive
     # 4. 顶配 FZF 模糊搜索内核交互 (支持彩色代码与行号预览)
     # -------------------------------------------------------------------------
     if type -q fzf
-        alias fzf="fzf --layout=reverse --border=bold --border=rounded --margin=5% --preview='bat --color=always --style=numbers {} 2>/dev/null || cat {} 2>/dev/null || eza --tree --level=2 --icons {} 2>/dev/null' --pointer='→' --bind='enter:execute(nvim {})+abort'"
+        alias fzf="fzf --layout=reverse --border=rounded --margin=5% --preview='bat --color=always --style=numbers {} 2>/dev/null || cat {} 2>/dev/null || eza --tree --level=2 --icons {} 2>/dev/null' --pointer='→'"
     end
 
     # -------------------------------------------------------------------------
     # 5. Arch Linux 专属极速包管理
     # -------------------------------------------------------------------------
-    alias pi='sudo pacman -S'
-    alias pr='sudo pacman -Rns'
-    alias pu='sudo pacman -Syu'
-    alias ps='pacman -Ss'
+    alias pacmani='sudo pacman -S'
+    alias pacmanr='sudo pacman -Rns'
+    alias pacmanu='sudo pacman -Syu'
+    alias pacmans='pacman -Ss'
 
     # -------------------------------------------------------------------------
     # 6. 终极磁盘清理短函数 (采用官方原生 Function 逻辑，彻底终结 $argv 追加报错)
