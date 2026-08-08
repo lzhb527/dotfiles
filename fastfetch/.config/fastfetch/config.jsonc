@@ -73,6 +73,16 @@
         "keyWidth": 16,
         "keyColor": "36"
     },
+
+    {
+    "type": "command",
+    "key": "󰖐  Weather  ",
+    "text": "cat /tmp/weather.txt 2>/dev/null | tr -d '\"' || echo '暂无缓存'",
+    "keyWidth": 16,
+    "keyColor": "36"
+    },
+
+
     "break",
     {
       "type": "colors",
