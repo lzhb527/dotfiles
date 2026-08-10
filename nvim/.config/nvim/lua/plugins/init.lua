@@ -1,5 +1,6 @@
 -- =========================================================================
--- init.lua - 极致性能优化 & 错误修复版
+-- init.lua - 极致性能优化版
+-- 每个插件的配置统一收敛到 lua/plugins/configs/<插件名>.lua
 -- =========================================================================
 
 -- 1. Lazy.nvim 安装
@@ -20,20 +21,11 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " " -- 设置空格键为 Leader 键
 vim.opt.termguicolors = true -- 开启 24 位真彩色支持
 
--- 3. 插件配置列表
+-- 3. 插件配置列表（每个插件具体配置见 lua/plugins/configs/）
 require("lazy").setup({
 	-- =========================================================================
 	-- 3.1 配色主题
 	-- =========================================================================
-	{
-		"UtkarshVerma/molokai.nvim",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			pcall(require, "configs.theme") -- 甩给专门的主题文件去激活(configs/theme.lua)
-		end,
-	},
-	{ "folke/tokyonight.nvim", lazy = true },
 	{ "catppuccin/nvim", name = "catppuccin", lazy = true },
 
 	-- =========================================================================
@@ -46,73 +38,62 @@ require("lazy").setup({
 		dependencies = {
 			"lewis6991/ts-install.nvim", -- 你的自动安装增强插件
 		},
-		config = function()
-			-- 1. 先初始化 ts-install
-			local ok_install, ts_install = pcall(require, "ts-install")
-			if ok_install then
-				ts_install.setup({
-					auto_install = true,
-				})
-			end
-
-			-- 2. 🚀 最新版 nvim-treesitter 的正确初始化姿势
-			local status_ok, configs = pcall(require, "nvim-treesitter.configs")
-			if not status_ok then
-				return
-			end
-			configs.setup({
-				-- 基础解析器强制锁死安装
-				ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown", "python", "javascript" },
-				highlight = {
-					enable = true,
-					additional_vim_regex_highlighting = false,
-				},
-				indent = {
-					enable = true,
-				},
-			})
-		end,
+		config = require("plugins.configs.treesitter"),
 	},
 
 	-- =========================================================================
 	-- 3.3 LSP、补全、代码检查与格式化
 	-- =========================================================================
-	{ "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" } }, -- LSP 核心(lsp.lua.0)
+	{
+		"neovim/nvim-lspconfig", -- LSP 核心(lsp.lua)
+		event = { "BufReadPre", "BufNewFile" },
+		dependencies = {
+			"williamboman/mason.nvim", -- 确保 Mason 先行加载安装工具
+			"hrsh7th/nvim-cmp", -- 确保补全能力先行注入 LSP 客户端
+		},
+		config = require("plugins.configs.lsp"),
+	},
 	{
 		"hrsh7th/nvim-cmp",
-		event = "InsertEnter", -- 补全核心(cmp.lua.2)
+		event = "InsertEnter", -- 补全核心(cmp.lua)
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
-			"L3MON4D3/LuaSnip", -- 代码片段引擎(plugins.configs.cmp.lua.1)
+			"L3MON4D3/LuaSnip", -- 代码片段引擎
 			"saadparwaiz1/cmp_luasnip", -- 代码片段补全源
 			"rafamadriz/friendly-snippets", -- 代码片段库
 			"hrsh7th/cmp-path", -- 路径补全
 			"hrsh7th/cmp-buffer", -- 缓冲区补全
 		},
+		config = require("plugins.configs.cmp"),
 	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter" }, -- 括号自动补全(cmp.lua.3)
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		dependencies = { "hrsh7th/nvim-cmp" }, -- 需要联动 cmp 确认事件
+		config = require("plugins.configs.autopairs"),
+	},
 	{
 		"williamboman/mason.nvim",
 		cmd = "Mason", -- 仅在调用 :Mason 时延迟加载
-		config = true, -- 自动运行 require("mason").setup()
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim", -- 🌟 新增：全品类工具自动下载
 		},
+		config = require("plugins.configs.mason"),
 	},
-	{ "stevearc/conform.nvim", event = "BufWritePre" }, -- 🌟 替换掉旧的 ALE/Flake8，现代高效异步代码格式化器(tools.lua.2)
+	{ "stevearc/conform.nvim", event = "BufWritePre", config = require("plugins.configs.conform") }, -- 🌟 替换掉旧的 ALE/Flake8，现代高效异步代码格式化器
 	{
 		"linux-cultist/venv-selector.nvim",
 		ft = "python", -- Python 虚拟环境切换
 		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim" },
-		config = true,
+		config = require("plugins.configs.venv"),
 	},
 
 	-- =========================================================================
 	-- 3.4 导航与搜索（全 Lua 升级）
 	-- =========================================================================
 	{
-		"nvim-neo-tree/neo-tree.nvim", -- 🌟 完美替代 NERDTree，异步、颜值更高(ui.lua.7)
+		"nvim-neo-tree/neo-tree.nvim", -- 🌟 完美替代 NERDTree，异步、颜值更高
 		branch = "v3.x",
 		cmd = "Neotree",
 		keys = {
@@ -123,41 +104,51 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 			"MunifTanjim/nui.nvim",
 		},
-		config = true,
+		opts = require("plugins.configs.neotree"),
 	},
-	{ "folke/flash.nvim", event = "VeryLazy", config = true }, -- 🌟 完美替代 EasyMotion，极其高效酷炫的跳转(editor.lua.2)
+	{ "folke/flash.nvim", event = "VeryLazy", config = require("plugins.configs.flash") }, -- 🌟 完美替代 EasyMotion，极其高效酷炫的跳转
 	{
-		"nvim-telescope/telescope.nvim", -- 🌟 现代化搜索神器，完美融合 FZF(tools.lua.1)
+		"nvim-telescope/telescope.nvim", -- 🌟 现代化搜索神器，完美融合 FZF
 		cmd = "Telescope",
 		keys = {
 			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
 			{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
+			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" }, -- FZF 原生加速
 		},
+		config = require("plugins.configs.telescope"),
 	},
-	{ "lewis6991/gitsigns.nvim", event = { "BufReadPre", "BufNewFile" }, config = true }, -- 🌟 替代旧的 Fugitive，提供极致的侧边栏 Git 状态和操作
-	{ "stevearc/aerial.nvim", cmd = "AerialToggle", config = true }, -- 🌟 完美替代 Tagbar，基于 LSP 的现代函数/类大纲导航(tools.lua.4)
+	{ "lewis6991/gitsigns.nvim", event = { "BufReadPre", "BufNewFile" }, config = require("plugins.configs.gitsigns") }, -- 🌟 替代旧的 Fugitive，提供极致的侧边栏 Git 状态和操作
+	{ "stevearc/aerial.nvim", cmd = "AerialToggle", config = require("plugins.configs.aerial") }, -- 🌟 完美替代 Tagbar，基于 LSP 的现代函数/类大纲导航
 	{
-		"folke/noice.nvim", -- 命令行与搜索栏重构(ui.8)
+		"folke/noice.nvim", -- 命令行与搜索栏重构
 		event = "VeryLazy",
 		dependencies = {
 			"MunifTanjim/nui.nvim",
 			"rcarriga/nvim-notify",
 		},
+		config = require("plugins.configs.noice"),
 	},
 
 	-- =========================================================================
 	-- 3.5 编辑增强
 	-- =========================================================================
-	{ "NvChad/nvim-colorizer.lua", event = "BufReadPre", config = true }, -- 颜色高亮(ui.lua.4)
-	{ "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost", "BufNewFile" }, main = "ibl", config = true }, -- 🌟 替换旧的 indentLine，基于 Lua 且完美适配 Treesitter（ui.lua.5)
-	{ "numToStr/Comment.nvim", keys = { { "<leader>cc", mode = { "n", "x" } } }, config = true },
-	{ "HiPhish/rainbow-delimiters.nvim", event = { "BufReadPost", "BufNewFile" } }, -- 🌟 替换旧的 rainbow，基于 Treesitter 的高性能彩虹括号(ui.lua.6)
-	{ "akinsho/toggleterm.nvim", version = "*", keys = { "<leader>t" }, config = true }, -- 🌟 替换旧的 floaterm，功能极度强大的浮动/多终端管理(editor.lua.3)
-	{ "folke/snacks.nvim", event = "VeryLazy" },
+	{ "NvChad/nvim-colorizer.lua", event = "BufReadPre", opts = require("plugins.configs.colorizer") }, -- 颜色高亮
+	{ "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost", "BufNewFile" }, main = "ibl", config = require("plugins.configs.ibl") }, -- 🌟 替换旧的 indentLine，基于 Lua 且完美适配 Treesitter
+	{ "HiPhish/rainbow-delimiters.nvim", event = { "BufReadPost", "BufNewFile" }, config = require("plugins.configs.rainbow") }, -- 🌟 替换旧的 rainbow，基于 Treesitter 的高性能彩虹括号
+	{
+		"akinsho/toggleterm.nvim",
+		version = "*",
+		-- 🌟 cmd 懒加载：F8/F9/F10 与 <leader>t* 映射直接调用 ToggleTerm 命令，
+		-- 用 cmd 拦截能在执行命令前先加载插件，避免 E492: Not an editor command
+		cmd = { "ToggleTerm", "ToggleTermToggleAll" },
+		keys = { "<leader>t" },
+		config = require("plugins.configs.toggleterm"),
+	}, -- 🌟 替换旧的 floaterm，功能极度强大的浮动/多终端管理
+	{ "folke/snacks.nvim", event = "VeryLazy", config = require("plugins.configs.snacks") },
 	{
 		"chrisgrieser/nvim-origami",
 		event = "VeryLazy",
@@ -170,11 +161,7 @@ require("lazy").setup({
 	{
 		"mg979/vim-visual-multi",
 		keys = { "<C-m>" },
-		init = function()
-			vim.g.VM_maps = {
-				["Find Under"] = "<C-m>",
-			}
-		end,
+		config = require("plugins.configs.visual-multi"),
 	},
 
 	-- =========================================================================
@@ -184,30 +171,20 @@ require("lazy").setup({
 		"nvim-lualine/lualine.nvim",
 		event = "UIEnter",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-	}, -- 状态栏(ui.lua.1)
-	{ "echasnovski/mini.icons", version = false, lazy = true },
-	{ "nvimdev/dashboard-nvim", event = "VimEnter" }, -- 启动页（已修正原仓库作者改名问题）(ui.lua.3)
+		opts = require("plugins.configs.lualine"),
+	}, -- 状态栏
+	{ "nvimdev/dashboard-nvim", event = "VimEnter", opts = require("plugins.configs.dashboard") }, -- 启动页（已修正原仓库作者改名问题）
 	{ "karb94/neoscroll.nvim", event = "VeryLazy", config = true }, -- 🌟 替换旧的 comfortable-motion.vim，平滑滚动
 	{
 		"akinsho/bufferline.nvim",
 		event = "UIEnter",
 		dependencies = { "nvim-web-devicons" },
-	}, -- 缓冲区多标签页(ui.lua.2)
-	-- { "folke/which-key.nvim", event = "VeryLazy", config = true }, -- 按键提示
-
+		config = require("plugins.configs.bufferline"),
+	}, -- 缓冲区多标签页
 	{
-		"folke/which-key.nvim",
+		"folke/which-key.nvim", -- 按键提示
 		event = "VeryLazy",
-		opts = {
-			-- 可以在这里调整你的配置，例如：
-			preset = "modern", -- 可选 "classic", "modern", "helix"
-			win = {
-				border = "rounded", -- 边框风格: none, single, double, rounded 等
-			},
-		},
-		config = function(_, opts)
-			require("which-key").setup(opts)
-		end,
+		opts = require("plugins.configs.whichkey"),
 	},
 
 	-- =========================================================================
@@ -215,27 +192,22 @@ require("lazy").setup({
 	-- =========================================================================
 	{
 		"folke/trouble.nvim",
-		opts = {}, -- 必须留空或传表以触发初始化
 		cmd = "Trouble", -- 懒加载：只有在调用 Trouble 命令时才加载
+		opts = require("plugins.configs.trouble"),
 	},
 	{
 		"rachartier/tiny-inline-diagnostic.nvim",
 		event = "LspAttach", -- 当 LSP 启动时再懒加载
 		priority = 1000, -- 保证优先级
-		config = function()
-			require("tiny-inline-diagnostic").setup({
-				-- 插件本身的个性化配置可以写在这里，默认就非常好看
-				signs = {
-					left = "▍",
-					right = " ",
-				},
-			})
-		end,
+		config = require("plugins.configs.tiny-inline-diagnostic"),
 	},
 }, {
 	-- Lazy 的全局 UI 配置
 	ui = { border = "rounded" },
 	performance = {
+		cache = {
+			enabled = true, -- 启用缓存加速
+		},
 		rtp = {
 			disabled_plugins = {
 				"netrw",
@@ -257,15 +229,14 @@ require("lazy").setup({
 				"spellfile_plugin",
 				"matchit",
 			},
+			checker = {
+				enabled = true,
+				notify = false,
+				frequency = 86400, -- 24小时检查一次
+			},
+			change_detection = {
+				notify = false, -- 不提示配置变化
+			},
 		},
 	},
 })
-
--- =========================================================================
--- 4. 加载各组件的具体配置文件
--- =========================================================================
-pcall(require, "plugins.configs.cmp")
-pcall(require, "plugins.configs.lsp")
-pcall(require, "plugins.configs.ui")
-pcall(require, "plugins.configs.editor")
-pcall(require, "plugins.configs.tools")

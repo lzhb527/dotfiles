@@ -18,6 +18,15 @@ catppuccin.setup({
 	transparent_background = false, -- 是否开启背景透明
 	term_colors = true,
 
+	-- 🌟 自定义背景色调（改 base 即可；mantle/crust 保持逐层略深，保留层次感）
+	color_overrides = {
+		mocha = {
+			base = "#161616", -- 背景主色
+			mantle = "#181818", -- 侧边栏等次级背景
+			crust = "#181818", -- 最深的底部背景
+		},
+	},
+
 	-- 🌟 核心大招：一键开启对各大插件的色彩原生整合支持
 	integrations = {
 		gitsigns = true, -- 自动让 gitsigns 继承 catppuccin 的完美 git 色彩
@@ -35,43 +44,7 @@ catppuccin.setup({
 vim.cmd.colorscheme("catppuccin")
 
 -- =========================================================================
--- 2. Tokyo Night 赛博朋克霓虹风格主题配置
--- 说明：官方仓库 folke/tokyonight.nvim，极具质感且支持深度定制。
--- =========================================================================
--- local status, tokyonight = pcall(require, "tokyonight")
--- if not status then
--- 	return
--- end
---
--- tokyonight.setup({
--- 	-- 样式选择：'storm' (经典暗蓝), 'night' (纯黑底), 'moon' (优雅深蓝), 'day' (明亮)
--- 	style = "night",
--- 	transparent = false, -- 是否开启背景透明
--- 	terminal_colors = true, -- 锁定终端色彩
--- 	styles = {
--- 		comments = { italic = true }, -- 注释加斜体
--- 		keywords = { italic = true }, -- 关键字加斜体
--- 		functions = {},
--- 		variables = {},
--- 		-- 🌟 核心整合：强制让侧边栏（Neo-tree）和主窗口之间拥有物理实线分割
--- 		sidebars = "dark",
--- 		floats = "dark",
--- 	},
---
--- 	-- 🌟 核心大招：一键开启对各大核心插件的原生高亮优化
--- 	plugins = {
--- 		auto = true, -- 自动根据安装的插件启用对应的高亮支持
--- 	},
--- })
---
--- -- 立即启用该主题
--- vim.cmd([[colorscheme tokyonight]])
---
---
---
--- =========================================================================
--- 🎨 针对 "night" 纯黑底色的分割线高亮
--- 说明:手动将线绑定为 Tokyo Night 经典的灰蓝色，确保线条清晰可见。
+-- 🎨 分割线高亮（细实线，清晰可见）
 -- =========================================================================
 vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#565f89", bold = true })
 
@@ -82,13 +55,6 @@ vim.opt.fillchars:append({
 	vertleft = "┤",
 })
 
---
---
--- vim.cmd.colorscheme("molokai")
--- vim.api.nvim_set_hl(0, "Normal", { bg = "none", ctermbg = "none" })
-
---
---
 -- =============================================================================
 -- 3.1 自定义你的专属 CursorLine 视觉样式
 -- =============================================================================

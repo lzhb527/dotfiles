@@ -88,3 +88,48 @@ opt.undodir = vim.fn.expand("~/.config/nvim/undo//") -- 指定撤销记录的物
 opt.background = "dark" -- 声明暗黑背景基调
 opt.winblend = 10 -- 全局浮动窗口（如 LSP 诊断详情、浮动终端）的半透明度 (0-100)
 opt.pumblend = 10 -- 自动补全下拉菜单 (nvim-cmp) 的半透明度，极大提升代码融合的品质感
+
+-- =============================================================================
+-- 12. 编码兜底（确保 UTF-8 全程一致）
+-- =============================================================================
+vim.scriptencoding = "utf-8"
+
+-- =============================================================================
+-- 13. 关闭字符隐藏 (conceallevel=0)，防止语法高亮被隐藏
+-- =============================================================================
+opt.conceallevel = 0
+api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+	group = api.nvim_create_augroup("ForceConceallevel", { clear = true }),
+	pattern = { "*" },
+	callback = function()
+		opt.conceallevel = 0
+	end,
+})
+
+-- =============================================================================
+-- 14. 诊断显示：关闭行尾虚拟文本，保留波浪线 + 符号栏 + 圆角浮窗
+-- =============================================================================
+vim.diagnostic.config({
+	virtual_text = false, -- 严格关闭默认的行尾提示
+	underline = true, -- 保留代码下方波浪线
+	update_in_insert = false, -- 插入模式下不触发报错
+
+	-- 现代纯 Lua 诊断图标配置（Nerd Font 图标套组）
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "⤬", -- 错误（红叉圆）
+			[vim.diagnostic.severity.WARN] = "", -- 警告（三角感叹号）
+			[vim.diagnostic.severity.HINT] = "󰌶", -- 提示（灯泡）
+			[vim.diagnostic.severity.INFO] = "🛈", -- 信息（信息圆）
+		},
+	},
+	float = { border = "rounded" },
+})
+
+-- 【关键防护】防止子模块（如 plugins 或 theme）异步加载时重新覆盖该配置
+vim.api.nvim_create_autocmd("User", {
+	pattern = "LspAttach", -- 当 LSP 启动时，再次强制确保 virtual_text 关闭
+	callback = function()
+		vim.diagnostic.config({ virtual_text = false })
+	end,
+})

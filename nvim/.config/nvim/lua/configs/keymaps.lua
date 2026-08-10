@@ -38,14 +38,8 @@ map("n", "<leader>fm", smart_format, { desc = "智能异步格式化" })
 
 -- =============================================================================
 -- 2. 独立插件核心配置 (Flash.nvim 极速跳转)
+-- 说明：Flash 的 setup 与 s / S 按键已统一收敛到 lua/plugins/configs/flash.lua
 -- =============================================================================
-local flash_status, flash = pcall(require, "flash")
-if flash_status then
-	flash.setup({ modes = { search = { enabled = false } } })
-	map({ "n", "x", "o" }, "s", function()
-		flash.jump()
-	end, { desc = "Flash 极速跳转" })
-end
 
 -- =============================================================================
 -- 3. ToggleTerm 终端管理基础键 (功能键直达)
@@ -61,15 +55,12 @@ map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "双击Esc退出终端输入模�
 
 -- =============================================================================
 -- 4. Which-Key 现代菜单一站式映射 (全面适配 v3 规范)
+-- 说明：which-key 的 setup 已统一收敛到 lua/plugins/configs/whichkey.lua
 -- =============================================================================
 local ok, wk = pcall(require, "which-key")
 if not ok then
 	return
 end
-
-wk.setup({
-	win = { border = "rounded" },
-})
 
 -- 普通模式 (Normal Mode) 菜单
 wk.add({
