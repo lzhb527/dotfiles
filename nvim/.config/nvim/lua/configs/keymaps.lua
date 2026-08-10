@@ -153,6 +153,75 @@ wk.add({
 	{ "<leader>aq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix 增强列表" },
 	{ "<leader>al", "<cmd>Trouble loclist toggle<cr>", desc = "Loclist 位置列表" },
 
+	-- 代码调试组 (DAP)
+	{ "<leader>d", group = "代码调试 (Debug)" },
+	{ "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "断点开关" },
+	{
+		"<leader>dB",
+		function()
+			require("dap").set_breakpoint(vim.fn.input("断点条件: "))
+		end,
+		desc = "条件断点",
+	},
+	{ "<leader>dc", "<cmd>DapStart<CR>", desc = "启动/继续调试" },
+	{
+		"<leader>ds",
+		function()
+			local dap = require("dap")
+			local configs = dap.configurations[vim.bo.filetype] or {}
+			if #configs == 0 then
+				vim.notify("当前文件类型没有调试配置: " .. vim.bo.filetype, vim.log.levels.WARN)
+				return
+			end
+			vim.ui.select(configs, {
+				prompt = "选择调试配置:",
+				format_item = function(c)
+					return c.name
+				end,
+			}, function(conf)
+				if conf then
+					dap.run(conf)
+				end
+			end)
+		end,
+		desc = "选择调试配置（含 attach）",
+	},
+	{ "<leader>di", function() require("dap").step_into() end, desc = "步入 (Into)" },
+	{ "<leader>do", function() require("dap").step_over() end, desc = "步过 (Over)" },
+	{ "<leader>du", function() require("dap").step_out() end, desc = "步出 (Out)" },
+	{
+		"<leader>da",
+		function()
+			local dap = require("dap")
+			local args = vim.split(vim.fn.input("运行参数: ") or "", "%s+", { trimempty = true })
+			for _, conf in ipairs(dap.configurations.python) do
+				if conf.name == "▶ 调试当前文件" then
+					conf.args = args
+				end
+			end
+			dap.continue()
+		end,
+		desc = "调试当前文件（带参数）",
+	},
+	{ "<leader>dr", function() require("dap").repl.toggle() end, desc = "REPL 控制台开关" },
+	{ "<leader>dt", function() require("dapui").toggle() end, desc = "调试 UI 开关" },
+	{
+		"<leader>dl",
+		function()
+			for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+				if vim.b[bufnr]["dap-type"] and vim.bo[bufnr].buftype == "terminal" then
+					vim.cmd("bel sb " .. bufnr)
+					return
+				end
+			end
+			vim.notify("没有调试终端，先按 F5 启动调试", vim.log.levels.WARN)
+		end,
+		desc = "查看调试终端输出",
+	},
+	{ "<leader>de", function() require("dapui").eval() end, desc = "评估变量/表达式" },
+	{ "<leader>dR", function() require("dap").restart() end, desc = "重启调试会话" },
+	{ "<leader>dQ", function() require("dap").terminate() end, desc = "终止调试会话" },
+
 	-- 标签页缓冲区管理 (Buffer)
 	{ "<leader>b", group = "标签页管理 (Buffer)" },
 	{ "<leader>bd", "<cmd>bdelete!<CR>", desc = "强行关闭当前标签页" },

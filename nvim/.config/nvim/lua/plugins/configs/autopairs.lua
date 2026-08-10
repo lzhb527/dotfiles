@@ -48,10 +48,6 @@ return function()
 			:with_pair(cond.not_after_regex("%}")),
 	})
 
-	-- 补全与括号联动
-	local cmp_status, cmp = pcall(require, "cmp")
-	if cmp_status then
-		local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-		cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-	end
+	-- 补全确认后的括号联动由 blink.cmp 的 auto_brackets 负责（见 blink.lua），
+	-- 不再依赖 nvim-cmp 的 confirm_done 事件
 end

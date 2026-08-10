@@ -35,9 +35,6 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
-		dependencies = {
-			"lewis6991/ts-install.nvim", -- 你的自动安装增强插件
-		},
 		config = require("plugins.configs.treesitter"),
 	},
 
@@ -49,27 +46,22 @@ require("lazy").setup({
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason.nvim", -- 确保 Mason 先行加载安装工具
-			"hrsh7th/nvim-cmp", -- 确保补全能力先行注入 LSP 客户端
+			"saghen/blink.cmp", -- 确保补全能力先行注入 LSP 客户端
 		},
 		config = require("plugins.configs.lsp"),
 	},
 	{
-		"hrsh7th/nvim-cmp",
-		event = "InsertEnter", -- 补全核心(cmp.lua)
+		"saghen/blink.cmp", -- 补全核心(blink.lua)，替代 nvim-cmp 全家桶
+		version = "1.*", -- 稳定版 V1
+		event = "InsertEnter",
 		dependencies = {
-			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
-			"L3MON4D3/LuaSnip", -- 代码片段引擎
-			"saadparwaiz1/cmp_luasnip", -- 代码片段补全源
-			"rafamadriz/friendly-snippets", -- 代码片段库
-			"hrsh7th/cmp-path", -- 路径补全
-			"hrsh7th/cmp-buffer", -- 缓冲区补全
+			"rafamadriz/friendly-snippets", -- 内置 snippets 源自动加载
 		},
-		config = require("plugins.configs.cmp"),
+		config = require("plugins.configs.blink"),
 	},
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		dependencies = { "hrsh7th/nvim-cmp" }, -- 需要联动 cmp 确认事件
 		config = require("plugins.configs.autopairs"),
 	},
 	{
@@ -136,9 +128,9 @@ require("lazy").setup({
 	-- =========================================================================
 	-- 3.5 编辑增强
 	-- =========================================================================
-	{ "NvChad/nvim-colorizer.lua", event = "BufReadPre", opts = require("plugins.configs.colorizer") }, -- 颜色高亮
 	{ "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost", "BufNewFile" }, main = "ibl", config = require("plugins.configs.ibl") }, -- 🌟 替换旧的 indentLine，基于 Lua 且完美适配 Treesitter
 	{ "HiPhish/rainbow-delimiters.nvim", event = { "BufReadPost", "BufNewFile" }, config = require("plugins.configs.rainbow") }, -- 🌟 替换旧的 rainbow，基于 Treesitter 的高性能彩虹括号
+	{ "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = require("plugins.configs.colorizer") }, -- 颜色高亮（活跃维护的新版 fork，全文件类型高亮）
 	{
 		"akinsho/toggleterm.nvim",
 		version = "*",
@@ -149,6 +141,19 @@ require("lazy").setup({
 		config = require("plugins.configs.toggleterm"),
 	}, -- 🌟 替换旧的 floaterm，功能极度强大的浮动/多终端管理
 	{ "folke/snacks.nvim", event = "VeryLazy", config = require("plugins.configs.snacks") },
+	{
+		"folke/persistence.nvim", -- 会话保存/恢复（激活 dashboard 的 s 键：Restore Session）
+		event = "BufReadPre",
+		opts = {
+			options = { "buffers", "win", "tabpages", "folds", "curdir" },
+			save_dir = vim.fn.stdpath("state") .. "/sessions/",
+		},
+		keys = {
+			{ "<leader>qs", function() require("persistence").save() end, desc = "保存会话" },
+			{ "<leader>ql", function() require("persistence").load() end, desc = "恢复会话" },
+			{ "<leader>qd", function() require("persistence").stop() end, desc = "停止自动保存" },
+		},
+	},
 	{
 		"chrisgrieser/nvim-origami",
 		event = "VeryLazy",
@@ -173,8 +178,6 @@ require("lazy").setup({
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = require("plugins.configs.lualine"),
 	}, -- 状态栏
-	{ "nvimdev/dashboard-nvim", event = "VimEnter", opts = require("plugins.configs.dashboard") }, -- 启动页（已修正原仓库作者改名问题）
-	{ "karb94/neoscroll.nvim", event = "VeryLazy", config = true }, -- 🌟 替换旧的 comfortable-motion.vim，平滑滚动
 	{
 		"akinsho/bufferline.nvim",
 		event = "UIEnter",
@@ -200,6 +203,38 @@ require("lazy").setup({
 		event = "LspAttach", -- 当 LSP 启动时再懒加载
 		priority = 1000, -- 保证优先级
 		config = require("plugins.configs.tiny-inline-diagnostic"),
+	},
+
+	-- =========================================================================
+	-- 3.8 代码调试 (DAP)
+	-- =========================================================================
+	{
+		"mfussenegger/nvim-dap", -- 调试核心引擎
+		event = "VeryLazy",
+		dependencies = {
+			"jay-babu/mason-nvim-dap.nvim", -- 自动安装/管理各语言调试器
+		},
+		config = require("plugins.configs.dap"),
+	},
+	{
+		"jay-babu/mason-nvim-dap.nvim", -- 从 Mason 自动安装调试器（setup 在 dap.lua 内调用）
+		lazy = true,
+		dependencies = { "williamboman/mason.nvim" },
+	},
+	{
+		"rcarriga/nvim-dap-ui", -- 调试 UI（变量/断点/调用栈/REPL）
+		event = "VeryLazy",
+		dependencies = {
+			"mfussenegger/nvim-dap",
+			"nvim-neotest/nvim-nio",
+		},
+		config = require("plugins.configs.dapui"),
+	},
+	{
+		"theHamsta/nvim-dap-virtual-text", -- 调试时行内显示变量值
+		event = "VeryLazy",
+		dependencies = { "mfussenegger/nvim-dap" },
+		opts = {},
 	},
 }, {
 	-- Lazy 的全局 UI 配置

@@ -1,5 +1,5 @@
 -- =========================================================================
--- snacks.nvim 净化后的状态列配置（彻底干掉冲突的竖线）
+-- snacks.nvim 配置（状态列 + 启动页 Dashboard）
 -- =========================================================================
 return function()
 	-- 🌟 核心修复 1：将原生折叠列强行设为 "0"！
@@ -34,6 +34,62 @@ return function()
 			folds = {
 				open = true, -- 没折叠时也显示小箭头，方便鼠标随时点
 				git_hl = false,
+			},
+		},
+		-- 🌟 启动页 Dashboard（内容与布局来自参照配置）
+		-- snacks 会在 UIEnter 后自动判断：无参数启动 + 空缓冲区时自动打开
+		dashboard = {
+			enabled = true,
+			preset = {
+				-- pick 选择器：nil=默认，按 fzf-lua → telescope → mini.pick → snacks picker 顺序自动选择
+				pick = nil,
+				keys = {
+					{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+					{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+					{
+						icon = " ",
+						key = "g",
+						desc = "Find Text",
+						action = ":lua Snacks.dashboard.pick('live_grep')",
+					},
+					{
+						icon = " ",
+						key = "r",
+						desc = "Recent Files",
+						action = ":lua Snacks.dashboard.pick('oldfiles')",
+					},
+					{
+						icon = " ",
+						key = "c",
+						desc = "Config",
+						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+					},
+					{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
+					{
+						icon = "󰒲 ",
+						key = "l",
+						desc = "Lazy",
+						action = ":Lazy",
+						enabled = package.loaded.lazy ~= nil,
+					},
+					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
+				},
+				header = [[
+                                                                             
+               ████ ██████           █████      ██                     
+              ███████████             █████                             
+              █████████ ███████████████████ ███   ███████████   
+             █████████  ███    █████████████ █████ ██████████████   
+            █████████ ██████████ █████████ █████ █████ ████ █████   
+          ███████████ ███    ███ █████████ █████ █████ ████ █████  
+         ██████  █████████████████████ ████ █████ █████ ████ ██████ 
+            ]],
+			},
+			sections = {
+				{ section = "header" },
+				{ section = "recent_files", icon = "  ", title = "Recent Files", indent = 1, padding = 1 },
+				{ section = "keys", indent = 1, padding = 1 },
+				{ section = "startup", icon = "" },
 			},
 		},
 	})

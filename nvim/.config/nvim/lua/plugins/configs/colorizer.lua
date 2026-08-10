@@ -1,12 +1,15 @@
 -- =========================================================================
--- nvim-colorizer.lua 颜色高亮配置（彻底修复 expected table, got string 报错）
+-- nvim-colorizer.lua 颜色高亮配置（新版 fork 的 options 结构化格式）
 -- =========================================================================
 return {
-	-- 🌟 修正：将裸字符串改为以文件类型（Filetype）为 Key 的 Table 格式
-	["*"] = {
-		css = true,
-		html = true,
+	filetypes = { "*" }, -- 对所有文件类型生效（含纯文本、Markdown 等非代码文件）
+	options = {
+		parsers = {
+			css = true, -- 预设：names + hex + rgb + hsl + oklch + css_var
+			css_fn = true, -- 预设：rgb() / hsl() / oklch() 函数形式
+		},
+		display = {
+			-- 默认 true：接管 LSP 颜色高亮并自动禁用内置 document_color，避免重复
+		},
 	},
-	css = { rgb_fn = true },
-	html = { names = true },
 }

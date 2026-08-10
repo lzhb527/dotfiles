@@ -6,15 +6,16 @@ return function()
 	-- [1] 核心补全能力与快捷键分发器 (on_attach)
 	-- ---------------------------------------------------------------------
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	if vim.lsp.default_capabilities then
-		capabilities = vim.lsp.default_capabilities()
-	end
-	local has_cmp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
-	if has_cmp then
-		capabilities = vim.tbl_deep_extend("force", capabilities, cmp_lsp.default_capabilities())
+	-- 🌟 补全能力交给 blink.cmp 提供（含 LSP 补全增强字段）
+	local has_blink, blink = pcall(require, "blink.cmp")
+	if has_blink then
+		capabilities = blink.get_lsp_capabilities()
 	end
 
 	local on_attach = function(client, bufnr)
+		-- 颜色高亮已交给 nvim-colorizer.lua 统一处理（含 LSP 颜色），
+		-- 它会自动禁用内置 vim.lsp.document_color 避免重复高亮
+
 		-- 🌟 彻底屏蔽 Pyright 原生的格式化能力，全面交给 Conform 后端的 Ruff
 		if client.name == "pyright" then
 			client.server_capabilities.documentFormattingProvider = false

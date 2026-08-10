@@ -18,10 +18,14 @@ return function()
 	})
 
 	-- 针对终端模式的特殊优化：在终端里按 Esc 键或 F2 就能直接退出输入模式或关闭窗口
-	function _G.set_terminal_keymaps()
-		local opts = { buffer = 0 }
-		vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], opts)
-		vim.keymap.set("t", "<F2>", [[<Cmd>ToggleTerm<CR>]], opts)
-	end
-	vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
+	-- 🌟 使用独立 augroup，避免 autocmd! 误清其他插件的 TermOpen 自动命令
+	vim.api.nvim_create_autocmd("TermOpen", {
+		group = vim.api.nvim_create_augroup("ToggleTermKeymaps", { clear = true }),
+		pattern = "term://*",
+		callback = function(event)
+			local opts = { buffer = event.buf }
+			vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], opts)
+			vim.keymap.set("t", "<F2>", [[<Cmd>ToggleTerm<CR>]], opts)
+		end,
+	})
 end

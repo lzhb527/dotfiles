@@ -31,8 +31,6 @@ return function()
 				-- 覆盖 Neovim 默认的 Markdown 转换与样式渲染，改用 Noice 视觉引擎
 				["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 				["vim.lsp.util.stylize_markdown"] = true,
-				-- 覆盖补全插件（如 nvim-cmp / blink.cmp）的文档处理，保持 UI 风格高度统一
-				["cmp.entry.get_documentation"] = true,
 			},
 
 			-- 关闭 noice 对诊断（报错信息）的接管与渲染

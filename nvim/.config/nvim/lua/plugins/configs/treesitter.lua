@@ -1,43 +1,40 @@
 -- =========================================================================
--- nvim-treesitter + ts-install 配置
+-- nvim-treesitter 配置（新版：仅负责解析器安装，语法高亮由 Neovim 内置）
+-- 说明：新版 nvim-treesitter 的 setup 只接受 install_dir，无 ensure_installed，
+--       解析器安装统一走内置的 :TSInstall（依赖 Mason 提供的 tree-sitter CLI）
 -- =========================================================================
 return function()
-	-- 1. 先初始化 ts-install（自动安装缺失解析器）
-	local ok_install, ts_install = pcall(require, "ts-install")
-	if ok_install then
-		ts_install.setup({
-			auto_install = true,
-		})
-	end
-
-	-- 2. 🚀 新版 nvim-treesitter（2025+ 重构版）初始化姿势
-	local status_ok, treesitter = pcall(require, "nvim-treesitter")
-	if not status_ok then
+	local ok, treesitter = pcall(require, "nvim-treesitter")
+	if not ok then
 		return
 	end
 
 	treesitter.setup({})
 
-	-- 基础解析器强制锁死安装（已装过的会跳过）
-	local parsers = { "lua", "vim", "vimdoc", "query", "markdown", "python", "javascript" }
+	-- 需要的解析器清单
+	local parsers = { "lua", "vim", "vimdoc", "query", "markdown", "python", "javascript", "c", "bash", "yaml" }
 
-	-- 🌟 新版 nvim-treesitter 编译解析器依赖 tree-sitter CLI（由 mason 提供）。
-	-- mason 是懒加载的，tree-sitter-cli 下载需要时间，这里等 CLI 就绪后再安装，
-	-- 否则会出现 ENOENT: 'tree-sitter' 报错。
-	local function ensure_parsers(tries)
-		if vim.fn.executable("tree-sitter") == 1 then
-			treesitter.install(parsers)
-		elseif tries > 0 then
-			vim.defer_fn(function()
-				ensure_parsers(tries - 1)
-			end, 3000)
-		else
+	-- 🌟 只安装缺失的解析器；已装的不重建，避免每次启动重复编译
+	local function ensure_parsers()
+		local installed = treesitter.get_installed("parsers")
+		local missing = vim.tbl_filter(function(p)
+			return not vim.tbl_contains(installed, p)
+		end, parsers)
+
+		if #missing == 0 then
+			return
+		end
+		if vim.fn.executable("tree-sitter") ~= 1 then
 			vim.notify(
-				"tree-sitter CLI 未就绪，解析器安装已跳过。请稍后运行 :MasonToolsInstall 后再 :TSInstallSync all",
+				"tree-sitter CLI 未就绪，缺失解析器跳过。可稍后运行 :TSInstallSync "
+					.. table.concat(missing, " "),
 				vim.log.levels.WARN
 			)
+			return
 		end
+		vim.cmd("TSInstall " .. table.concat(missing, " "))
 	end
 
-	ensure_parsers(10) -- 最多重试 10 次（约 30 秒），等待 mason 装好 tree-sitter-cli
+	-- 延迟到 Mason 就绪后再装，避免加载期阻塞
+	vim.defer_fn(ensure_parsers, 800)
 end

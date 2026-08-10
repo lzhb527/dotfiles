@@ -32,7 +32,7 @@ return function()
 		},
 		exclude = {
 			filetypes = {
-				"dashboard",
+				"snacks_dashboard",
 				"alpha",
 				"neo-tree", -- 🌟 同步修正：防止缩进线破坏 Neo-tree 侧边栏的树状视觉效果
 				"lazy",
