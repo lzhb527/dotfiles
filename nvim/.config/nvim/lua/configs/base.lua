@@ -139,9 +139,9 @@ vim.diagnostic.config({
 	signs = {
 		text = {
 			[vim.diagnostic.severity.ERROR] = "⤬", -- 错误（红叉圆）
-			[vim.diagnostic.severity.WARN] = "", -- 警告（三角感叹号）
+			[vim.diagnostic.severity.WARN] = " ", -- 警告（三角感叹号）
 			[vim.diagnostic.severity.HINT] = "󰌶", -- 提示（灯泡）
-			[vim.diagnostic.severity.INFO] = "🛈", -- 信息（信息圆）
+			[vim.diagnostic.severity.INFO] = " ", -- 信息（信息圆）
 		},
 	},
 	float = { border = "rounded" },
