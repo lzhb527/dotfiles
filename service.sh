@@ -12,13 +12,12 @@ systemctl --user enable dms.service
 systemctl --user enable foot-server.service
 systemctl --user daemon-reload
 
-
 sudo systemctl enable --now power-profiles-daemon.service
 sudo systemctl start power-profiles-daemon.service --now
 sudo firewall-cmd --permanent --add-port=80/tcp
 sudo firewall-cmd --permanent --add-port=22/tcp
 sudo firewall-cmd --permanent --add-service=ssh
-sudo systemctl start --now  sshd.service
+sudo systemctl start --now sshd.service
 sudo systemctl enable sshd.service
 
 sudo firewall-cmd --reload

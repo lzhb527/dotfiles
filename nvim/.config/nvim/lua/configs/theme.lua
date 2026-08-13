@@ -82,6 +82,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 			fg = "#7dcfff",
 			force = true,
 		})
+
+		-- 5. snacks.indent 缩进线配色（复刻旧 indent-blankline：灰线 + 青色作用域）
+		vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#292e42", nocombine = true, force = true })
+		vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = "#2ac3de", nocombine = true, force = true })
 	end,
 })
 

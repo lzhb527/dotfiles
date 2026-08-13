@@ -14,6 +14,8 @@ return function()
 		name = { "venv", ".venv", "env" },
 		auto_select = true,
 		options = {
+			-- 使用 snacks.picker 作为选择器（telescope 已移除）
+			picker = "snacks",
 			-- 🌟 必须设为 false！否则 venv-selector 会把 vim.notify 覆盖成 notify 模块表，
 			-- 与 Noice 的 vim.notify 冲突，打开 Python 文件时会弹窗
 			-- "`vim.notify` has been overwritten by another plugin?"
@@ -24,7 +26,7 @@ return function()
 	-- 🌟 按键：一键弹出虚拟环境切换器
 	vim.keymap.set("n", "<leader>v", "<cmd>VenvSelect<CR>", { desc = "切换 Python 虚拟环境" })
 
-	vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
+	vim.api.nvim_create_autocmd("FileType", {
 		pattern = "python",
 		callback = function()
 			vim.cmd("silent! VenvSelectCached")

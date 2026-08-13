@@ -7,14 +7,6 @@ return function()
 		return
 	end
 
-	-- 🌟 核心修复：在 noice 启动前，强行为依赖的 notify 插件兜底指定背景色
-	-- 这样在启用透明终端或 Tokyo Night 主题时，绝对不会再触发黄色警告弹窗。
-	pcall(function()
-		require("notify").setup({
-			background_colour = "#1a1b26", -- 精准对齐 Tokyo Night 官方暗底色
-		})
-	end)
-
 	noice.setup({
 		presets = {
 			bottom_search = true, -- 底部搜索栏：使 / 和 ? 搜索窗口停靠在底部，更符合原生习惯

@@ -75,14 +75,15 @@ return function()
 	vim.lsp.enable("ruff")
 
 	-- ---------------------------------------------------------------------
-	-- [4] Ansible 服务：ansiblels (文件精准感知与自动匹配)
+	-- [4] Ansible：统一注册，按根目录自动匹配（不再每文件起一个客户端）
 	-- ---------------------------------------------------------------------
 	local data_path = vim.fn.stdpath("data")
-	local ansiblels_config = {
-		name = "ansiblels",
+	vim.lsp.config("ansiblels", {
 		cmd = { data_path .. "/mason/bin/ansible-language-server", "--stdio" },
 		capabilities = capabilities,
 		on_attach = on_attach,
+		root_markers = { ".git", "ansible.cfg", "requirements.yml", "ansible-navigator.yml" },
+		filetypes = { "yaml.ansible" },
 		settings = {
 			ansible = {
 				python = { interpreterPath = vim.fn.exepath("python3") },
@@ -90,17 +91,14 @@ return function()
 				validation = { enabled = true, lint = { enabled = false } },
 			},
 		},
-	}
+	})
+	vim.lsp.enable("ansiblels")
 
+	-- yaml 文件类型识别
 	vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		pattern = { "*.yml", "*.yaml" },
 		callback = function(args)
 			vim.bo[args.buf].filetype = "yaml.ansible"
-			local current_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf))
-			local final_config = vim.tbl_deep_extend("force", ansiblels_config, {
-				root_dir = current_dir,
-			})
-			vim.lsp.start(final_config, { bufnr = args.buf })
 		end,
 	})
 end

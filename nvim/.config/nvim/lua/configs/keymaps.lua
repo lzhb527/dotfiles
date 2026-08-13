@@ -5,8 +5,19 @@ local map = vim.keymap.set
 -- =============================================================================
 
 -- 基础工具开关
+local function snacks_explorer_toggle()
+	require("snacks").explorer.open({
+		layout = "sidebar", -- 侧边栏布局（替代 neo-tree 的左侧停靠）
+		git_status = true, -- 文件树显示 Git 状态
+		diagnostics = true, -- 显示诊断符号
+		hidden = true, -- 显示隐藏文件（对应 neo-tree hide_dotfiles = false）
+		follow_file = true, -- 智能追踪当前文件（对应 neo-tree follow_current_file）
+		toggles = { hidden = false }, -- 不显示 hidden toggle 的 "h" 徽标
+	})
+end
+
 map("n", "<F1>", "<cmd>set nu! rnu!<CR>", { noremap = true, silent = true, desc = "切换行号显示" })
-map("n", "<C-n>", "<cmd>Neotree toggle left<CR>", { noremap = true, silent = true, desc = "切换文件浏览器" })
+map("n", "<C-n>", snacks_explorer_toggle, { noremap = true, silent = true, desc = "切换文件浏览器" })
 map("n", "<F12>", "<cmd>AerialToggle! right<CR>", { noremap = true, silent = true, desc = "切换代码结构树" })
 
 -- 极速无感保存 (Ctrl + S)
@@ -42,15 +53,41 @@ map("n", "<leader>fm", smart_format, { desc = "智能异步格式化" })
 -- =============================================================================
 
 -- =============================================================================
--- 3. ToggleTerm 终端管理基础键 (功能键直达)
+-- 3. Snacks.terminal 终端管理基础键 (功能键直达)
+-- 说明：toggleterm 已迁移至 snacks.terminal。F2 浮动终端 / F9 底部终端
+-- 通过 count 区分身份，避免同一 cwd 的终端被共用。
 -- =============================================================================
-map("n", "<F8>", "<cmd>ToggleTerm direction=float<CR>", { silent = true, desc = "切换浮动终端" })
-map("n", "<F9>", "<cmd>ToggleTermToggleAll<CR>", { silent = true, desc = "切换所有终端" })
-map("n", "<F10>", "<cmd>ToggleTerm direction=horizontal<CR>", { silent = true, desc = "切换水平终端" })
-map("n", "<F11>", "<cmd>close<CR>", { silent = true, desc = "隐藏当前终端面板" })
+local function snacks_term_toggle(position, count)
+	require("snacks").terminal.toggle(nil, {
+		win = {
+			position = position, -- 位置必须放 win 子表，top-level position 会被忽略
+			border = position == "float" and "rounded" or "none", -- 浮动终端圆角边框
+		},
+		count = count,
+		auto_close = true, -- 进程退出自动关闭（对应 toggleterm.close_on_exit）
+	})
+end
 
-map("t", "<F8>", [[<C-\><C-n><cmd>ToggleTerm<CR>]], { silent = true, desc = "隐藏终端回到代码" })
-map("t", "<F9>", [[<C-\><C-n><cmd>ToggleTermToggleAll<CR>]], { silent = true, desc = "隐藏所有终端" })
+-- 收起当前光标所在终端（终端模式内用）
+local function snacks_term_hide()
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
+	vim.schedule(function()
+		local cur = vim.api.nvim_get_current_buf()
+		for _, t in ipairs(require("snacks").terminal.list()) do
+			if t.buf == cur then
+				t:hide()
+				return
+			end
+		end
+	end)
+end
+
+map("n", "<F2>", function() snacks_term_toggle("float", 1) end, { silent = true, desc = "切换浮动终端" })
+map("n", "<F9>", function() snacks_term_toggle("bottom", 2) end, { silent = true, desc = "切换底部终端" })
+map("n", "<F10>", "<cmd>close<CR>", { silent = true, desc = "关闭当前终端窗口" })
+
+map("t", "<F2>", snacks_term_hide, { silent = true, desc = "收起终端回到代码" })
+map("t", "<F9>", snacks_term_hide, { silent = true, desc = "收起底部终端" })
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "双击Esc退出终端输入模式" })
 
 -- =============================================================================
@@ -70,14 +107,14 @@ wk.add({
 	{ "<leader>?", "<cmd>WhichKey<cr>", desc = "快捷键(help file)" },
 	{ "<leader>S", "<cmd>w!<CR>", desc = "强行保存当前文件", hidden = true },
 
-	-- 搜索组 (Telescope)
+	-- 搜索组 (snacks.picker)
 	{ "<leader>f", group = "搜索查找 (Find)" },
-	{ "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "查找文件名称" },
-	{ "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "全局文本搜索" },
-	{ "<leader>fb", "<cmd>Telescope buffers<CR>", desc = "查找活动缓冲区" },
-	{ "<leader>fh", "<cmd>Telescope oldfiles<CR>", desc = "历史打开记录" },
-	{ "<leader>fc", "<cmd>Telescope git_commits<CR>", desc = "Git 提交历史" },
-	{ "<leader>fr", "<cmd>Telescope grep_string<CR>", desc = "搜索光标下单词" },
+	{ "<leader>ff", function() require("snacks").picker.files() end, desc = "查找文件名称" },
+	{ "<leader>fg", function() require("snacks").picker.grep() end, desc = "全局文本搜索" },
+	{ "<leader>fb", function() require("snacks").picker.buffers() end, desc = "查找活动缓冲区" },
+	{ "<leader>fh", function() require("snacks").picker.recent() end, desc = "历史打开记录" },
+	{ "<leader>fc", function() require("snacks").picker.git_log() end, desc = "Git 提交历史" },
+	{ "<leader>fr", function() require("snacks").picker.grep_word() end, desc = "搜索光标下单词" },
 
 	-- 代码行为组 (LSP)
 	{ "<leader>c", group = "代码行为(LSP CODE)" },
@@ -92,16 +129,18 @@ wk.add({
 	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "LSP 代码符号列表" },
 	{ "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP 定义/引用树" },
 
-	-- 终端管理组 (ToggleTerm)
+	-- 终端管理组 (Snacks.terminal)
 	{ "<leader>t", group = "终端管理 (Terminal)" },
-	{ "<leader>tn", "<cmd>ToggleTerm direction=float<CR>", desc = "新建浮动终端" },
-	{ "<leader>tt", "<cmd>ToggleTermToggleAll<CR>", desc = "切换所有终端显示" },
-	{ "<leader>th", "<cmd>ToggleTerm direction=horizontal<CR>", desc = "新建水平分屏终端" },
+	{ "<leader>tn", function() snacks_term_toggle("float", 1) end, desc = "新建浮动终端" },
+	{ "<leader>th", function() snacks_term_toggle("bottom", 2) end, desc = "新建底部终端" },
 	{ "<leader>tk", "<cmd>close<CR>", desc = "关闭当前终端窗口" },
 
 	-- Git 状态管理组 (所有 Hunk 高级操作已彻底打平整合至此)
 	{ "<leader>g", group = "Git 状态管理" },
 	{ "<leader>gs", "<cmd>Gitsigns toggle_signs<CR>", desc = "开关左侧状态线" },
+	{ "<leader>gg", function() require("snacks.lazygit").open() end, desc = "LazyGit" },
+	{ "<leader>gL", function() require("snacks.lazygit").log() end, desc = "LazyGit 提交日志" },
+	{ "<leader>gF", function() require("snacks.lazygit").log_file() end, desc = "LazyGit 当前文件日志" },
 	{ "<leader>gl", "<cmd>Gitsigns preview_hunk_inline<CR>", desc = "预览当前行改动 (Inline)" },
 	{ "<leader>gk", "<cmd>Gitsigns prev_hunk<CR>", desc = "上一个改动块" },
 	{ "<leader>gj", "<cmd>Gitsigns next_hunk<CR>", desc = "下一个改动块" },
@@ -238,7 +277,8 @@ wk.add({
 	-- 界面交互与 UI 开关
 	{ "<leader>u", group = "界面 (UI)" },
 	{ "<leader>u1", "<cmd>set nu! rnu!<CR>", desc = "切换行号显示" },
-	{ "<leader>un", "<cmd>Neotree toggle left<CR>", desc = "侧边文件树开关" },
+	{ "<leader>e", snacks_explorer_toggle, desc = "侧边文件树开关" },
+	{ "<leader>un", snacks_explorer_toggle, desc = "侧边文件树开关" },
 	{ "<leader>uf12", "<cmd>AerialToggle! right<CR>", desc = "代码结构树开关" },
 	{
 		"<leader>us",
@@ -257,6 +297,7 @@ wk.add({
 	-- 文件存取
 	{ "<leader>s", group = "文件存取(Save file)" },
 	{ "<leader>ss", "<cmd>w<CR>", desc = "保存当前文件" },
+	{ "<leader>sc", function() Snacks.scratch() end, desc = "临时草稿缓冲" },
 	{ "<leader>sS", "<cmd>w!<CR>", desc = "强制保存当前文件" },
 	{ "<leader>sw", ":w ", desc = "文件另存为..." },
 	{ "<leader>sa", "<cmd>wa<CR>", desc = "保存所有打开文件" },
@@ -267,6 +308,5 @@ wk.add({
 wk.add({
 	mode = "t",
 	{ "<leader>", group = "终端快捷菜单" },
-	{ "<leader>tn", [[<C-\><C-n><cmd>ToggleTerm<CR>]], desc = "收起终端回到代码" },
-	{ "<leader>tt", [[<C-\><C-n><cmd>ToggleTermToggleAll<CR>]], desc = "收起隐藏所有终端" },
+	{ "<leader>tn", snacks_term_hide, desc = "收起终端回到代码" },
 })

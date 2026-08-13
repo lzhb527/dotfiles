@@ -22,8 +22,8 @@ return {
 		theme = "auto",
 		component_separators = { left = "", right = "" },
 		section_separators = { left = "", right = "" },
-		-- 🌟 同步修正：将过时的 NvimTree 更改为现代的 neo-tree
-		disabled_filetypes = { "neo-tree", "snacks_dashboard" },
+		-- 🌟 文件浏览器改为 snacks.explorer 后无需再屏蔽 neo-tree
+		disabled_filetypes = { "snacks_dashboard" },
 		globalstatus = true,
 		refresh = { statusline = 1000 },
 	},

@@ -9,6 +9,15 @@ vim.g.mapleader = " " -- 🌟 同步修正：严格保持【空格键】为核�
 vim.g.maplocalleader = " " -- 🌟 同步修正：本地 Leader 键同步设为空格
 vim.o.clipboard = "unnamedplus"
 
+-- 删除 nvim 内置的 "[Process exited N]" 虚拟文本（终端退出时的底部提示）
+-- 全局生效；toggleterm 本就 close_on_exit 自动关闭，影响可忽略
+local term_autos = vim.api.nvim_get_autocmds({ group = "nvim.terminal" })
+for _, a in ipairs(term_autos) do
+	if a.event == "TermClose" and a.desc and a.desc:find("Process exited") then
+		vim.api.nvim_del_autocmd(a.id)
+	end
+end
+
 -- =============================================================================
 -- 2. 基础兼容性与编码规范
 -- =============================================================================
@@ -31,10 +40,11 @@ opt.guifont = "DroidSansMono_Nerd_Font:h11" -- GUI 客户端（如 Neovide）下
 -- =============================================================================
 -- 4. 基于现代语法树的折叠机制优化
 -- =============================================================================
-opt.foldmethod = "expr" -- 🌟 升级：由普通的 indent 升级为基于 Treesitter 表达式的更精准折叠
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- 🌟 升级：绑定 Neovim 官方原生 Treesitter 高性能折叠引擎
-opt.foldlevel = 99 -- 默认折叠层级设为最高（意味着打开文件时代码默认全部展开，按 `za` 触发折叠）
-opt.foldenable = true -- 启用代码折叠
+opt.foldmethod = "expr" -- 基于 Treesitter 的精准折叠
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldlevel = 99 -- 默认全部展开
+opt.foldlevelstart = 99
+opt.foldenable = true
 
 -- =============================================================================
 -- 5. 窗口分屏排版行为
@@ -97,13 +107,23 @@ vim.scriptencoding = "utf-8"
 
 -- =============================================================================
 -- 13. 关闭字符隐藏 (conceallevel=0)，防止语法高亮被隐藏
+--     但排除 markview 渲染的 markdown 家族文件类型，否则 markview 无法工作
 -- =============================================================================
 opt.conceallevel = 0
+local markview_filetypes = {
+	markdown = true,
+	quarto = true,
+	rmd = true,
+	typst = true,
+	asciidoc = true,
+}
 api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 	group = api.nvim_create_augroup("ForceConceallevel", { clear = true }),
 	pattern = { "*" },
 	callback = function()
-		opt.conceallevel = 0
+		if not markview_filetypes[vim.bo.filetype] then
+			opt.conceallevel = 0
+		end
 	end,
 })
 

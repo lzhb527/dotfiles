@@ -24,7 +24,8 @@ return function()
 			-- 让 Mason 自动帮你把底下的静态检查器与格式化命令行工具也一并下载到本地！
 			ensure_installed = { "ansible-lint", "stylua", "prettier", "tree-sitter-cli", "shfmt" },
 			auto_update = true,
-			run_on_start = true,
+			-- 🌟 关闭内置的自动安装检查，改用手动触发，避免与下方自定义 defer 重复
+			run_on_start = false,
 		})
 
 		-- 🌟 主动触发一次安装检查

@@ -74,10 +74,11 @@ require("lazy").setup({
 		config = require("plugins.configs.mason"),
 	},
 	{ "stevearc/conform.nvim", event = "BufWritePre", config = require("plugins.configs.conform") }, -- 🌟 替换掉旧的 ALE/Flake8，现代高效异步代码格式化器
+	{ "mfussenegger/nvim-lint", event = "VeryLazy", config = require("plugins.configs.lint") }, -- 外部 linter(shellcheck/yamllint)
 	{
 		"linux-cultist/venv-selector.nvim",
 		ft = "python", -- Python 虚拟环境切换
-		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim" },
+		dependencies = { "neovim/nvim-lspconfig" },
 		config = require("plugins.configs.venv"),
 	},
 
@@ -85,34 +86,14 @@ require("lazy").setup({
 	-- 3.4 导航与搜索（全 Lua 升级）
 	-- =========================================================================
 	{
-		"nvim-neo-tree/neo-tree.nvim", -- 🌟 完美替代 NERDTree，异步、颜值更高
-		branch = "v3.x",
-		cmd = "Neotree",
+		"stevearc/oil.nvim", -- 把文件夹当文本缓冲编辑（配合 snacks.rename 自动同步引用）
+		cmd = "Oil",
 		keys = {
-			{ "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neo-tree" },
+			{ "-", "<cmd>Oil<CR>", desc = "打开文件管理器(Oil)" },
 		},
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons",
-			"MunifTanjim/nui.nvim",
-		},
-		opts = require("plugins.configs.neotree"),
+		config = require("plugins.configs.oil"),
 	},
 	{ "folke/flash.nvim", event = "VeryLazy", config = require("plugins.configs.flash") }, -- 🌟 完美替代 EasyMotion，极其高效酷炫的跳转
-	{
-		"nvim-telescope/telescope.nvim", -- 🌟 现代化搜索神器，完美融合 FZF
-		cmd = "Telescope",
-		keys = {
-			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
-			{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
-			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-		},
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" }, -- FZF 原生加速
-		},
-		config = require("plugins.configs.telescope"),
-	},
 	{ "lewis6991/gitsigns.nvim", event = { "BufReadPre", "BufNewFile" }, config = require("plugins.configs.gitsigns") }, -- 🌟 替代旧的 Fugitive，提供极致的侧边栏 Git 状态和操作
 	{ "stevearc/aerial.nvim", cmd = "AerialToggle", config = require("plugins.configs.aerial") }, -- 🌟 完美替代 Tagbar，基于 LSP 的现代函数/类大纲导航
 	{
@@ -128,19 +109,73 @@ require("lazy").setup({
 	-- =========================================================================
 	-- 3.5 编辑增强
 	-- =========================================================================
-	{ "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost", "BufNewFile" }, main = "ibl", config = require("plugins.configs.ibl") }, -- 🌟 替换旧的 indentLine，基于 Lua 且完美适配 Treesitter
-	{ "HiPhish/rainbow-delimiters.nvim", event = { "BufReadPost", "BufNewFile" }, config = require("plugins.configs.rainbow") }, -- 🌟 替换旧的 rainbow，基于 Treesitter 的高性能彩虹括号
-	{ "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = require("plugins.configs.colorizer") }, -- 颜色高亮（活跃维护的新版 fork，全文件类型高亮）
 	{
-		"akinsho/toggleterm.nvim",
-		version = "*",
-		-- 🌟 cmd 懒加载：F8/F9/F10 与 <leader>t* 映射直接调用 ToggleTerm 命令，
-		-- 用 cmd 拦截能在执行命令前先加载插件，避免 E492: Not an editor command
-		cmd = { "ToggleTerm", "ToggleTermToggleAll" },
-		keys = { "<leader>t" },
-		config = require("plugins.configs.toggleterm"),
-	}, -- 🌟 替换旧的 floaterm，功能极度强大的浮动/多终端管理
+		"HiPhish/rainbow-delimiters.nvim",
+		event = { "BufReadPost", "BufNewFile" },
+		config = require("plugins.configs.rainbow"),
+	}, -- 🌟 替换旧的 rainbow，基于 Treesitter 的高性能彩虹括号
+	{ "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = require("plugins.configs.colorizer") }, -- 颜色高亮（活跃维护的新版 fork，全文件类型高亮）
+	{ "kylechui/nvim-surround", event = "VeryLazy", opts = {} }, -- 快速加/改/删包围符号 (ys/cs/ds)
+	{ "echasnovski/mini.ai", event = "VeryLazy", opts = {} }, -- 文本对象增强 (di(/cif/vit 等)
+	{ "OXY2DEV/markview.nvim", event = "BufReadPost", config = require("plugins.configs.markview") }, -- Markdown 编辑渲染增强
+	{
+		"nvim-treesitter/nvim-treesitter-textobjects", -- 基于语法树的结构跳转(motions)
+		event = "VeryLazy",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		config = function()
+			require("nvim-treesitter-textobjects").setup {
+				move = { set_jumps = true },
+			}
+			-- 只配跳转 motions，文本对象(if/ac 等)交给 mini.ai
+			local function go(dir, q)
+				return function()
+					local mv = require("nvim-treesitter-textobjects.move")
+					if dir == "next" then
+						mv.goto_next_start(q, "textobjects")
+					else
+						mv.goto_previous_start(q, "textobjects")
+					end
+				end
+			end
+			vim.keymap.set({ "n", "x", "o" }, "]m", go("next", "@function.outer"), { desc = "下一个函数" })
+			vim.keymap.set({ "n", "x", "o" }, "[m", go("prev", "@function.outer"), { desc = "上一个函数" })
+			vim.keymap.set({ "n", "x", "o" }, "]C", go("next", "@class.outer"), { desc = "下一个类" })
+			vim.keymap.set({ "n", "x", "o" }, "[C", go("prev", "@class.outer"), { desc = "上一个类" })
+			vim.keymap.set({ "n", "x", "o" }, "]a", go("next", "@parameter.inner"), { desc = "下一个参数" })
+			vim.keymap.set({ "n", "x", "o" }, "[a", go("prev", "@parameter.inner"), { desc = "上一个参数" })
+			vim.keymap.set({ "n", "x", "o" }, "]f", go("next", "@call.outer"), { desc = "下一个函数调用" })
+			vim.keymap.set({ "n", "x", "o" }, "[f", go("prev", "@call.outer"), { desc = "上一个函数调用" })
+		end,
+	},
+	{
+		"folke/todo-comments.nvim",
+		event = "VeryLazy",
+		dependencies = { "nvim-lua/plenary.nvim" }, -- TodoQuickFix 搜索依赖
+		opts = {},
+		keys = { { "<leader>ft", "<cmd>TodoQuickFix<CR>", desc = "查看 TODO/FIXME" } },
+	}, -- 高亮 TODO/FIXME 注释
+	{ "mbbill/undotree", cmd = "UndotreeToggle", keys = { { "<F7>", "<cmd>UndotreeToggle<CR>", desc = "撤销树" } } }, -- 可视化撤销历史
 	{ "folke/snacks.nvim", event = "VeryLazy", config = require("plugins.configs.snacks") },
+	{
+		"RRethy/vim-illuminate",
+		event = "BufReadPost",
+		config = function()
+			require("illuminate").configure({
+				-- 只用 treesitter/正则兜底，LSP 文件的高亮交给 snacks.words，避免双重高亮
+				providers = { "treesitter", "regex" },
+				should_enable = function(bufnr)
+					if vim.fn.has("nvim-0.11") == 1 then
+						local clients = vim.lsp.get_clients({
+							bufnr = bufnr,
+							method = "textDocument/documentHighlight",
+						})
+						return #clients == 0
+					end
+					return true
+				end,
+			})
+		end,
+	}, -- 高亮光标下单词的所有出现（无 LSP 文件兜底；LSP 文件由 snacks.words 负责）
 	{
 		"folke/persistence.nvim", -- 会话保存/恢复（激活 dashboard 的 s 键：Restore Session）
 		event = "BufReadPre",
@@ -149,24 +184,28 @@ require("lazy").setup({
 			save_dir = vim.fn.stdpath("state") .. "/sessions/",
 		},
 		keys = {
-			{ "<leader>qs", function() require("persistence").save() end, desc = "保存会话" },
-			{ "<leader>ql", function() require("persistence").load() end, desc = "恢复会话" },
-			{ "<leader>qd", function() require("persistence").stop() end, desc = "停止自动保存" },
+			{
+				"<leader>qs",
+				function()
+					require("persistence").save()
+				end,
+				desc = "保存会话",
+			},
+			{
+				"<leader>ql",
+				function()
+					require("persistence").load()
+				end,
+				desc = "恢复会话",
+			},
+			{
+				"<leader>qd",
+				function()
+					require("persistence").stop()
+				end,
+				desc = "停止自动保存",
+			},
 		},
-	},
-	{
-		"chrisgrieser/nvim-origami",
-		event = "VeryLazy",
-		opts = {},
-		init = function()
-			vim.opt.foldlevel = 99
-			vim.opt.foldlevelstart = 99
-		end,
-	},
-	{
-		"mg979/vim-visual-multi",
-		keys = { "<C-m>" },
-		config = require("plugins.configs.visual-multi"),
 	},
 
 	-- =========================================================================
@@ -265,9 +304,7 @@ require("lazy").setup({
 				"matchit",
 			},
 			checker = {
-				enabled = true,
-				notify = false,
-				frequency = 86400, -- 24小时检查一次
+				enabled = false, -- 关闭启动时联网检查更新
 			},
 			change_detection = {
 				notify = false, -- 不提示配置变化

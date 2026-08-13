@@ -8,14 +8,16 @@
 # Copyright (C) 2026  Ltd. All rights reserved.
 import os
 import re
-from pypinyin import pinyin, Style
+
+from pypinyin import Style, pinyin
 
 # 🎯 1. 升级：同时扫描原生系统路径与所有可能的 Flatpak 路径
 SCAN_DIRS = [
-    "/usr/share/applications",  # 系统原生应用
-    "/var/lib/flatpak/exports/share/applications",  # Flatpak 全局应用
+    "/usr/share/applications",  # BUG: 系统原生应用
+    "/var/lib/flatpak/exports/share/applications",  # TODO: Flatpak 全局应用
     os.path.expanduser(
-        "~/.local/share/flatpak/exports/share/applications")  # Flatpak 用户应用
+        "~/.local/share/flatpak/exports/share/applications"
+    ),  # FIXME: Flatpak 用户应用
 ]
 
 USER_DIR = os.path.expanduser("~/.local/share/applications")
@@ -35,17 +37,17 @@ MANUAL_MAP = {
 
 
 def get_pinyin_keywords(text):
-    if not text: return []
+    if not text:
+        return []
     chinese_chars = "".join(re.findall(r"[\u4e00-\u9fa5]", text))
-    if not chinese_chars: return []
+    if not chinese_chars:
+        return []
 
     full_pinyin_list = pinyin(chinese_chars, style=Style.NORMAL)
-    full_pinyin = "".join(
-        [sublist[0] for sublist in full_pinyin_list if sublist])
+    full_pinyin = "".join([sublist[0] for sublist in full_pinyin_list if sublist])
 
     first_letter_list = pinyin(chinese_chars, style=Style.FIRST_LETTER)
-    first_letter = "".join(
-        [sublist[0] for sublist in first_letter_list if sublist])
+    first_letter = "".join([sublist[0] for sublist in first_letter_list if sublist])
 
     return [full_pinyin, first_letter]
 
@@ -71,9 +73,11 @@ def process_file(src_dir, filename):
             is_main_entry = False
 
         if is_main_entry:
-            if line.startswith("Name[zh_CN]=") or line.startswith(
-                    "GenericName[zh_CN]=") or line.startswith(
-                        "Keywords[zh_CN]="):
+            if (
+                line.startswith("Name[zh_CN]=")
+                or line.startswith("GenericName[zh_CN]=")
+                or line.startswith("Keywords[zh_CN]=")
+            ):
                 val = line.split("=", 1)[1].strip()
                 chinese_hints.append(val)
             elif line.startswith("Name="):
@@ -140,4 +144,6 @@ for d in SCAN_DIRS:
                 if process_file(d, item):
                     success_count += 1
 
-print(f"\n🚀 处理完成！已为 {success_count} 个应用（含 Flatpak）无损注入了中英双语与全拼音关键词。")
+print(
+    f"\n🚀 处理完成！已为 {success_count} 个应用（含 Flatpak）无损注入了中英双语与全拼音关键词。"
+)

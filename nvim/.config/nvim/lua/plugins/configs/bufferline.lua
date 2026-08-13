@@ -25,16 +25,6 @@ return function()
 			left_trunc_marker = "",
 			right_trunc_marker = "",
 
-			-- 完美桥接你的 Neo-tree 文件树，让左侧自动留出空白，视觉极度舒适
-			offsets = {
-				{
-					filetype = "neo-tree",
-					text = "  FILE EXPLORER",
-					text_align = "center",
-					separator = true,
-				},
-			},
-
 			-- 基础行为
 			diagnostics = "nvim_lsp", -- 顶栏直接显示对应文件的 LSP 报错状态
 			always_show_bufferline = true,
