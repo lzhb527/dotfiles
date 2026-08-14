@@ -75,7 +75,6 @@
     - { src: "lyricspot", dest: "/usr/local/bin/lyricspot", mode: "0755" }
   become: true
 
-
 - name: 解压并安装字体与主题包
   ansible.builtin.unarchive:
     src: "{{ item.src }}"
@@ -153,8 +152,6 @@
 # - name: 首次手动触发刷新 systemd-boot 快照菜单
 #   ansible.builtin.command: /usr/local/bin/update-systemd-boot-snapshots
 #   changed_when: true
-
-
 
 # ==========================================
 # 5.2. 复制执行/安装类文件到临时目录（必要中转）
@@ -297,6 +294,18 @@
       success_symbol = "[❯](red)[❯](yellow)[❯](green)"
       error_symbol = "[❯](red)[❯](red)[❯](red)"
 
+- name: 在已有的 [directory] 模块内精准插入路径配置
+  ansible.builtin.lineinfile:
+    path: "~/.config/starship.toml"
+    backrefs: no
+    state: present
+    insertafter: 'read_only\s*=\s*".*"' # 正则匹配：在 read_only 这一行之后插入
+    line: "{{ item }}"
+  loop:
+    - "truncation_length = 0"
+    - "truncate_to_repo = false"
+    - "fish_style_pwd_dir_length = 0"
+
 - name: 设置系统默认语言为中文（可选）
   ansible.builtin.lineinfile:
     path: /etc/locale.conf
@@ -305,20 +314,18 @@
     create: yes
   become: yes
 
-
-
 # ==========================================
 # 7. 服务管理：系统级与用户级 Systemd 服务
 # ==========================================
 
 - name: 【安全修复】利用白名单修复 accounts-daemon 无法保存头像的问题
-  become: true  # 必须使用 root 权限修改系统级配置
+  become: true # 必须使用 root 权限修改系统级配置
   block:
     - name: 创建 accounts-daemon 服务配置覆盖目录
       ansible.builtin.file:
         path: /etc/systemd/system/accounts-daemon.service.d
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: 写入覆盖配置（通过 ReadWritePaths 精准放行路径，保持沙盒开启）
       ansible.builtin.copy:
@@ -330,7 +337,7 @@
           # PrivateTmp=true
           # 显式允许服务读写头像存储目录和公共临时目录，不降低整体沙盒安全等级
           ReadWritePaths=/var/lib/AccountsService/ /tmp/
-        mode: '0644'
+        mode: "0644"
 
     - name: 刷新系统级 Systemd 并重启 accounts-daemon
       ansible.builtin.systemd_service:
@@ -352,8 +359,6 @@
     - mpd.service
     - foot-server.service
     - mpd-mpris.service
-
-
 
 - name: 将本地的 folder_colors.tar.gz 上传并解压至用户家目录
   ansible.builtin.unarchive:
