@@ -82,8 +82,12 @@ local function snacks_term_hide()
 	end)
 end
 
-map("n", "<F2>", function() snacks_term_toggle("float", 1) end, { silent = true, desc = "切换浮动终端" })
-map("n", "<F9>", function() snacks_term_toggle("bottom", 2) end, { silent = true, desc = "切换底部终端" })
+map("n", "<F2>", function()
+	snacks_term_toggle("float", 1)
+end, { silent = true, desc = "切换浮动终端" })
+map("n", "<F9>", function()
+	snacks_term_toggle("bottom", 2)
+end, { silent = true, desc = "切换底部终端" })
 map("n", "<F10>", "<cmd>close<CR>", { silent = true, desc = "关闭当前终端窗口" })
 
 map("t", "<F2>", snacks_term_hide, { silent = true, desc = "收起终端回到代码" })
@@ -109,12 +113,48 @@ wk.add({
 
 	-- 搜索组 (snacks.picker)
 	{ "<leader>f", group = "搜索查找 (Find)" },
-	{ "<leader>ff", function() require("snacks").picker.files() end, desc = "查找文件名称" },
-	{ "<leader>fg", function() require("snacks").picker.grep() end, desc = "全局文本搜索" },
-	{ "<leader>fb", function() require("snacks").picker.buffers() end, desc = "查找活动缓冲区" },
-	{ "<leader>fh", function() require("snacks").picker.recent() end, desc = "历史打开记录" },
-	{ "<leader>fc", function() require("snacks").picker.git_log() end, desc = "Git 提交历史" },
-	{ "<leader>fr", function() require("snacks").picker.grep_word() end, desc = "搜索光标下单词" },
+	{
+		"<leader>ff",
+		function()
+			require("snacks").picker.files()
+		end,
+		desc = "查找文件名称",
+	},
+	{
+		"<leader>fg",
+		function()
+			require("snacks").picker.grep()
+		end,
+		desc = "全局文本搜索",
+	},
+	{
+		"<leader>fb",
+		function()
+			require("snacks").picker.buffers()
+		end,
+		desc = "查找活动缓冲区",
+	},
+	{
+		"<leader>fh",
+		function()
+			require("snacks").picker.recent()
+		end,
+		desc = "历史打开记录",
+	},
+	{
+		"<leader>fc",
+		function()
+			require("snacks").picker.git_log()
+		end,
+		desc = "Git 提交历史",
+	},
+	{
+		"<leader>fr",
+		function()
+			require("snacks").picker.grep_word()
+		end,
+		desc = "搜索光标下单词",
+	},
 
 	-- 代码行为组 (LSP)
 	{ "<leader>c", group = "代码行为(LSP CODE)" },
@@ -131,16 +171,46 @@ wk.add({
 
 	-- 终端管理组 (Snacks.terminal)
 	{ "<leader>t", group = "终端管理 (Terminal)" },
-	{ "<leader>tn", function() snacks_term_toggle("float", 1) end, desc = "新建浮动终端" },
-	{ "<leader>th", function() snacks_term_toggle("bottom", 2) end, desc = "新建底部终端" },
+	{
+		"<leader>tn",
+		function()
+			snacks_term_toggle("float", 1)
+		end,
+		desc = "新建浮动终端",
+	},
+	{
+		"<leader>th",
+		function()
+			snacks_term_toggle("bottom", 2)
+		end,
+		desc = "新建底部终端",
+	},
 	{ "<leader>tk", "<cmd>close<CR>", desc = "关闭当前终端窗口" },
 
 	-- Git 状态管理组 (所有 Hunk 高级操作已彻底打平整合至此)
 	{ "<leader>g", group = "Git 状态管理" },
 	{ "<leader>gs", "<cmd>Gitsigns toggle_signs<CR>", desc = "开关左侧状态线" },
-	{ "<leader>gg", function() require("snacks.lazygit").open() end, desc = "LazyGit" },
-	{ "<leader>gL", function() require("snacks.lazygit").log() end, desc = "LazyGit 提交日志" },
-	{ "<leader>gF", function() require("snacks.lazygit").log_file() end, desc = "LazyGit 当前文件日志" },
+	{
+		"<leader>gg",
+		function()
+			require("snacks.lazygit").open()
+		end,
+		desc = "LazyGit",
+	},
+	{
+		"<leader>gL",
+		function()
+			require("snacks.lazygit").log()
+		end,
+		desc = "LazyGit 提交日志",
+	},
+	{
+		"<leader>gF",
+		function()
+			require("snacks.lazygit").log_file()
+		end,
+		desc = "LazyGit 当前文件日志",
+	},
 	{ "<leader>gl", "<cmd>Gitsigns preview_hunk_inline<CR>", desc = "预览当前行改动 (Inline)" },
 	{ "<leader>gk", "<cmd>Gitsigns prev_hunk<CR>", desc = "上一个改动块" },
 	{ "<leader>gj", "<cmd>Gitsigns next_hunk<CR>", desc = "下一个改动块" },
@@ -194,7 +264,13 @@ wk.add({
 
 	-- 代码调试组 (DAP)
 	{ "<leader>d", group = "代码调试 (Debug)" },
-	{ "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "断点开关" },
+	{
+		"<leader>db",
+		function()
+			require("dap").toggle_breakpoint()
+		end,
+		desc = "断点开关",
+	},
 	{
 		"<leader>dB",
 		function()
@@ -225,9 +301,27 @@ wk.add({
 		end,
 		desc = "选择调试配置（含 attach）",
 	},
-	{ "<leader>di", function() require("dap").step_into() end, desc = "步入 (Into)" },
-	{ "<leader>do", function() require("dap").step_over() end, desc = "步过 (Over)" },
-	{ "<leader>du", function() require("dap").step_out() end, desc = "步出 (Out)" },
+	{
+		"<leader>di",
+		function()
+			require("dap").step_into()
+		end,
+		desc = "步入 (Into)",
+	},
+	{
+		"<leader>do",
+		function()
+			require("dap").step_over()
+		end,
+		desc = "步过 (Over)",
+	},
+	{
+		"<leader>du",
+		function()
+			require("dap").step_out()
+		end,
+		desc = "步出 (Out)",
+	},
 	{
 		"<leader>da",
 		function()
@@ -242,8 +336,20 @@ wk.add({
 		end,
 		desc = "调试当前文件（带参数）",
 	},
-	{ "<leader>dr", function() require("dap").repl.toggle() end, desc = "REPL 控制台开关" },
-	{ "<leader>dt", function() require("dapui").toggle() end, desc = "调试 UI 开关" },
+	{
+		"<leader>dr",
+		function()
+			require("dap").repl.toggle()
+		end,
+		desc = "REPL 控制台开关",
+	},
+	{
+		"<leader>dt",
+		function()
+			require("dapui").toggle()
+		end,
+		desc = "调试 UI 开关",
+	},
 	{
 		"<leader>dl",
 		function()
@@ -257,9 +363,27 @@ wk.add({
 		end,
 		desc = "查看调试终端输出",
 	},
-	{ "<leader>de", function() require("dapui").eval() end, desc = "评估变量/表达式" },
-	{ "<leader>dR", function() require("dap").restart() end, desc = "重启调试会话" },
-	{ "<leader>dQ", function() require("dap").terminate() end, desc = "终止调试会话" },
+	{
+		"<leader>de",
+		function()
+			require("dapui").eval()
+		end,
+		desc = "评估变量/表达式",
+	},
+	{
+		"<leader>dR",
+		function()
+			require("dap").restart()
+		end,
+		desc = "重启调试会话",
+	},
+	{
+		"<leader>dQ",
+		function()
+			require("dap").terminate()
+		end,
+		desc = "终止调试会话",
+	},
 
 	-- 标签页缓冲区管理 (Buffer)
 	{ "<leader>b", group = "标签页管理 (Buffer)" },
@@ -277,7 +401,7 @@ wk.add({
 	-- 界面交互与 UI 开关
 	{ "<leader>u", group = "界面 (UI)" },
 	{ "<leader>u1", "<cmd>set nu! rnu!<CR>", desc = "切换行号显示" },
-	{ "<leader>e", snacks_explorer_toggle, desc = "侧边文件树开关" },
+	{ "<leader>e", snacks_explorer_toggle, desc = "侧边文件树开关", icon = "󰙅 " },
 	{ "<leader>un", snacks_explorer_toggle, desc = "侧边文件树开关" },
 	{ "<leader>uf12", "<cmd>AerialToggle! right<CR>", desc = "代码结构树开关" },
 	{
@@ -297,7 +421,13 @@ wk.add({
 	-- 文件存取
 	{ "<leader>s", group = "文件存取(Save file)" },
 	{ "<leader>ss", "<cmd>w<CR>", desc = "保存当前文件" },
-	{ "<leader>sc", function() Snacks.scratch() end, desc = "临时草稿缓冲" },
+	{
+		"<leader>sc",
+		function()
+			Snacks.scratch()
+		end,
+		desc = "临时草稿缓冲",
+	},
 	{ "<leader>sS", "<cmd>w!<CR>", desc = "强制保存当前文件" },
 	{ "<leader>sw", ":w ", desc = "文件另存为..." },
 	{ "<leader>sa", "<cmd>wa<CR>", desc = "保存所有打开文件" },

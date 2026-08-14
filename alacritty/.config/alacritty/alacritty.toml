@@ -1,30 +1,53 @@
-# =========================
-# 基础
-# =========================
+# ============================================================
+# Alacritty 配置
+# 终端: fish | 字体: JetBrainsMono Nerd Font
+# 配色: Molokai | 窗口: 半透明 + 模糊
+# ============================================================
 
+# ============================================================
+# 终端 Shell
+# ============================================================
+[terminal.shell]
+program = "/opt/homebrew/bin/fish"
+
+# ============================================================
+# 窗口
+# ============================================================
 [window]
-opacity = 0.99
-padding = { x = 10, y = 10 }
-decorations = "Buttonless" # macOS 可用，Linux 可删
+opacity = 0.8
+blur = true
+
+# 内边距（留白更美观）
+dynamic_padding = true
+padding = { x = 5, y = 5 }
+
+# 无标题栏（Buttonless 仅 macOS，Full 跨平台）
+decorations = "Buttonless"
+
+# 启动方式与默认尺寸/位置
 startup_mode = "Windowed"
 dimensions = { columns = 120, lines = 40 }
 position = { x = 100, y = 100 }
 
+# ============================================================
+# 光标
+# ============================================================
 [cursor]
-# 设置光标为方块（可以选择 Block 或 Underline）
 style = { shape = "Block", blinking = "On" }
 blink_interval = 500
 unfocused_hollow = true
 
+# ============================================================
+# 滚动
+# ============================================================
 [scrolling]
 history = 10000
-multiplier = 3
 
-# =========================
+# ============================================================
 # 字体（必须 Nerd Font）
-# =========================
+# ============================================================
 [font]
-size = 14.0
+size = 19.0
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
@@ -42,18 +65,21 @@ style = "Italic"
 x = 0
 y = 1
 
+# ============================================================
+# 配色 — Molokai
+# ============================================================
 
-# =========================
-# Molokai 风格配色
-# =========================
+# 前景 / 背景
 [colors.primary]
-background = "#161616"
+background = "#0d0f31"
 foreground = "#f8f8f2"
 
+# 光标
 [colors.cursor]
 text = "#1b1d1e"
 cursor = "#f8f8f2"
 
+# 常规色
 [colors.normal]
 black   = "#1b1d1e"
 red     = "#f92672"
@@ -64,6 +90,7 @@ magenta = "#ae81ff"
 cyan    = "#a1efe4"
 white   = "#f8f8f2"
 
+# 亮色
 [colors.bright]
 black   = "#75715e"
 red     = "#f92672"
@@ -74,9 +101,31 @@ magenta = "#ae81ff"
 cyan    = "#a1efe4"
 white   = "#f9f8f5"
 
-# =========================
-# 键位（可选）
-# =========================
+# ============================================================
+# 选择 & 鼠标
+# ============================================================
+
+# 选中后自动存入系统剪贴板
+[selection]
+save_to_clipboard = true
+
+[mouse]
+hide_when_typing = true
+
+# 鼠标操作
+[[mouse.bindings]]
+mouse = "Left"
+mods = "Shift"
+action = "Copy"
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "Paste"
+
+# ============================================================
+# 键盘绑定
+# ============================================================
+
 [[keyboard.bindings]]
 key = "V"
 mods = "Control|Shift"
@@ -86,26 +135,3 @@ action = "Paste"
 key = "C"
 mods = "Control|Shift"
 action = "Copy"
-
-# ======================
-# 鼠标 & 选择
-# ======================
-
-[selection]
-save_to_clipboard = true
-
-[mouse]
-hide_when_typing = true
-
-[[mouse.bindings]]
-mouse = "Left"
-mods = "Shift"
-action = "Copy"
-
-[[mouse.bindings]]
-mouse = "Right"
-action = "None"
-
-[[mouse.bindings]]
-mouse = "Right"
-action = "Paste"
