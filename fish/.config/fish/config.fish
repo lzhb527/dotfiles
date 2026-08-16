@@ -10,7 +10,7 @@ if status is-interactive
 
     # --- 1. 环境变量与包管理器初始化 (优先加载) ---
     if test -d /opt/homebrew
-        eval (/opt/homebrew/bin/brew shellenv)
+        /opt/homebrew/bin/brew shellenv | source
     end
 
     # 快捷添加 PATH（fish_add_path 会自动去重，无需重复添加）
@@ -30,11 +30,6 @@ if status is-interactive
     alias c='clear'
     alias kt='kitten @ launch --type tab'
 
-    alias pacmani='sudo pacman -S'
-    alias pacmanr='sudo pacman -Rns'
-    alias pacmanu='sudo pacman -Syu'
-    alias pacmans='pacman -Ss'
-
     # Eza 高级文件列表增强
     if type -q eza
         alias ls='eza --icons --group-directories-first'
@@ -48,7 +43,7 @@ if status is-interactive
         zoxide init fish --cmd cd | source
     end
 
-    # Starship (终端提示符 - 放在最后加载)
+    # Starship (终端提示符 - 定义 fish_prompt, 需在工具初始化之后加载)
     if type -q starship
         starship init fish | source
     end
@@ -67,15 +62,13 @@ if status is-interactive
         # 启用 vi 混合模式（保留 emacs 行编辑，Esc 后可用 f/t 跳转）
         fish_hybrid_key_bindings
 
-        # 先清除 fzf 默认的所有旧绑定（insert 和 default 两种模式都要清，避免按键冲突）
+        # 先清除 fish 预设绑定, 避免与自定义键冲突 (ctrl-t/cr, alt-c 默认是 transpose/history-pager/capitalize-word)
         bind -M insert \ct ''
         bind -M default \ct ''
         bind -M insert \ec ''
         bind -M default \ec ''
         bind -M insert \cr ''
         bind -M default \cr ''
-        bind -M insert \ed ''
-        bind -M default \ed ''
 
         # 再绑定你自己的自定义快捷键（两种模式都绑，打字时也能用）
         bind -M insert \eh fzf-history-widget  # Alt + H: 搜历史记录
@@ -85,25 +78,11 @@ if status is-interactive
         bind -M insert \ed fzf-cd-widget       # Alt + D: 切换目录
         bind -M default \ed fzf-cd-widget
 
-        # 兜底: 部分 macOS 终端 Option 键发特殊字符 (Option+H=˙ Option+F=ƒ Option+D=∂)
-        bind -M insert \u02d9 fzf-history-widget
-        bind -M default \u02d9 fzf-history-widget
-        bind -M insert \u0192 fzf-file-widget
-        bind -M default \u0192 fzf-file-widget
-        bind -M insert \u2202 fzf-cd-widget
-        bind -M default \u2202 fzf-cd-widget
-
         # 按编号精确跳转单词 (insert 模式 [打字时] 和 default 模式 [Esc 后])
-        bind -M insert \cg fish_easymotion_jump
-        bind -M default \cg fish_easymotion_jump
-        bind -M insert \ew fish_easymotion_jump  # Alt+W: 终端设置好 Meta 键时可用
+        bind -M insert \ew fish_easymotion_jump  # Alt+W: 按编号精确跳转单词
         bind -M default \ew fish_easymotion_jump
-        bind -M insert \u2211 fish_easymotion_jump  # 兜底: 部分 macOS 终端 Option+W 发 ∑
-        bind -M default \u2211 fish_easymotion_jump
         bind -M insert \eg fish_easymotion_jump  # Alt+G: 按编号精确跳转单词
         bind -M default \eg fish_easymotion_jump
-        bind -M insert \u00a9 fish_easymotion_jump  # 兜底: 部分 macOS 终端 Option+G 发 ©
-        bind -M default \u00a9 fish_easymotion_jump
     end
 
 end

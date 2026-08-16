@@ -5,16 +5,10 @@
 # ============================================================
 
 # ============================================================
-# 终端 Shell
-# ============================================================
-# [terminal.shell]
-# program = "/opt/homebrew/bin/fish"
-
-# ============================================================
 # 窗口
 # ============================================================
 [window]
-opacity = 0.8
+opacity = 0.98
 blur = true
 option_as_alt = "Both"
 
@@ -26,17 +20,17 @@ padding = { x = 5, y = 5 }
 decorations = "Buttonless"
 
 # 启动方式与默认尺寸/位置
-startup_mode = "Windowed"
-dimensions = { columns = 120, lines = 40 }
-position = { x = 100, y = 100 }
+startup_mode = "Maximized"
 
 # ============================================================
 # 光标
 # ============================================================
 [cursor]
-style = { shape = "Block", blinking = "On" }
-blink_interval = 500
-unfocused_hollow = true
+style = { shape = "Beam", blinking = "Always" }
+blink_interval = 950
+blink_timeout = 0
+unfocused_hollow = false
+thickness = 0.35
 
 # ============================================================
 # 滚动
@@ -72,24 +66,24 @@ y = 1
 
 # 前景 / 背景
 [colors.primary]
-background = "#0d0f31"
+background = "#1a1b26"
 foreground = "#f8f8f2"
 
 # 光标
 [colors.cursor]
 text = "#1b1d1e"
-cursor = "#f8f8f2"
+cursor = "#89dceb"
 
 # 常规色
 [colors.normal]
-black   = "#1b1d1e"
-red     = "#f92672"
-green   = "#a6e22e"
-yellow  = "#f4bf75"
-blue    = "#66d9ef"
-magenta = "#ae81ff"
-cyan    = "#a1efe4"
-white   = "#f8f8f2"
+black   = "#1b2436"
+red     = "#f7768e"
+green   = "#9ece6a"
+yellow  = "#f4d370"
+blue    = "#7aa2f7"
+magenta = "#ad8ee6"
+cyan    = "#89dceb"
+white   = "#e3e6ee"
 
 # 亮色
 [colors.bright]

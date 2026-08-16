@@ -21,7 +21,7 @@ catppuccin.setup({
 	-- 🌟 自定义背景色调（改 base 即可；mantle/crust 保持逐层略深，保留层次感）
 	color_overrides = {
 		mocha = {
-			base = "#161616", -- 背景主色
+			base = "#1a1b26", -- 背景主色
 			mantle = "#181818", -- 侧边栏等次级背景
 			crust = "#181818", -- 最深的底部背景
 		},
