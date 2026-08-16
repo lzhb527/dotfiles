@@ -52,12 +52,18 @@ if status is-interactive
         fzf --fish | source
     end
 
-    # --- 5. 顶配 FZF 模糊搜索内核交互 (支持彩色代码与行号预览) ---
+    # --- 5. 每次提示符刷新时向终端/tmux 发送当前目录 (OSC 7) ---
+    # tmux 收到后即时更新 pane_current_path, 让 automatic-rename 立刻感知 cd (无需降低 status-interval)
+    function __update_osc7 --on-event fish_prompt
+        printf '\e]7;file://%s%s\e\\' (hostname) (string escape --style=url "$PWD")
+    end
+
+    # --- 6. 顶配 FZF 模糊搜索内核交互 (支持彩色代码与行号预览) ---
     if type -q fzf
         alias fzf="fzf --layout=reverse --border=rounded --margin=1% --preview='bat --color=always --style=numbers {} 2>/dev/null || cat {} 2>/dev/null || eza --tree --level=2 --icons {} 2>/dev/null' --pointer='→'"
     end
 
-    # --- 6. 自定义按键绑定 ---
+    # --- 7. 自定义按键绑定 ---
     function fish_user_key_bindings
         # 启用 vi 混合模式（保留 emacs 行编辑，Esc 后可用 f/t 跳转）
         fish_hybrid_key_bindings
