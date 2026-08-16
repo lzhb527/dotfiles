@@ -61,7 +61,7 @@ vim.opt.fillchars:append({
 vim.api.nvim_create_autocmd("ColorScheme", {
 	pattern = "*",
 	callback = function()
-		-- 当前行下划线：松石蓝下划线，底色为 NONE
+		-- 1. 当前行下划线：松石蓝下划线，底色为 NONE
 		vim.api.nvim_set_hl(0, "CursorLine", {
 			fg = "NONE",
 			bg = "NONE",
@@ -70,22 +70,33 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 			force = true,
 		})
 
-		-- 2. 括号强制去除斜体
+		-- 2. 鼠标/可视模式选中的背景色
+		vim.api.nvim_set_hl(0, "Visual", { bg = "#3b4261", fg = "#ffffff", force = true })
+
+		-- 3. 括号强制去除斜体
 		vim.api.nvim_set_hl(0, "@punctuation.bracket", { italic = false, force = true })
 
-		-- 3. 浮动窗口透明
+		-- 4. 浮动窗口透明
 		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE", force = true })
 
-		-- 4. 浮动窗口边框
+		-- 5. 浮动窗口边框
 		vim.api.nvim_set_hl(0, "FloatBorder", {
 			bg = "NONE",
 			fg = "#7dcfff",
 			force = true,
 		})
 
-		-- 5. snacks.indent 缩进线配色（复刻旧 indent-blankline：灰线 + 青色作用域）
+		-- 6. snacks.indent 缩进线配色（复刻旧 indent-blankline：灰线 + 青色作用域）
 		vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#292e42", nocombine = true, force = true })
 		vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = "#2ac3de", nocombine = true, force = true })
+
+		-- 7. 光标下单词高亮背景（LSP 内置 + vim-illuminate 独立组）
+		vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#292e42", force = true })
+		vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#292e42", force = true })
+		vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#292e42", force = true })
+		vim.api.nvim_set_hl(0, "illuminatedWord", { bg = "#292e42", force = true })
+		vim.api.nvim_set_hl(0, "illuminatedWordRead", { bg = "#292e42", force = true })
+		vim.api.nvim_set_hl(0, "illuminatedWordWrite", { bg = "#292e42", force = true })
 	end,
 })
 

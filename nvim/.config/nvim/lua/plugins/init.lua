@@ -123,9 +123,9 @@ require("lazy").setup({
 		event = "VeryLazy",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		config = function()
-			require("nvim-treesitter-textobjects").setup {
+			require("nvim-treesitter-textobjects").setup({
 				move = { set_jumps = true },
-			}
+			})
 			-- 只配跳转 motions，文本对象(if/ac 等)交给 mini.ai
 			local function go(dir, q)
 				return function()
