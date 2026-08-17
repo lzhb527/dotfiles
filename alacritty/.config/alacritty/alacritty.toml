@@ -1,12 +1,37 @@
 # ============================================================
 # Alacritty 配置
 # 终端: fish | 字体: JetBrainsMono Nerd Font
-# 配色: Molokai | 窗口: 半透明 + 模糊
+# 配色: Tokyo Night | 窗口: 半透明 + 模糊
 # ============================================================
+
+# ============================================================
+# 字体（必须 Nerd Font）
+# ============================================================
+
+[font]
+size = 19.0
+
+# 常规 / 粗体 / 斜体
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.offset]
+x = 0
+y = 0
 
 # ============================================================
 # 窗口
 # ============================================================
+
 [window]
 opacity = 0.95
 blur = true
@@ -23,86 +48,71 @@ decorations = "Buttonless"
 startup_mode = "Maximized"
 
 # ============================================================
-# 光标
-# ============================================================
-[cursor]
-style = { shape = "Beam", blinking = "Always" }
-blink_interval = 950
-blink_timeout = 0
-unfocused_hollow = false
-thickness = 0.35
-
-# ============================================================
-# 滚动
-# ============================================================
-[scrolling]
-history = 10000
-
-# ============================================================
-# 字体（必须 Nerd Font）
-# ============================================================
-[font]
-size = 19.0
-
-[font.normal]
-family = "JetBrainsMono Nerd Font"
-style = "Regular"
-
-[font.bold]
-family = "JetBrainsMono Nerd Font"
-style = "Bold"
-
-[font.italic]
-family = "JetBrainsMono Nerd Font"
-style = "Italic"
-
-[font.offset]
-x = 0
-y = 1
-
-# ============================================================
-# 配色 — Molokai
+# 配色 — Tokyo Night
 # ============================================================
 
 # 前景 / 背景
 [colors.primary]
 background = "#1a1b26"
-foreground = "#f8f8f2"
+foreground = "#c0caf5"
+dim_foreground = "#565f89"
 
 # 光标
 [colors.cursor]
-text = "#1b1d1e"
-cursor = "#89dceb"
+text = "#1a1b26"
+cursor = "#c0caf5"
 
 # 常规色
 [colors.normal]
-black   = "#1b2436"
+black   = "#15161e"
 red     = "#f7768e"
 green   = "#9ece6a"
-yellow  = "#f4d370"
+yellow  = "#e0af68"
 blue    = "#7aa2f7"
-magenta = "#ad8ee6"
-cyan    = "#89dceb"
-white   = "#e3e6ee"
+magenta = "#bb9af7"
+cyan    = "#7dcfff"
+white   = "#a9b1d6"
 
 # 亮色
 [colors.bright]
-black   = "#75715e"
-red     = "#f92672"
-green   = "#a6e22e"
-yellow  = "#f4bf75"
-blue    = "#66d9ef"
-magenta = "#ae81ff"
-cyan    = "#a1efe4"
-white   = "#f9f8f5"
+black   = "#414868"
+red     = "#f7768e"
+green   = "#9ece6a"
+yellow  = "#e0af68"
+blue    = "#7aa2f7"
+magenta = "#bb9af7"
+cyan    = "#7dcfff"
+white   = "#c0caf5"
 
 # ============================================================
-# 选择 & 鼠标
+# 光标
+# ============================================================
+
+[cursor]
+style = { shape = "Beam", blinking = "Always" }
+blink_interval = 950
+blink_timeout = 0
+unfocused_hollow = false
+thickness = 0.25
+
+# ============================================================
+# 滚动
+# ============================================================
+
+[scrolling]
+history = 10000
+
+# ============================================================
+# 选择
 # ============================================================
 
 # 选中后自动存入系统剪贴板
 [selection]
 save_to_clipboard = true
+
+# ============================================================
+# 鼠标
+# ============================================================
 
 [mouse]
 hide_when_typing = true
