@@ -3,6 +3,15 @@
 # =============================================================================
 set -g fish_greeting "" # 禁用启动问候语
 
+# 在 Alacritty 会话中声明终端能力为 alacritty
+# (其 terminfo 含 Smulx，Neovim 检测到后才会发送下划线颜色 guisp/sp；
+#  否则按 xterm-256color 处理，DECRQSS 探测 Alacritty 不应答，下划线颜色丢失)
+if set -q ALACRITTY_WINDOW_ID
+    if infocmp alacritty >/dev/null 2>&1
+        set -gx TERM alacritty
+    end
+end
+
 # =============================================================================
 # 2. 仅在交互模式下运行的配置 (终端日常使用)
 # =============================================================================
