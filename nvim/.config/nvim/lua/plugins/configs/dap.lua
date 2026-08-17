@@ -108,10 +108,11 @@ return function()
 	-- 3. 断点/停止位图标美化（替换默认 >> 标记）
 	-- ---------------------------------------------------------------------
 	local function setup_dap_signs()
-		vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#e78284" })
-		vim.api.nvim_set_hl(0, "DapBreakpointCondition", { fg = "#e5c890" })
-		vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#a6d189" })
-		vim.api.nvim_set_hl(0, "DapStopped", { fg = "#8caaee" })
+		local c = require("configs.themes").get()
+		vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = c.red })
+		vim.api.nvim_set_hl(0, "DapBreakpointCondition", { fg = c.yellow })
+		vim.api.nvim_set_hl(0, "DapLogPoint", { fg = c.green })
+		vim.api.nvim_set_hl(0, "DapStopped", { fg = c.blue })
 	end
 	vim.api.nvim_create_autocmd("ColorScheme", {
 		pattern = "*",

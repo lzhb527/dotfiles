@@ -27,6 +27,7 @@ require("lazy").setup({
 	-- 3.1 配色主题
 	-- =========================================================================
 	{ "catppuccin/nvim", name = "catppuccin", lazy = true },
+    {"folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {}, },
 
 	-- =========================================================================
 	-- 3.2 现代化核心：代码高亮与语义解析引擎
@@ -215,7 +216,7 @@ require("lazy").setup({
 		"nvim-lualine/lualine.nvim",
 		event = "UIEnter",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		opts = require("plugins.configs.lualine"),
+		config = require("plugins.configs.lualine"),
 	}, -- 状态栏
 	{
 		"akinsho/bufferline.nvim",

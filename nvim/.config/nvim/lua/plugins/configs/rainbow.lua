@@ -23,15 +23,25 @@ return function()
 		},
 	}
 
-	-- 完美同步你原本的 Gruvbox 配色
-	local colors = {
-		Red = "#fb4934",
-		Yellow = "#b8bb26",
-		Blue = "#83a598",
-		Orange = "#d3869b",
-		Green = "#8ec07c",
-	}
-	for role, color in pairs(colors) do
-		vim.api.nvim_set_hl(0, "RainbowDelimiter" .. role, { fg = color })
+	local function set_rainbow_colors()
+		local c = require("configs.themes").get()
+		-- 完美同步当前主题配色
+		local colors = {
+			Red = c.red,
+			Yellow = c.yellow,
+			Blue = c.blue,
+			Orange = c.orange,
+			Green = c.green,
+		}
+		for role, color in pairs(colors) do
+			vim.api.nvim_set_hl(0, "RainbowDelimiter" .. role, { fg = color })
+		end
 	end
+
+	set_rainbow_colors()
+
+	-- 切换主题时同步括号颜色
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		callback = set_rainbow_colors,
+	})
 end

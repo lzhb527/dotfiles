@@ -95,15 +95,14 @@ return function()
 	}
 
 	snacks.setup({
-		-- indent：缩进线 + 当前作用域高亮（替代 indent-blankline）
+		-- indent：缩进线 + 当前作用域高亮
 		indent = {
 			enabled = true,
-			indent = {
-				char = "┊", -- 与旧 ibl 相同的细实线
-				hl = "SnacksIndent",
-			},
+			char = "┊", -- 与旧 ibl 相同的细实线
+			hl = "SnacksIndent",
 			scope = {
 				enabled = true,
+				char = "┊", -- 与缩进线同款，靠颜色区分作用域
 				hl = "SnacksIndentScope",
 			},
 			animate = {
@@ -243,4 +242,11 @@ return function()
 			sections = dashboard_sections,
 		},
 	})
+
+	-- 强制启用缩进线：snacks 靠一次性事件(BufReadPost)懒加载 indent，
+	-- 真实会话时序变化常导致该事件被消耗而模块永不加载(loaded=false)。
+	-- 这里直接加载并启用，enable() 有幂等保护，重复调用无害。
+	pcall(function()
+		require("snacks.indent").enable()
+	end)
 end

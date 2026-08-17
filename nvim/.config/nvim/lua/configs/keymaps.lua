@@ -20,6 +20,16 @@ map("n", "<F1>", "<cmd>set nu! rnu!<CR>", { noremap = true, silent = true, desc 
 map("n", "<C-n>", snacks_explorer_toggle, { noremap = true, silent = true, desc = "切换文件浏览器" })
 map("n", "<F12>", "<cmd>AerialToggle! right<CR>", { noremap = true, silent = true, desc = "切换代码结构树" })
 
+-- 双主题一键切换（Tokyo Night ⇄ Catppuccin mocha）
+local function toggle_theme()
+	if (vim.g.colors_name or ""):match("^catppuccin") then
+		vim.cmd.colorscheme("tokyonight-night")
+	else
+		vim.cmd.colorscheme("catppuccin")
+	end
+end
+map("n", "<leader>ut", toggle_theme, { desc = "切换 Tokyo Night / Catppuccin" })
+
 -- 极速无感保存 (Ctrl + S)
 map("i", "<C-s>", "<Esc><cmd>w<CR>a", { desc = "插入模式快速保存" })
 map("v", "<C-s>", "<Esc><cmd>w<CR>gv", { desc = "可视模式快速保存" })

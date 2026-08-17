@@ -8,16 +8,24 @@ return function()
 	end
 
 	-- =========================================================================
-	-- 🎨 Git 符号栏配色（硬编码，不依赖任何主题插件）
+	-- 🎨 Git 符号栏配色（双主题感知，切换主题时自动跟随）
 	-- =========================================================================
 	local set_hl = vim.api.nvim_set_hl
 
-	set_hl(0, "GitSignsAdd", { fg = "#00ffff", bold = true }) -- 新增（绿）
-	set_hl(0, "GitSignsChange", { fg = "#e0af68", bold = true }) -- 修改（蓝/青）
-	set_hl(0, "GitSignsDelete", { fg = "#ff0000", bold = true }) -- 删除（红）
-	set_hl(0, "GitSignsTopdelete", { fg = "#ff0000", bold = true })
-	set_hl(0, "GitSignsChangedelete", { fg = "#2ac3de", bold = true })
-	set_hl(0, "GitSignsUntracked", { fg = "#3b4261", bold = true }) -- 未追踪（灰）
+	local function setup_git_signs_colors()
+		local c = require("configs.themes").get()
+		set_hl(0, "GitSignsAdd", { fg = c.green, bold = true }) -- 新增（绿）
+		set_hl(0, "GitSignsChange", { fg = c.yellow, bold = true }) -- 修改（黄）
+		set_hl(0, "GitSignsDelete", { fg = c.red, bold = true }) -- 删除（红）
+		set_hl(0, "GitSignsTopdelete", { fg = c.red, bold = true })
+		set_hl(0, "GitSignsChangedelete", { fg = c.cyan, bold = true })
+		set_hl(0, "GitSignsUntracked", { fg = c.gray, bold = true }) -- 未追踪（灰）
+	end
+
+	setup_git_signs_colors()
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		callback = setup_git_signs_colors,
+	})
 
 	gitsigns.setup({
 		-- 1. 符号栏图标与高亮组绑定
