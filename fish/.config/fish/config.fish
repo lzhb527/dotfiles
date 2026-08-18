@@ -12,6 +12,12 @@ if set -q ALACRITTY_WINDOW_ID
     end
 end
 
+set fish_pager_color_selected_background '--background=E6B450' '--foreground=000000'
+set fish_pager_color_selected_prefix      black
+set fish_pager_color_selected_completion  black
+set fish_pager_color_selected_description black
+set fish_pager_color_progress '--background=E6B450' '--foreground=000000' --bold
+
 # =============================================================================
 # 2. 仅在交互模式下运行的配置 (终端日常使用)
 # =============================================================================
