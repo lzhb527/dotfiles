@@ -1,0 +1,11 @@
+#!/bin/sh
+# 1. 触发区域选择并利用grim截取1像素
+# 2. 通过imagemagick转换为HEX代码
+# 3. 自动送入剪贴板并发送系统通知
+COLOR=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -n 1 | awk '{print $3}')
+
+if [ ! -z "$COLOR" ]; then
+    echo -n "$COLOR" | wl-copy
+    notify-send "取色成功" "颜色代码 $COLOR 已复制到剪贴板" -i color-picker
+fi
+

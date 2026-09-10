@@ -1,0 +1,11 @@
+ansible-deploy/
+├── hosts.ini            # 目标机器定义
+├── playbook.yml         # 主入口
+└── roles/
+    └── system_init/
+        ├── tasks/
+        │   └── main.yml # 核心逻辑
+        └── files/       # 存放不需要链接的静态资源
+            └── tilix_backup.dconf
+
+ansible-playbook -i hosts.ini playbook.yml --ask-become-pass

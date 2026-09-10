@@ -1,0 +1,128 @@
+## ---------------- Alacritty 配置 ----------------
+# 终端: fish | 字体: JetBrainsMono Nerd Font
+# 配色: Tokyo Night | 窗口: 半透明 + 模糊
+
+[font]
+size = 13.0
+
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 0
+
+## ---------------- 窗口 ----------------
+
+[window]
+opacity = 0.8
+blur = true
+option_as_alt = "Both"
+
+# 内边距（留白）
+dynamic_padding = true
+padding = { x = 5, y = 5 }
+
+# 无标题栏（Buttonless 仅 macOS）
+decorations = "Buttonless"
+
+# 启动方式与默认尺寸/位置(SimpleFullscreen)
+startup_mode = "Maximized"
+
+## ---------------- 光标 ----------------
+
+[cursor]
+style = { shape = "Beam", blinking = "Always" }
+vi_mode_style = { shape = "Block" }
+blink_interval = 950
+blink_timeout = 5
+unfocused_hollow = false
+thickness = 0.25
+
+## ---------------- 滚动 ----------------
+
+[scrolling]
+history = 20000
+multiplier = 3
+
+## ---------------- 铃声 ----------------
+
+[bell]
+animation = "EaseOutExpo"
+duration = 150
+color = "#7dcfff"
+
+## ---------------- 选择 ----------------
+
+# 选中后自动存入系统剪贴板
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+## ---------------- 鼠标 ----------------
+
+[mouse]
+hide_when_typing = true
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "Paste"
+
+## ---------------- 键盘绑定 ----------------
+
+# vi 模式开关
+[[keyboard.bindings]]
+key = "Q"
+mods = "Control"
+action = "ToggleViMode"
+
+## ---------------- tmux 兼容性建议 ----------------
+
+# alacritty terminfo，tmux/nvim 色彩正常
+[env]
+TERM = "alacritty"
+LANG = "en_US.UTF-8"
+
+## ---------------- 配色 — Tokyo Night ----------------
+
+[colors]
+# transparent_background_colors = true
+draw_bold_text_with_bright_colors = true
+
+# 前景 / 背景
+[colors.primary]
+background = "#0a0a0a"
+foreground = "#c0caf5"
+
+# 光标
+[colors.cursor]
+text = "#15161e"
+cursor = "#66ff66"
+
+# 常规色
+[colors.normal]
+black   = "#15161e"
+red     = "#f7768e"
+green   = "#9ece6a"
+yellow  = "#e0af68"
+blue    = "#7aa2f7"
+magenta = "#bb9af7"
+cyan    = "#7dcfff"
+white   = "#a9b1d6"
+
+# 亮色
+[colors.bright]
+black   = "#414868"
+red     = "#f7768e"
+green   = "#9ece6a"
+yellow  = "#e0af68"
+blue    = "#7aa2f7"
+magenta = "#bb9af7"
+cyan    = "#7dcfff"
+white   = "#c0caf5"
+
+# 选区
+[colors.selection]
+text = "#c0caf5"
+background = "#283457"

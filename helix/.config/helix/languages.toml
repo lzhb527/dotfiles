@@ -1,0 +1,16 @@
+[[language]]
+name = "python"
+language-servers = [ "pyright", "ruff" ]
+formatter = { command = "ruff", args = ["format", "-"] }
+auto-format = true
+
+[language-server.pyright]
+# 🌟 使用最标准、兼容性最好的全局命令启动方式
+command = "pyright-langserver"
+args = ["--stdio"]
+# 🌟 显式告诉 pyright 基础解释器位置，防止它在后台因找不到 Python 而崩溃
+config = { python = { pythonPath = "/usr/bin/python3" } }
+
+[language-server.ruff]
+command = "ruff"
+args = ["server"]

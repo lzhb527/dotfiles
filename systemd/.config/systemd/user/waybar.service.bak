@@ -1,0 +1,11 @@
+[Unit]
+Description=Waybar status bar
+After=wayland-session.target
+
+[Service]
+ExecStart=/usr/bin/waybar -c %h/.config/waybar/gap.jsonc -s %h/.config/waybar/gap.css
+Restart=always
+
+[Install]
+WantedBy=default.target
+

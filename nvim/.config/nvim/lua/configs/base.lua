@@ -1,0 +1,157 @@
+local vim = vim
+local api = vim.api
+local opt = vim.opt
+
+-- =============================================================================
+-- 1. 核心与 Leader 键设置（必须置顶，确保空格键对所有插件生效）
+-- =============================================================================
+vim.g.mapleader = " " -- 🌟 同步修正：严格保持【空格键】为核心 Leader 键，与 Which-Key 完美闭环
+vim.g.maplocalleader = " " -- 🌟 同步修正：本地 Leader 键同步设为空格
+vim.o.clipboard = "unnamedplus"
+
+-- 删除 nvim 内置的 "[Process exited N]" 虚拟文本（终端退出时的底部提示）
+-- 全局生效；toggleterm 本就 close_on_exit 自动关闭，影响可忽略
+local term_autos = vim.api.nvim_get_autocmds({ group = "nvim.terminal" })
+for _, a in ipairs(term_autos) do
+	if a.event == "TermClose" and a.desc and a.desc:find("Process exited") then
+		vim.api.nvim_del_autocmd(a.id)
+	end
+end
+
+-- =============================================================================
+-- 2. 基础兼容性与编码规范
+-- =============================================================================
+opt.compatible = false -- 禁用 vi 兼容模式，全面释放 Neovim 现代化特性
+opt.termguicolors = true -- 启用 24 位 TrueColor 真彩色（主题和 UI 美化必须）
+opt.encoding = "utf-8" -- 内存编码设置
+opt.fileencodings = "utf-8,gbk,ucs-bom" -- 文件解码识别顺序（自动兼容 GBK 避免中文乱码）
+opt.fileformat = "unix" -- 默认使用 Unix (LF) 换行符，防止脚本在 Linux 下因 CRLF 报错
+opt.cmdheight = 2 -- 确保命令行至少有 1 行高度。如果已经写了，可以尝试改成 2
+
+-- =============================================================================
+-- 3. 屏幕与边框显示设置
+-- =============================================================================
+opt.number = true -- 显示绝对行号
+opt.relativenumber = true -- 显示相对行号（极易配合 `5j`、`3k` 等 Vim 原生大范围跳行）
+opt.cursorline = true -- 高亮光标所在行（配合你之前写的 Gruvbox 绿色下划线）
+opt.mouse = "a" -- 全面启用鼠标支持（支持鼠标点击切换标签页和分屏拉伸）
+opt.guifont = "DroidSansMono_Nerd_Font:h11" -- GUI 客户端（如 Neovide）下的字体与字号设置
+opt.guicursor = "n-v-c-sm:ver10,i-ci-ve:ver40,r-cr-o:hor20" -- 插入模式光束 40% 宽，其余保持默认形状
+
+-- =============================================================================
+-- 4. 基于现代语法树的折叠机制优化
+-- =============================================================================
+opt.foldmethod = "expr" -- 基于 Treesitter 的精准折叠
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldlevel = 99 -- 默认全部展开
+opt.foldlevelstart = 99
+opt.foldenable = true
+
+-- =============================================================================
+-- 5. 窗口分屏排版行为
+-- =============================================================================
+opt.splitbelow = true -- 水平分屏时，新窗口自动放置在当前窗口的下方
+opt.splitright = true -- 垂直分屏时，新窗口自动放置在当前窗口的右侧
+
+-- =============================================================================
+-- 6. 全局默认缩进规范（Python、Yaml 会通过专属 autocmd 进一步精准覆盖）
+-- =============================================================================
+opt.tabstop = 4 -- 1个制表符展现出的空格宽度
+opt.softtabstop = 4 -- 连续退格时当成4个空格一并删除
+opt.shiftwidth = 4 -- 自动缩进、按 `>>` 或 `<<` 移动代码时的宽度
+opt.expandtab = true -- 敲击 Tab 键时自动将其置换为纯空格
+opt.autoindent = true -- 开启基础自动缩进
+opt.smartindent = true -- 开启上下文智能缩进
+
+-- =============================================================================
+-- 7. 搜索反馈优化
+-- =============================================================================
+opt.hlsearch = true -- 高亮所有搜索命中结果
+opt.incsearch = true -- 增量搜索（边打字边在屏幕上预览匹配点）
+opt.ignorecase = true -- 搜索时默认忽略英文字母大小写
+opt.smartcase = true -- 智能大小写（只要你输入的检索词中带有大写字母，就会严格匹配大小写）
+
+-- =============================================================================
+-- 8. 丝滑视差：平滑滚动边距设置
+-- =============================================================================
+opt.smoothscroll = true -- 🌟 开启 Neovim 0.11+ 内置平滑滚动（替代已停止开发必要性下降的 neoscroll.nvim）
+opt.scrolloff = 5 -- 当光标距离屏幕上下边缘剩 5 行时，屏幕会自动开始平滑滚动
+opt.sidescrolloff = 5 -- 当光标距离屏幕左右边缘剩 5 个字符时，自动横向平滑滚动
+
+-- =============================================================================
+-- 9. 现代核心性能调优
+-- =============================================================================
+opt.lazyredraw = false -- 🌟 同步修正：必须设为 false！防止 Telescope / Flash 弹窗渲染卡顿和残影
+opt.updatetime = 200 -- 核心延迟响应（影响 gitsigns 侧边线亮起速度以及 LSP 错误提示弹窗的响应时间）
+opt.timeoutlen = 500 -- 按键组合等待超时时间（设置 500ms 既能让 Which-Key 菜单秒开，又不会打断你的手速）
+
+-- =============================================================================
+-- 10. 文件安全机制与持久化撤销树（防丢失重器）
+-- =============================================================================
+opt.backup = false -- 禁用过时的备份文件
+opt.swapfile = false -- 禁用繁琐的 .swp 交换文件
+opt.writebackup = false -- 禁用写入中临时备份
+opt.undofile = true -- 🌟 开启持久化撤销历史：即使关闭电脑、重启 Neovim，曾经的写错的代码依然能按 `u` 完美撤销！
+opt.undodir = vim.fn.expand("~/.config/nvim/undo//") -- 指定撤销记录的物理存放目录（双斜杠能防止同名文件冲突）
+
+-- =============================================================================
+-- 11. 现代半透明视效渲染（Gruvbox 质感拉满）
+-- =============================================================================
+opt.background = "dark" -- 声明暗黑背景基调
+opt.winblend = 10 -- 全局浮动窗口（如 LSP 诊断详情、浮动终端）的半透明度 (0-100)
+opt.pumblend = 10 -- 自动补全下拉菜单 (nvim-cmp) 的半透明度，极大提升代码融合的品质感
+
+-- =============================================================================
+-- 12. 编码兜底（确保 UTF-8 全程一致）
+-- =============================================================================
+vim.scriptencoding = "utf-8"
+
+-- =============================================================================
+-- 13. 关闭字符隐藏 (conceallevel=0)，防止语法高亮被隐藏
+--     但排除 markview 渲染的 markdown 家族文件类型，否则 markview 无法工作
+-- =============================================================================
+opt.conceallevel = 0
+local markview_filetypes = {
+	markdown = true,
+	quarto = true,
+	rmd = true,
+	typst = true,
+	asciidoc = true,
+}
+api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+	group = api.nvim_create_augroup("ForceConceallevel", { clear = true }),
+	pattern = { "*" },
+	callback = function()
+		if not markview_filetypes[vim.bo.filetype] then
+			opt.conceallevel = 0
+		end
+	end,
+})
+
+-- =============================================================================
+-- 14. 诊断显示：关闭行尾虚拟文本，保留波浪线 + 符号栏 + 圆角浮窗
+-- =============================================================================
+vim.diagnostic.config({
+	virtual_text = false, -- 严格关闭默认的行尾提示
+	underline = true, -- 保留代码下方波浪线
+	update_in_insert = false, -- 插入模式下不触发报错
+
+	-- 现代纯 Lua 诊断图标配置（Nerd Font 图标套组）
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "", -- 错误（红叉圆）
+			[vim.diagnostic.severity.WARN] = "", -- 警告（三角感叹号）
+			[vim.diagnostic.severity.HINT] = "󰌶", -- 提示（灯泡）
+			[vim.diagnostic.severity.INFO] = "", -- 信息（信息圆）
+		},
+	},
+	float = { border = "rounded" },
+})
+
+-- 【关键防护】防止子模块（如 plugins 或 theme）异步加载时重新覆盖该配置
+vim.api.nvim_create_autocmd("User", {
+	pattern = "LspAttach", -- 当 LSP 启动时，再次强制确保 virtual_text 关闭
+	callback = function()
+		vim.diagnostic.config({ virtual_text = false })
+	end,
+})

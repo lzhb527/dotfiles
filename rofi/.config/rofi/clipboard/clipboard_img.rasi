@@ -1,0 +1,91 @@
+/*****----- Configuration -----*****/
+configuration {
+	show-icons: 		true;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+/*****----- Global Properties -----*****/
+@import                          "~/.config/rofi/shared/colors.rasi"
+
+* {
+    border-radius:               6px;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    northeast;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       500px;
+    x-offset:                    -100px;
+    y-offset:                    5px;
+    enabled:                     true;
+    cursor:                      "default";
+    border:                      1px;
+    border-color:                @hover;
+    background-color:            @background;
+    padding:                     10px;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "listview" ];
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     2;
+    lines:                       3;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    spacing:                     10px; 
+    margin: 			         0px;
+    background-color:            transparent;
+    cursor:                      "default";
+    scrollbar:                   true;
+}
+scrollbar {
+    handle-width:                3px ;
+    margin: 			         0px 0px 0px 2px;
+    handle-color:                @foreground;
+    background-color:            @background-alt;
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    padding:                     0px; 
+    cursor:                      pointer;
+    orientation:                 vertical;
+    background-color:            @background-alt;
+}
+
+element.selected  {
+    background-color:            @hover;
+    text-color:                  @foreground;
+}
+
+element-icon {
+    size:                         120px; 
+    background-color:             transparent;
+    border-radius:                8px;
+}
+
+element-text {
+    font:                        "sans 0";
+    background-color:            transparent;
+    text-color:                  transparent;
+}
