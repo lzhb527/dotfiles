@@ -16,7 +16,7 @@ from kitty.tab_bar import (
     TabBarData,
     as_rgb,
     draw_tab_with_powerline,
-    draw_title,
+    draw_title as kitty_draw_title,
 )
 from kitty.utils import color_as_int
 
@@ -162,7 +162,7 @@ def _draw_left_status(
         screen.draw(" " * draw_data.leading_spaces)
 
     # draw tab title
-    draw_title(draw_data, screen, tab, index)
+    kitty_draw_title(draw_data, screen, tab, index)
 
     trailing_spaces = min(max_title_length - 1, draw_data.trailing_spaces)
     max_title_length -= trailing_spaces
@@ -242,3 +242,18 @@ def draw_tab(
         is_last,
     )
     return end
+
+
+def draw_title(data: dict) -> str:
+    """标签标题: 最后一级目录名(家目录显示 ~)/正在运行的程序"""
+    tab = data["tab"]
+    wd = tab.active_wd
+    home = os.path.expanduser("~")
+    if wd == home:
+        name = "~"
+    elif wd:
+        name = os.path.basename(wd.rstrip(os.sep)) or os.sep
+    else:
+        name = ""
+    exe = tab.active_exe
+    return f"{name}/{exe}" if exe else name
