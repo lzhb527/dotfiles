@@ -50,17 +50,17 @@ def _battery() -> tuple[str, int]:
             if info:
                 pct, on_ac = info
                 if on_ac:
-                    icon = "\uf0e7"  # 电源插头
+                    icon = ""  # 电源插头
                 elif pct >= 90:
-                    icon = "\uf240"  # 满电
+                    icon = "󰂂"  # 满电
                 elif pct >= 60:
-                    icon = "\uf241"
+                    icon = "󰁿"
                 elif pct >= 30:
-                    icon = "\uf242"
+                    icon = "󰁽"
                 elif pct >= 10:
-                    icon = "\uf243"
+                    icon = "󰁺"
                 else:
-                    icon = "\uf244"  # 空电
+                    icon = "󰁺"  # 空电
                 if not on_ac and pct < 20:
                     color = as_rgb(0xFF0000)  # 低电量标红
                 text = f" {icon} {pct}% "
