@@ -15,7 +15,7 @@ weather=$(curl -s "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longit
 
 # 使用 -r 参数去掉 jq 输出的潜在双引号
 tem=$(echo "$weather" | jq -r '.current.temperature')
-wea=$(echo "$weather" | jq '.current.weathercode')
+wea=$(echo "$weather" | jq -r '.current.weathercode')
 
 # 完整代码映射 (已补全 Nerd Fonts 图标)
 case $wea in
@@ -137,4 +137,4 @@ case $wea in
 esac
 
 # 输出 JSON 给 Waybar
-echo "{\"text\": \"$curwea $tem°C\", \"tooltip\": \"$desc ($wea)\"}"
+echo "{\"text\": \"$curwea ${tem}°C\", \"tooltip\": \"$desc ($wea)\"}"
