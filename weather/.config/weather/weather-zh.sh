@@ -11,11 +11,18 @@ lat="39.9075"
 long="116.3972"
 
 # 获取天气数据
-weather=$(curl -s "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature,weathercode")
-
-# 使用 -r 参数去掉 jq 输出的潜在双引号
-tem=$(echo "$weather" | jq -r '.current.temperature')
-wea=$(echo "$weather" | jq -r '.current.weathercode')
+max_retry=1
+for ((i = 0; i <= max_retry; i++)); do
+    weather=$(curl -s -m 5 "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature,weathercode")
+    tem=$(echo "$weather" | jq -r '.current.temperature')
+    wea=$(echo "$weather" | jq -r '.current.weathercode')
+    # 只要tem、wea都不是null，跳出循环
+    if [[ $tem != "null" && $wea != "null" ]]; then
+        break
+    fi
+    # 是null，短暂sleep再试
+    sleep 3
+done
 
 # 完整代码映射 (已补全 Nerd Fonts 图标)
 case $wea in
