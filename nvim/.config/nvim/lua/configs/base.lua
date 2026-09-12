@@ -35,6 +35,8 @@ opt.number = true -- 显示绝对行号
 opt.relativenumber = true -- 显示相对行号（极易配合 `5j`、`3k` 等 Vim 原生大范围跳行）
 opt.cursorline = true -- 高亮光标所在行（配合你之前写的 Gruvbox 绿色下划线）
 opt.mouse = "a" -- 全面启用鼠标支持（支持鼠标点击切换标签页和分屏拉伸）
+opt.selection = "exclusive"
+vim.keymap.set("v", "<LeftRelease>", "y", { noremap = true, silent = true })
 opt.guifont = "DroidSansMono_Nerd_Font:h11" -- GUI 客户端（如 Neovide）下的字体与字号设置
 opt.guicursor = "n-v-c-sm:ver10,i-ci-ve:ver40,r-cr-o:hor20" -- 插入模式光束 40% 宽，其余保持默认形状
 

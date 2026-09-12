@@ -123,7 +123,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		})
 
 		-- 2. 鼠标/可视模式选中的背景色
-		vim.api.nvim_set_hl(0, "Visual", { bg = c.visual_bg, fg = "#ffffff", force = true })
+		vim.api.nvim_set_hl(0, "Visual", { bg = c.visual_bg, fg = "#000000", force = true })
 
 		-- 3. 括号强制去除斜体
 		vim.api.nvim_set_hl(0, "@punctuation.bracket", { italic = false, force = true })

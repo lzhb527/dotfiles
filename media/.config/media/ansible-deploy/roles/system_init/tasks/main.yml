@@ -318,13 +318,13 @@
   ansible.builtin.cron:
     name: "每30分钟更新天气"
     minute: "*/30"
-    job: "echo === 执行时间: $(date +\\%Y-\\%m-\\%d\\ \\%H:\\%M:\\%S) === >> /tmp/weather_run_time.log && /home/lee/.config/weather/weather7-zh.sh > /tmp/weather_report.txt 2>&1"
+    job: "echo === 更新时间: $(date +\\%Y-\\%m-\\%d\\ \\%H:\\%M:\\%S) === >> /tmp/weather_run_time.log && /home/lee/.config/weather/run_weather.sh 2>&1"
 
 - name: 添加开机自动执行的任务
   ansible.builtin.cron:
     name: "开机自动更新天气"
     special_time: reboot
-    job: "sleep 5 && echo === 开机启动时间: $(date +\\%Y-\\%m-\\%d\\ \\%H:\\%M:\\%S) === >> /tmp/weather_run_time.log && /home/lee/.config/weather/weather7-zh.sh > /tmp/weather_report.txt 2>&1"
+    job: "sleep 5 && echo === 开机启动时间: $(date +\\%Y-\\%m-\\%d\\ \\%H:\\%M:\\%S) === >> /tmp/weather_run_time.log && /home/lee/.config/weather/run_weather.sh 2>&1"
 
 # ==========================================
 # 7. 服务管理：系统级与用户级 Systemd 服务
