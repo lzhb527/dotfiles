@@ -1,5 +1,5 @@
 -- =========================================================================
--- smear-cursor.nvim 光标拖尾动画配置
+-- smear-cursor.nvim 光标拖尾动画配置（kitty 渐隐拖尾风格）
 -- =========================================================================
 return function()
 	local smear_status, smear = pcall(require, "smear_cursor")
@@ -8,7 +8,10 @@ return function()
 	end
 
 	smear.setup({
-		-- 拖尾颜色：Alacritty 会强制覆盖终端光标色，这里手动对齐绿色 #66ff66
+		-- 默认关闭拖尾特效，按 <leader>uc 手动开启
+		enabled = false,
+
+		-- 拖尾颜色：kitty 光标色，手动对齐绿色 #66ff66
 		cursor_color = "#66ff66",
 
 		-- 半透明底色下的阴影回退色，与终端/主题底色保持一致
@@ -26,24 +29,27 @@ return function()
 		-- 帧间隔（ms），约 60fps，性能与顺滑的平衡点
 		time_interval = 17,
 
-		-- Fire hazard 特效参数（粒子火焰）
-		particles_enabled = true,
-		stiffness = 0.5,
-		trailing_stiffness = 0.2,
-		trailing_exponent = 5,
-		damping = 0.6,
-		gradient_exponent = 0,
-		gamma = 1,
-		never_draw_over_target = true,
-		hide_target_hack = true,
-		particle_spread = 1,
-		particles_per_second = 500,
-		particles_per_length = 50,
-		particle_max_lifetime = 800,
-		particle_max_initial_velocity = 20,
-		particle_velocity_from_cursor = 0.5,
-		particle_damping = 0.15,
-		particle_gravity = -50,
-		min_distance_emit_particles = 0,
+		-- kitty 拖尾无粒子，显式关闭
+		particles_enabled = false,
+
+		-- kitty 风格渐隐拖尾：头部跟手、尾巴滞后拉出拖尾
+		stiffness = 0.7,
+		trailing_stiffness = 0.3,
+		damping = 0.8,
+
+		-- 中间点更靠近尾部，拖尾更长
+		trailing_exponent = 4,
+
+		-- 头到尾纵向渐变，模拟 kitty 的 decay 渐隐
+		gradient_exponent = 2,
+		gamma = 2.2,
+
+		-- 允许更长的拖尾
+		max_length = 30,
+
+		-- 插入模式同样跟手并带拖尾
+		stiffness_insert_mode = 0.6,
+		trailing_stiffness_insert_mode = 0.4,
+		damping_insert_mode = 0.9,
 	})
 end

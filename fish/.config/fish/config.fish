@@ -3,10 +3,18 @@
 # =============================================================================
 set -g fish_greeting "" # 禁用启动问候语
 
+# Homebrew 国内镜像 (跳过自动更新 + 走中科大源，规避 GitHub/formulae 拉取超时)
+set -gx HOMEBREW_NO_AUTO_UPDATE 1
+set -gx HOMEBREW_API_DOMAIN "https://mirrors.ustc.edu.cn/homebrew-bottles/api"
+set -gx HOMEBREW_BOTTLE_DOMAIN "https://mirrors.ustc.edu.cn/homebrew-bottles"
+set -gx HOMEBREW_BREW_GIT_REMOTE "https://mirrors.ustc.edu.cn/brew.git"
+set -gx HOMEBREW_CORE_GIT_REMOTE "https://mirrors.ustc.edu.cn/homebrew-core.git"
+
 # 在 Alacritty 会话中声明终端能力为 alacritty
 # (其 terminfo 含 Smulx，Neovim 检测到后才会发送下划线颜色 guisp/sp；
 #  否则按 xterm-256color 处理，DECRQSS 探测 Alacritty 不应答，下划线颜色丢失)
-if set -q ALACRITTY_WINDOW_ID
+# 注意: tmux 内 TERM 必须由 tmux 的 default-terminal 决定, 不能覆盖
+if set -q ALACRITTY_WINDOW_ID; and not set -q TMUX
     if infocmp alacritty >/dev/null 2>&1
         set -gx TERM alacritty
     end
@@ -42,8 +50,37 @@ if status is-interactive
     if type -q nvim;   alias vim='nvim'; end
     if type -q bat;    alias cat='bat --paging=never --plain'; end
     if type -q kitty;  alias icat='kitty +kitten icat'; end
-    alias c='clear'
+    alias cls='clear'
+    function c
+        clear
+        printf '\033[3J'
+    end
     alias kt='kitten @ launch --type tab'
+
+    # 拼图预览: kitty 下用 icat 显示真缩略图, 其他终端回退 chafa 字符预览
+    function lsimg
+        set -l tmp /tmp/lsimg_thumb.png
+        set -l files
+        for p in *.jpg *.jpeg *.png *.webp *.gif *.bmp *.JPG *.PNG
+            test -f "$p"; and set -a files "$p"
+        end
+        if test (count $files) -eq 0
+            echo "lsimg: 当前目录没有图片"; return 1
+        end
+        # macOS ImageMagick 默认字体为空, 需显式指定才能渲染文件名标注
+        set -l font_args
+        if test -f /System/Library/Fonts/Helvetica.ttc
+            set font_args -font /System/Library/Fonts/Helvetica.ttc
+        end
+        magick montage $font_args -label '%f' -thumbnail 320x320 -geometry +6+6 -tile 5x $files $tmp
+        if set -q KITTY_WINDOW_ID
+            kitty +kitten icat $tmp
+        else if type -q chafa
+            chafa --size 100x60 $tmp
+        else
+            echo "lsimg: 需要在 kitty 中运行(或安装 chafa 作为回退)"
+        end
+    end
 
     # Eza 高级文件列表增强
     if type -q eza
@@ -108,3 +145,7 @@ if status is-interactive
 
 end
 
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
