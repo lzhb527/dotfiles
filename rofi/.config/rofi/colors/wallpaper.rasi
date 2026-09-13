@@ -1,0 +1,11 @@
+///**** Rofi matugen color theme ****///
+
+* {
+    background: rgba(15, 21, 18, 1);
+    background-alt: rgba(27, 33, 31, 1);
+    foreground: rgba(222, 228, 224, 1);
+    selected: rgba(134, 214, 190, 1);
+    hover: rgba(134, 214, 190, 0.2);
+    active: rgba(169, 203, 227, 1);
+    urgent: rgba(255, 180, 171, 1);
+}

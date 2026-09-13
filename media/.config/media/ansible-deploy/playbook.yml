@@ -1,0 +1,6 @@
+---
+- name: 部署 Debian 13 labwc
+  hosts: my_desktop
+  gather_facts: true # 💡 必须设置为 true，以便 handlers 识别当前是什么 Linux 发行版
+  roles:
+    - system_init

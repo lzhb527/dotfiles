@@ -1,0 +1,48 @@
+! =====================================================================
+! 1984 Theme for Xterm (Cyberpunk Neon)
+! =====================================================================
+! =====================================================================
+! Xterm 复制粘贴行为优化
+! =====================================================================
+
+! 核心：让鼠标左键选中的文本立即同步到全局剪贴板 (Ctrl+V 可直接粘贴)
+XTerm*selectToClipboard: true
+
+! 快捷键增强：支持使用键盘 Ctrl+Shift+C 复制，Ctrl+Shift+V 粘贴
+XTerm*VT100.Translations: #override \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
+! =====================================================================
+! Xterm 字体设置 (JetBrains Mono Nerd Font)
+! =====================================================================
+XTerm*faceName: JetBrainsMono Nerd Font:style=Regular
+XTerm*faceSize: 15
+
+! 基础前景色与背景色
+XTerm*foreground:   #ffffff
+XTerm*background:   #161616
+
+! 选中文本时的颜色
+XTerm*highlightColor: #00d5eb
+XTerm*highlightTextColor: #ffea16
+
+! 光标颜色
+XTerm*cursorColor:  #59e1e3
+
+! 16 色标准终端色彩
+XTerm*color0:       #000000
+XTerm*color1:       #ff16b0
+XTerm*color2:       #b3f361
+XTerm*color3:       #ffea16
+XTerm*color4:       #46bdff
+XTerm*color5:       #f806fa
+XTerm*color6:       #59e1e3
+XTerm*color7:       #feffff
+XTerm*color8:       #000000
+XTerm*color9:       #ff16b0
+XTerm*color10:      #b3f361
+XTerm*color11:      #ffea16
+XTerm*color12:      #46bdff
+XTerm*color13:      #f806fa
+XTerm*color14:      #6be4e6
+XTerm*color15:      #feffff

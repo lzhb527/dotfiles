@@ -1,0 +1,13 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Generating systemd-boot entries for new Snapper snapshots...
+When = PostTransaction
+Depends = snapper
+Exec = /usr/local/bin/update-systemd-boot-snapshots
+

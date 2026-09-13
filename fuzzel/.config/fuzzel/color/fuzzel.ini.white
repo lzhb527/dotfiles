@@ -1,0 +1,36 @@
+[main]
+font=Segoe UI:size=14, Noto Sans CJK SC:size=14
+icon-theme=Papirus
+fields=name,generic,comment
+lines=10
+width=45
+horizontal-pad=15
+vertical-pad=15
+inner-pad=8
+
+# ================= 核心功能设置 =================
+# 1. 允许其他区域获取焦点，配合实现失焦自动关闭
+# focus-mode=on-demand
+# 2. 当检测到键盘或鼠标焦点离开 Fuzzel 时，立刻自动隐退销毁窗口
+exit-on-keyboard-focus-loss=yes
+
+# ================= 极客青配色方案 =================
+[border]
+radius=12
+width=2
+
+[colors]
+# 161616，d8 代表 85% 半透明质感
+background=fdf6e3ff       
+text=000000ff             
+# 搜索匹配高亮为 08bdba 极客青
+match=f53c3cff            
+# 选中条目背景（08bdba 加 40% 微透高亮）
+selection=08bdbaff       
+selection-text=ffffffff   
+border=08bdbaff
+input=000000ff
+prompt=586e75ff
+
+# F1=bash -c 'fd --type f --hidden --exclude .git . "$HOME" | fuzzel -d | xargs -r xdg-open'
+

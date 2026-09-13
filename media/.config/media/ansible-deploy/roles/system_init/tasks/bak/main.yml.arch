@@ -1,0 +1,303 @@
+---
+# ==========================================
+# 1. 基础设施：替换清华大学 Debian Testing 官方软件源
+# ==========================================
+
+# ==========================================
+# 2. 清理步骤：暴力拔除所有残留的旧第三方软件源与密钥
+# ==========================================
+
+# ==========================================
+# 3. 软件安装：自愈、刷新缓存并一键安装海量原生软件包
+# ==========================================
+
+# ==========================================
+# 4. 点文件管理：直接调用你最完美的本地自动化 Stow 脚本
+# ==========================================
+- name: 给本地的 stow 自动化脚本赋予可执行权限
+  file:
+    path: "/home/lee/Templates/dotfiles/install.sh"
+    mode: "0755"
+
+- name: 一键运行你的专属 Stow 自动化安装脚本
+  shell: "./install.sh"
+  args:
+    # 物理锁定上下文！让当前终端死死站在你的脚本所在的绝对目录下执行
+    chdir: "/home/lee/Templates/dotfiles"
+    executable: /bin/bash
+
+# ==========================================
+# 5. 静态媒体文件与系统基础配置（原 media-cp.sh 逻辑）
+# ==========================================
+- name: 确保 user 媒体目录存在
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
+    state: directory
+  loop:
+    - Music
+    - Pictures
+    - Videos
+    - .local/share/fonts
+    - .local/share/themes
+
+- name: 拷贝壁纸、音乐与视频文件
+  copy:
+    src: "{{ playbook_dir }}/../{{ item.src }}"
+    # src: "/home/lee/Templates/dotfiles/media/.config/media/{{ item.src }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/{{ item.dest }}"
+  loop:
+    - { src: "星晴.mp3", dest: "Music/" }
+    - { src: "never-say-never.mp3", dest: "Music/" }
+    - { src: "lishenjin.mp4", dest: "Videos/" }
+    - { src: "def-wallpapers/opensuse-ice.png", dest: "Pictures/" }
+
+- name: 拷贝默认桌面壁纸到系统目录
+  become: true
+  copy:
+    src: "{{ playbook_dir }}/../def-wallpapers/opensuse-ice.png"
+    dest: /usr/share/backgrounds/opensuse-ice.png
+
+- name: 复制 environment 到 /etc/ 目录
+  ansible.builtin.copy:
+    src: environment
+    dest: /etc/environment
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+
+- name: 复制 SDDM 主题目录
+  ansible.builtin.copy:
+    src: sddm-astronaut-theme
+    dest: /usr/share/sddm/themes/
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: 复制 SDDM 配置文件到 sddm.conf.d 目录
+  ansible.builtin.copy:
+    src: "sddm.conf.d/{{ item }}"
+    dest: /etc/sddm.conf.d/
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - kde_settings.conf
+    - virtualkbd.conf
+  become: true
+
+- name: 复制 sddm.conf 到 /etc 目录并备份旧文件
+  ansible.builtin.copy:
+    src: sddm.conf
+    dest: /etc/sddm.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  become: true
+
+- name: 修改 GRUB 启动参数以锁定分辨率
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT=" # 正则匹配以这一开头的行
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"' # 替换为全新内容
+    backrefs: no
+  become: true # 使用 root 权限
+  notify: 更新 GRUB 配置 # 如果文件发生改变，触发更新命令
+
+- name: 复制 wl-colorpicker 和 wl-screenshot 到 /usr/local/bin/ 并赋予执行权限
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: "0755" # 👈 0755 确保脚本具有可执行权限 (rwxr-xr-x)
+  loop:
+    - wl-colorpicker
+    - wl-screenshot
+    - lyricspot
+  become: yes
+
+# ==========================================
+# 5.1. 统一复制所有文件（利用循环合并代码）
+# ==========================================
+- name: 批量复制脚本和配置文件到临时目录
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "/tmp/{{ item.src }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: "papirus-folders", mode: "0755" }
+    - { src: "xfce4-init.sh", mode: "0755" }
+    - { src: "fix_icons_flat.py", mode: "0755" }
+    - { src: "v4.tar.bz2", mode: "0644" }
+
+# ==========================================
+# 5.2. 需要 Root 权限执行的任务 (become: true)
+# ==========================================
+- name: "[Root] 执行 papirus-folders 修改图标颜色"
+  ansible.builtin.command:
+    cmd: bash /tmp/papirus-folders -C teal -t Papirus-Dark
+  become: true
+  register: papirus_result
+  changed_when: "'is already' not in papirus_result.stdout"
+
+- name: "[Debug] 显示 papirus-folders 脚本的输出内容"
+  ansible.builtin.debug:
+    var: papirus_result.stdout_lines
+
+# ==========================================
+# 5.3. 普通用户权限执行的任务（配置当前桌面环境）
+# ==========================================
+
+- name: 执行 fix_icons_flat.py 修复图标
+  ansible.builtin.command:
+    cmd: python3 /tmp/fix_icons_flat.py
+
+# ==========================================
+# 5.4. 统一清理临时文件（利用循环合并代码）
+# ==========================================
+- name: 批量清理临时文件
+  ansible.builtin.file:
+    path: "/tmp/{{ item }}"
+    state: absent
+  loop:
+    - papirus-folders
+    - xfce4-init.sh
+    - v4.tar.bz2
+    - fix_icons_flat.py
+
+- name: 解压字体与主题包
+  unarchive:
+    src: "{{ playbook_dir }}/../../../../local/.local/share/{{ item.src }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/share/{{ item.dest }}"
+    remote_src: yes
+  loop:
+    - { src: "fonts/jetbrain.tar.xz", dest: "fonts/" }
+    - { src: "themes/Kali.tar.xz", dest: "themes/" }
+
+# ==========================================
+# 6. 配置环境与特定软件设置
+# ==========================================
+- name: archlinunxcn
+  ansible.builtin.blockinfile:
+    path: /etc/pacman.conf
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGE BLOCK: ARCHLINUXCN"
+    block: |
+      [archlinuxcn]
+      SigLevel = Never
+      Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
+  become: true
+
+# 1. 创建用户账户（不直接设密码，避免 passlib 报错）
+- name: 创建普通用户 lee
+  ansible.builtin.user:
+    name: lee
+    shell: /bin/bash
+    groups: wheel,video,tty
+    append: yes
+    create_home: yes
+    state: present
+  become: true
+
+# 2. 通过 chpasswd 设置明文密码（不需要本地安装 passlib）
+- name: 设置用户 lee 的明文密码
+  ansible.builtin.shell: echo "lee:lee" | chpasswd
+  become: true
+  # 提示：为了安全，建议以后改为 password_hash
+  changed_when: false # 避免每次执行都显示 changed
+
+# 3. 配置 wheel 组的免密 sudo 权限
+- name: 允许 wheel 组用户免密执行 sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^#\s*%wheel\s+ALL=\(ALL:ALL\)\s+NOPASSWD'
+    line: "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "visudo -cf %s"
+  become: true
+
+- name: 配置 greetd 使用 tuigreet 登录环境
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/greetd/config.toml
+    regexp: '^command\s*='
+    line: 'command = "tuigreet --time --time-format %H:%M --remember --asterisks  --power-shutdown ''systemctl poweroff'' --power-reboot ''systemctl reboot'' --cmd labwc"'
+    state: present
+
+- name: 配置 Git 全局压缩参数
+  git_config:
+    name: core.compression
+    value: "0"
+    scope: global
+
+- name: 将 Tilix 配置文件拷贝到服务器暂存区
+  copy:
+    src: tilix_backup.dconf
+    dest: /tmp/tilix_backup.dconf
+    mode: "0644"
+
+- name: 导入 Tilix 终端配置
+  shell: "dconf load /com/gexperts/Tilix/ < /tmp/tilix_backup.dconf"
+  args:
+    executable: /bin/bash
+
+- name: 清理 Tilix 暂存文件
+  file:
+    path: /tmp/tilix_backup.dconf
+    state: absent
+
+- name: 获取 Starship Nerd Font 预设配置
+  ansible.builtin.shell: starship preset nerd-font-symbols
+  register: starship_preset
+  changed_when: false
+
+- name: 将预设写入 starship.toml
+  ansible.builtin.copy:
+    content: "{{ starship_preset.stdout }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    mode: "0644"
+
+- name: 注入并定制 Starship 提示符
+  blockinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
+    create: yes
+    block: |
+      [character]
+      success_symbol = "[❯](red)[❯](yellow)[❯](green)"
+      error_symbol = "[❯](red)[❯](red)[❯](red)"
+
+- name: 设置系统默认语言为中文（可选）
+  ansible.builtin.lineinfile:
+    path: /etc/locale.conf
+    regexp: "^LANG="
+    line: "LANG=zh_CN.UTF-8"
+    create: yes
+  become: yes
+
+# ==========================================
+# 7. 服务管理：系统级与用户级 Systemd 服务
+# ==========================================
+
+- name: 【自愈】强制刷新用户级 Systemd 守护进程内存缓存
+  systemd:
+    daemon_reload: yes
+    scope: user
+
+- name: 启用并启动 greetd 服务
+  ansible.builtin.service:
+    name: greetd
+    enabled: yes
+  become: true
+
+- name: 启用用户级守护服务 (不需要 sudo，移除了损坏的 dms 服务)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    scope: user
+  loop:
+    - mpd.service
+    - foot-server.service
+    - mpd-mpris.service

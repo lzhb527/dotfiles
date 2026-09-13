@@ -1,0 +1,89 @@
+## -------------------------------------------------------------------------
+## 全局全局配置 (Global Settings)
+## -------------------------------------------------------------------------
+# 字体设置 (建议使用包含中文字体和图标的 Nerd Font)
+font=Inter,Noto Sans CJK SC 10
+
+# 窗口背景颜色 (RGBA 格式，最后两位是透明度)
+background-color=#1e1e2edd
+
+# 文本颜色
+text-color=#cdd6f4
+
+# 边框粗细与颜色
+border-size=2
+border-color=#08bdba
+
+# 边框圆角半径
+border-radius=8
+
+# 通知窗口在屏幕上的显示位置
+# 可选值: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+anchor=top-right
+
+# 多个通知之间的间距
+margin=20
+padding=15
+
+# 通知窗口的宽度与高度控制
+width=350
+height=350
+max-visible=5
+
+# 分组行为 (相同应用发送的多条通知是否打包)
+group-by=app-name
+
+# 设置默认超时时间（毫秒，0 表示不自动消失）
+default-timeout=0
+
+# 忽略超时限制的应用（如正在播放媒体或会议）
+ignore-timeout=0
+
+## -------------------------------------------------------------------------
+## 历史记录配置 (History Settings)
+## -------------------------------------------------------------------------
+# 启用历史记录功能 (1 为开启，0 为关闭)
+history=1
+
+# 历史记录最大保存条数
+max-history=500
+
+## -------------------------------------------------------------------------
+## 动画与高级行为 (Animation & Layout)
+## -------------------------------------------------------------------------
+# 通知图标排列位置 (left, right, top, bottom, none)
+icon-path=/usr/share/icons/hicolor
+max-icon-size=64
+
+# 文本对齐方式 (left, center, right)
+text-alignment=left
+
+# 允许通知文本使用 Markup 语法 (如加粗、斜体、颜色标签)
+markup=1
+
+# 鼠标左键点击通知时的动作 (dismiss=消除, invoke-default-action=触发默认点击动作)
+
+# 鼠标右键点击通知时的动作
+on-button-right=dismiss-all
+
+## -------------------------------------------------------------------------
+## 针对特定优先级的条件样式 (Urgency Rules)
+## -------------------------------------------------------------------------
+[urgency=low]
+border-color=#6c7086
+default-timeout=2000
+
+[urgency=high]
+border-color=#f38ba8
+text-color=#f38ba8
+background-color=#311c2a
+default-timeout=0
+
+## -------------------------------------------------------------------------
+## 针对特定应用的条件样式 (Per-app Rules)
+## -------------------------------------------------------------------------
+# 针对音乐播放器 (示例: Spotify) 的通知样式
+[app-name=Spotify]
+default-timeout=3000
+group-by=none
+

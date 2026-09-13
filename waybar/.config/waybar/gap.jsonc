@@ -1,0 +1,39 @@
+[
+  {
+    "name": "top-margin",
+    "layer": "top",
+    "position": "top",
+    "height": 5, // 顶部留白高度
+    "exclusive": true,
+    "passthrough": true, // 鼠标穿透，不干扰点击
+    "modules-left": []
+  },
+  {
+    "name": "bottom-margin",
+    "layer": "top",
+    "position": "bottom",
+    "height": 5, // 底部留白高度
+    "exclusive": true,
+    "passthrough": true,
+    "modules-left": []
+  },
+  {
+    "name": "left-margin",
+    "layer": "top",
+    "position": "left",
+    "width": 5, // 左侧留白宽度
+    "exclusive": true,
+    "passthrough": true,
+    "modules-left": []
+  },
+  {
+    "name": "right-margin",
+    "layer": "top",
+    "position": "right",
+    "width": 5, // 右侧留白宽度
+    "exclusive": true,
+    "passthrough": true,
+    "modules-left": []
+  }
+]
+

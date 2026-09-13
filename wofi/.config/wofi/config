@@ -1,0 +1,21 @@
+# 显示模式与基本行为
+show=drun
+allow_images=true
+allow-markup
+hide-scroll
+no-actions
+insensitive=false
+hint=搜索应用...
+term=foot
+
+# 尺寸：高宽固定，呈高矩形菜单
+width=500
+height=300
+
+# 屏幕对齐：左下角偏上（避开任务栏高度，假设底栏高 40px）
+# location=top_left
+# xoffset=1
+# yoffset=1
+
+# 调整输入框和列表顺序 (可以通过 CSS 重排使其更像 Windows)
+

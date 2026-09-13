@@ -1,0 +1,15 @@
+---
+- name: 更新 GRUB 配置
+  become: true
+  ansible.builtin.command: update-grub
+  when: ansible_facts["os_family"] == "Debian"
+
+- name: 更新 GRUB 配置 (CentOS/RedHat)
+  become: true
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when: ansible_facts["os_family"] == "RedHat"
+
+- name: 更新 GRUB 配置 (Arch Linux)
+  become: true
+  ansible.builtin.command: grub-mkconfig -o /boot/grub/grub.cfg
+  when: ansible_facts["os_family"] == "Archlinux"

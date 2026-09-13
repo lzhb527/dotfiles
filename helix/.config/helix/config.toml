@@ -1,0 +1,112 @@
+# ==============================================================================
+# Helix 最新版本兼容  (config.toml)
+# ==============================================================================
+
+theme = "catppuccin_mocha"       # Catppuccin Mocha 主题
+
+[editor]
+line-number = "relative"        # 显示相对行号
+mouse = true                    # 开启鼠标支持
+cursorline = true               # 高亮当前行
+color-modes = true              # 不同的编辑器模式下显示不同的状态栏颜色
+scrolloff = 5                   # 滚动时保持光标上下各有 5 行距离
+# bufferline = "always"           # 总是显示顶部标签页栏
+text-width = 80                 # 参考线宽度
+
+[editor.statusline]
+# 自定义底部状态栏组件
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "selections", "position", "file-encoding", "file-type"]
+separator = "│"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.lsp]
+display-messages = true         # 在屏幕上显示 LSP 的警告和错误提示
+display-inlay-hints = true      # 启用代码内嵌提示
+auto-signature-help = true     # 输入参数时自动显示函数签名帮助
+snippets = true                 # 启用 LSP 代码片段补全
+
+[editor.cursor-shape]
+# 不同模式下的光标形状
+normal = "block"                # 普通模式：方块
+insert = "bar"                  # 输入模式：竖线
+select = "underline"            # 选择模式：下划线
+
+[editor.file-picker]
+hidden = false                  # 在文件检索中包含隐藏文件
+git-ignore = true               # 遵循 .gitignore 规则
+git-global = true               # 遵循全局 git ignore 规则
+git-exclude = true              # 遵循 .git/info/exclude 规则
+
+[editor.auto-pairs]
+# 自动补全括号和引号
+'(' = ')'
+'{' = '}'
+'[' = ']'
+'"' = '"'
+"'" = "'"
+'`' = '`'
+'<' = '>'
+
+[editor.auto-save]
+focus-lost = true                 # 失去焦点时自动保存
+
+[editor.auto-save.after-delay]
+enable = false                    # 关闭定时自动保存
+timeout = 3000
+
+[editor.search]
+smart-case = true               # 智能大小写敏感
+wrap-around = true              # 搜索到文件底部后自动循环回到顶部
+
+[editor.whitespace]
+# 【已修复】新版转为子配置表形式，在此分别指定渲染规则
+[editor.whitespace.render]
+space = "none"                  # 空格渲染："all", "none", "trailing"
+tab = "all"                    # 制表符渲染："all", "none"
+newline = "none"                # 换行符渲染："all", "none"
+
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+tab = "→"
+newline = "⏎"
+
+[editor.indent-guides]
+render = true                   # 渲染对齐线
+character = "│"                 # 对齐线使用的字符
+skip-levels = 0                 # 从第一级缩进开始就显示对齐线
+
+[editor.gutters]
+# 侧边栏组件的渲染顺序（已移除会导致报错的空子配置块）
+layout = ["diagnostics", "spacer", "line-numbers", "spacer", "diff"]
+
+[editor.gutters.line-numbers]
+min-width = 3                   # 行号最小宽度
+
+[editor.soft-wrap]
+enable = true                   # 开启软换行
+max-wrap = 20                   # 单行最大折行次数
+wrap-indicator = "↪ "           # 折行处的视觉提示符
+
+[editor.smart-tab]
+enable = true                   # 开启智能 Tab 键
+supersede-menu = false          # 补全菜单打开时，Tab 键用于切换菜单项
+
+[editor.inline-diagnostics]
+cursor-line = "hint"            # 光标所在行显示何种级别的内联错误提示
+other-lines = "error"           # 其他行仅显示错误（Error）级别的内联提示
+
+# ==============================================================================
+# 自定义快捷键配置节
+# ==============================================================================
+
+[keys.normal]
+X = "extend_line_above"         # 按下大写 X 向上选中整行
+C-g = ":buffer-close"           # 按下 Ctrl + g 关闭当前标签页
+
+[keys.insert]
+C-space = "completion"          # 按下 Ctrl + Space 强制弹出代码补全

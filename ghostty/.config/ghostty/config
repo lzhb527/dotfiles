@@ -1,0 +1,96 @@
+# ====================================================================
+# Ghostty 配置 (Fish Shell + 透明磨砂)
+# ====================================================================
+
+# --- 基础字体 ---
+font-family = "JetBrainsMono Nerd Font"
+font-size = 17
+font-synthetic-style = no-bold-italic
+font-feature = -calt, -liga, -dlig
+
+# --- 外观与颜色 ---
+background = "#0a0a0a"
+foreground = "#ffffff"
+background-opacity = 0.8
+background-opacity-cells = true
+background-blur-radius = 20
+
+# --- 光标与选中样式 ---
+cursor-style = block
+adjust-cursor-thickness = 5
+cursor-style-blink = true
+cursor-color = #00ff00
+selection-background = #ebcb8c
+selection-foreground = #000000
+
+# custom-shader = shaders/cursor_tail.glsl
+custom-shader = shaders/cursor_warp.glsl
+custom-shader = shaders/ripple_cursor.glsl
+# custom-shader = shaders/rectangle_boom_cursor.glsl
+# custom-shader = shaders/ripple_rectangle_cursor.glsl
+# custom-shader = shaders/sonic_boom_cursor.glsl
+custom-shader-animation = always
+
+# --- Tokyo Night 配色方案 (0-255) ---
+palette = 0=#15161e
+palette = 1=#f7768e
+palette = 2=#9ece6a
+palette = 3=#e0af68
+palette = 4=#7aa2f7
+palette = 5=#bb9af3
+palette = 6=#7dcfff
+palette = 7=#a9b1d6
+palette = 8=#414868
+palette = 9=#f7768e
+palette = 10=#9ece6a
+palette = 11=#e0af68
+palette = 12=#7aa2f7
+palette = 13=#bb9af3
+palette = 14=#7dcfff
+palette = 15=#c0caf5
+palette = 16=#24283b
+palette = 17=#565f89
+palette = 18=#3d59a1
+palette = 19=#7dcfff
+palette = 20=#7aa2f7
+palette = 21=#3d59a1
+palette = 22=#f7768e
+palette = 23=#ff9e64
+palette = 24=#e0af68
+palette = 25=#9ece6a
+palette = 26=#bb9af3
+palette = 255=#ffffff
+
+# --- macOS 窗口美化 ---
+window-padding-x = 4
+window-padding-y = 4
+macos-titlebar-style = hidden
+macos-option-as-alt = true
+
+# --- 快捷键映射 (macOS) ---
+keybind = clear
+keybind = super+c=copy_to_clipboard
+keybind = super+v=paste_from_clipboard
+keybind = super+a=select_all
+keybind = super+n=new_window
+keybind = super+t=new_tab
+keybind = super+w=close_surface
+keybind = super+q=quit
+
+# 缩放与配置
+keybind = super+plus=increase_font_size:1
+keybind = super+-=decrease_font_size:1
+keybind = super+0=reset_font_size
+keybind = super+enter=toggle_fullscreen
+keybind = super+ctrl+f=toggle_maximize
+keybind = super+,=open_config
+keybind = super+shift+,=reload_config
+
+# --- 终端环境与行为 ---
+command = /opt/homebrew/bin/fish
+scrollback-limit = 50000000
+copy-on-select = true
+minimum-contrast = 1.1
+
+# 彻底修复：禁止 shell 集成接管覆盖你的自定义绿光标
+shell-integration-features = no-cursor

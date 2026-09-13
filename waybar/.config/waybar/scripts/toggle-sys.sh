@@ -1,0 +1,19 @@
+#!/bin/bash
+# Filename：media-toggle.sh
+# Author：lizhengbei
+# Contact：lizhengbei@gmail.com
+# Created Time：2026-05-25
+# Description：
+# Copyright (C) 2026  Ltd. All rights reserved.
+
+# 查找真正的进程 PID（排除正在执行 grep 的自身进程）
+PID=$(ps aux | grep 'system-hud-capsule.py' | grep -v 'grep' | awk '{print $2}')
+
+if [ -n "$PID" ]; then
+    # 如果进程存在，则关闭它
+    kill $PID
+else
+    # 如果进程不存在，则在后台启动它
+    python3 /home/lee/.config/waybar/scripts/system-hud-capsule.py &
+fi
+

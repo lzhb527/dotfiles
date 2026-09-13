@@ -1,0 +1,141 @@
+/* 定义颜色变量 */
+@define-color module_bg rgba(255, 255, 255, 0.1);
+@define-color hover_bg #08bdba;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
+    font-size: 14px;
+    border: none;
+    border-radius: 0;
+}
+
+window#waybar {
+    background-color: rgba(22,22,22,0.5);
+    border-bottom: 2px solid rgba(100, 114, 125, 0.3);
+    color: #ffffff;
+    transition: background-color 0.5s;
+    border-radius: 8px;
+}
+
+/* 通用模块样式 */
+#clock, #battery, #cpu, #memory, #tray, #network, #power-profiles-daemon, #pulseaudio, #mpd, #custom-showdesktop, #custom-notification {
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 4px;
+    background-color: @module_bg;
+}
+#clock:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#battery:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#cpu:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#memory:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#tray:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#network:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#power-profiles-daemon:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+
+#pulseaudio:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#mpd:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#custom-showdesktop:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+#custom:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+
+/* 电池低电量报警 */
+#battery.critical:not(.charging) {
+    background-color: #f53c3c;
+    color: #ffffff;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
+}
+
+/* 启动器样式 */
+#custom-launcher {
+    background-color: rgba(137, 180, 250, 0.2);
+    color: #08bdba;
+    font-size: 18px;
+    padding: 0 12px;
+    margin: 4px 5px 4px 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#custom-launcher:hover {
+    background-color: #08bdba;
+    color: #1e1e2e;
+}
+
+/* 注销按钮样式 */
+#custom-logout {
+    background-color: @module_bg;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 0 10px;
+    margin: 4px 2px;
+    font-weight: bold;
+}
+
+#custom-logout:hover {
+    background-color: #f9e2af;
+    color: #1e1e2e;
+}
+
+/* --- Taskbar 任务栏 --- */
+#taskbar {
+    background-color: @module_bg;
+    margin: 4px;
+    padding: 0 8px;
+    border-radius: 8px;
+}
+
+#taskbar button {
+    padding: 0 8px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+#taskbar button.active {
+    background-color: rgba(8, 189, 186, 0.25);
+    border-bottom: 3px solid @hover_bg;
+}
+
+#taskbar button:hover {
+    background-color: rgba(8, 189, 186, 0.15);
+    border-bottom: 3px solid rgba(8, 189, 186, 0.65);
+}
+
