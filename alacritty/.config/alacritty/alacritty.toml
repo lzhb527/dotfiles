@@ -3,10 +3,11 @@
 # 配色: Tokyo Night | 窗口: 半透明 + 模糊
 
 [font]
-size = 13.0
+size = 17.0
+builtin_box_drawing = true
 
 [font.normal]
-family = "JetBrainsMono Nerd Font Mono"
+family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 [font.offset]
@@ -16,7 +17,7 @@ y = 0
 ## ---------------- 窗口 ----------------
 
 [window]
-opacity = 0.8
+opacity = 0.85
 blur = true
 option_as_alt = "Both"
 
@@ -81,13 +82,13 @@ action = "ToggleViMode"
 
 # alacritty terminfo，tmux/nvim 色彩正常
 [env]
-TERM = "alacritty"
+# TERM = "alacritty"
 LANG = "en_US.UTF-8"
 
 ## ---------------- 配色 — Tokyo Night ----------------
 
 [colors]
-# transparent_background_colors = true
+transparent_background_colors = true
 draw_bold_text_with_bright_colors = true
 
 # 前景 / 背景
