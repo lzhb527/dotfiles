@@ -114,7 +114,7 @@
 
 | 插件 | 说明 |
 |---|---|
-| **nvim-surround** | `gza`/`gzc`/`gzd`（或 `<leader>za`/`zc`/`zd`）包围符操作（避让 Flash `s`/`S`） |
+| **nvim-surround** | `gza`/`gzc`/`gzd`（或 `<leader>za`/`zc`/`zd`）包围符操作（避 Flash `s`/`S`） |
 | **mini.ai** | 文本对象增强 |
 | **todo-comments.nvim** | TODO/FIXME 高亮 + 看板 |
 | **undotree** | 可视化撤销树 |

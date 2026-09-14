@@ -2,6 +2,11 @@
 -- mason.nvim + mason-lspconfig + mason-tool-installer 联动配置
 -- =========================================================================
 return function()
+	-- 让 mason 派生的 curl 走本机 xray SOCKS 代理（GitHub 直连被墙）
+	vim.env.all_proxy = "socks5h://127.0.0.1:10808"
+	vim.env.http_proxy = "socks5h://127.0.0.1:10808"
+	vim.env.https_proxy = "socks5h://127.0.0.1:10808"
+
 	local mason_status, mason = pcall(require, "mason")
 	if not mason_status then
 		return
@@ -23,7 +28,7 @@ return function()
 		mason_tool.setup({
 			-- 让 Mason 自动帮你把底下的静态检查器与格式化命令行工具也一并下载到本地！
 			ensure_installed = { "ansible-lint", "stylua", "prettier", "tree-sitter-cli", "shfmt" },
-			auto_update = true,
+			auto_update = false,
 			-- 🌟 关闭内置的自动安装检查，改用手动触发，避免与下方自定义 defer 重复
 			run_on_start = false,
 		})
