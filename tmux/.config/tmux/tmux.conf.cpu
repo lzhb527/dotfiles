@@ -135,7 +135,7 @@ bind A resize-window -A
 
 # ── D.1 刷新与位置 ──────────────────────────────────────────────
 set -g status-position top
-set -g status-interval 60
+set -g status-interval 5
 set -g bell-action none
 
 # ── D.2 窗口标题 ────────────────────────────────────────────────
@@ -166,7 +166,7 @@ set -g window-status-current-format " #I:#W:#F "
 set -g window-status-separator '┊'
 
 # 右侧: 前缀高亮 + 电池(图标+百分比, 低电量变色) + 时间
-set -g status-right "#{prefix_highlight}#[bg=default,fg=#afafaf] #{battery_color_charge_fg}#{battery_icon} #{battery_percentage}#[bg=default,fg=#afafaf] #{window_panes} #(jq -r ".text" /tmp/weather_report.txt 2>/dev/null) %H:%M"
+set -g status-right "#{prefix_highlight}#[bg=default,fg=#afafaf] #{cpu_icon}#{cpu_percentage} #{ram_icon}#{ram_percentage} #{battery_color_charge_fg}#{battery_icon} #{battery_percentage}#[bg=default,fg=#afafaf] #{window_panes} #(jq -r \".text\" /tmp/weather_report.txt 2>/dev/null) %H:%M"
 set -g status-right-length 60
 
 # ── D.5 电池显示配置 (tmux-battery) ─────────────────────────────
@@ -193,6 +193,22 @@ set -g @batt_color_charge_secondary_tier4 'default'
 set -g @batt_color_charge_secondary_tier3 'default'
 set -g @batt_color_charge_secondary_tier2 'default'
 set -g @batt_color_charge_secondary_tier1 'default'
+
+# ── D.6 CPU / 内存显示配置 (tmux-cpu) ───────────────────────────
+# Nerd Font 图标
+set -g @cpu_low_icon ' '
+set -g @cpu_medium_icon ''
+set -g @cpu_high_icon ''
+set -g @ram_low_icon ' '
+set -g @ram_medium_icon ' '
+set -g @ram_high_icon ' '
+# 颜色: 低/中/高负载分档变色 (Catppuccin Mocha)
+set -g @cpu_low_fg_color '#a6e3a1'
+set -g @cpu_medium_fg_color '#f9e2af'
+set -g @cpu_high_fg_color '#f38ba8'
+set -g @ram_low_fg_color '#a6e3a1'
+set -g @ram_medium_fg_color '#f9e2af'
+set -g @ram_high_fg_color '#f38ba8'
 
 # ================================================================
 # E. 复制粘贴与系统剪贴板 (Copy & Clipboard)
@@ -234,6 +250,7 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 set -g @plugin 'tmux-plugins/tmux-battery'
+set -g @plugin 'tmux-plugins/tmux-cpu'
 
 # ── F.3 插件配置 ────────────────────────────────────────────────
 # prefix-highlight: 按下前缀时状态栏高亮提示 (Catppuccin 配色)
