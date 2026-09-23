@@ -6,5 +6,5 @@
 # Description：
 # Copyright (C) 2026  Ltd. All rights reserved.
 
-sh ~/.config/weather/weather-zh.sh >/tmp/weather_report.txt
-sh ~/.config/weather/weather7-zh.sh >/tmp/weather_report7.txt
+bash ~/.config/weather/weather-zh.sh >/tmp/weather_report.txt
+bash ~/.config/weather/weather7-zh.sh >/tmp/weather_report7.txt
