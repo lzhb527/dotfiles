@@ -3,9 +3,9 @@
 -- =========================================================================
 return function()
 	-- 让 mason 派生的 curl 走本机 xray SOCKS 代理（GitHub 直连被墙）
-	vim.env.all_proxy = "socks5h://127.0.0.1:10808"
-	vim.env.http_proxy = "socks5h://127.0.0.1:10808"
-	vim.env.https_proxy = "socks5h://127.0.0.1:10808"
+	-- vim.env.all_proxy = "socks5h://127.0.0.1:10808"
+	-- vim.env.http_proxy = "socks5h://127.0.0.1:10808"
+	-- vim.env.https_proxy = "socks5h://127.0.0.1:10808"
 
 	local mason_status, mason = pcall(require, "mason")
 	if not mason_status then
