@@ -104,9 +104,9 @@
     dest: "~/{{ item.dest }}"
     mode: "0644"
   loop:
-    - { src: "星晴.mp3", dest: "Music/" }
-    - { src: "never-say-never.mp3", dest: "Music/" }
-    - { src: "lishenjin.mp4", dest: "Videos/" }
+    # - { src: "星晴.mp3", dest: "Music/" }
+    # - { src: "never-say-never.mp3", dest: "Music/" }
+    # - { src: "lishenjin.mp4", dest: "Videos/" }
     - { src: "def-wallpapers/5120x2880.jpg", dest: "Pictures/" }
 
 - name: 复制系统级配置文件与可执行脚本
@@ -131,13 +131,13 @@
     - { src: "lyricspot", dest: "/usr/local/bin/lyricspot", mode: "0755" }
   become: true
 
-- name: 修改 GRUB 启动参数以锁定分辨率
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"'
-  become: true
-  notify: 更新 GRUB 配置
+# - name: 修改 GRUB 启动参数以锁定分辨率
+#   ansible.builtin.lineinfile:
+#     path: /etc/default/grub
+#     regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+#     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet video=1440x900"'
+#   become: true
+#   notify: 更新 GRUB 配置
 
 - name: 解压并安装字体与主题包
   ansible.builtin.unarchive:
@@ -202,11 +202,11 @@
   loop:
     - { src: "papirus-folders", dest: "/tmp/papirus-folders", mode: "0755" }
     - { src: "fix_icons_flat.py", dest: "/tmp/fix_icons_flat.py", mode: "0755" }
-    - {
-        src: "weather.widget.plus.plasmoid",
-        dest: "/tmp/weather.widget.plus.plasmoid",
-        mode: "0644",
-      }
+    # - {
+    #     src: "weather.widget.plus.plasmoid",
+    #     dest: "/tmp/weather.widget.plus.plasmoid",
+    #     mode: "0644",
+    #   }
     - {
         src: "commandoutput-v14-plasma6-0.plasmoid",
         dest: "/tmp/commandoutput-v14-plasma6-0.plasmoid",
@@ -227,12 +227,12 @@
   ansible.builtin.debug:
     var: papirus_result.stdout_lines
 
-- name: 安装 Plasma Applet：weather.widget.plus.plasmoid
-  ansible.builtin.command:
-    cmd: kpackagetool6 --type Plasma/Applet --install /tmp/weather.widget.plus.plasmoid
-  register: weather_install
-  changed_when: "'is already' not in weather_install.stdout"
-  failed_when: false
+# - name: 安装 Plasma Applet：weather.widget.plus.plasmoid
+#   ansible.builtin.command:
+#     cmd: kpackagetool6 --type Plasma/Applet --install /tmp/weather.widget.plus.plasmoid
+#   register: weather_install
+#   changed_when: "'is already' not in weather_install.stdout"
+#   failed_when: false
 
 - name: 安装 Plasma Applet：commandoutput-v14-plasma6-0.plasmoid
   ansible.builtin.command:
@@ -255,7 +255,7 @@
   loop:
     - /tmp/papirus-folders
     - /tmp/fix_icons_flat.py
-    - /tmp/weather.widget.plus.plasmoid
+    # - /tmp/weather.widget.plus.plasmoid
     - /tmp/commandoutput-v14-plasma6-0.plasmoid
 
 
