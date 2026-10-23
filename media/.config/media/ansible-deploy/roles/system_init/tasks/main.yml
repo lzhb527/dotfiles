@@ -299,7 +299,7 @@
       disabled = false
       format = "[$time]($style) "
       time_format = "%R"
-      style = "bold white
+      style = "bold white"
 
       [character]
       success_symbol = "[❯](red)[❯](yellow)[❯](green)"
