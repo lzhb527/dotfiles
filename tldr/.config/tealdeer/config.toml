@@ -1,0 +1,53 @@
+[style.description]
+underline = false
+bold = false
+italic = false
+
+[style.command_name]
+foreground = "cyan"
+underline = false
+bold = false
+italic = false
+
+[style.example_text]
+foreground = "green"
+underline = false
+bold = false
+italic = false
+
+[style.example_code]
+foreground = "cyan"
+underline = false
+bold = false
+italic = false
+
+[style.example_variable]
+foreground = "cyan"
+underline = true
+bold = false
+italic = false
+
+[display]
+compact = false
+use_pager = false
+show_title = false
+placeholder_format = "long"
+
+[display.indent]
+base = 2
+command = 6
+
+[updates]
+auto_update = false
+auto_update_interval_hours = 720
+archive_source = "https://github.com/tldr-pages/tldr/releases/latest/download"
+tls_backend = "rustls-with-webpki-roots"
+# update 更新时，一次性下载 zh + en 全部页面
+download_languages = ["zh", "en"]
+# 国内网络可替换源（可选，github拉取慢才启用）
+# archive_source = "https://gitee.com/ZeroFreeze/tldr-mirror/raw/master/archives"
+
+[directories]
+
+[search]
+languages = ["zh", "en"]
