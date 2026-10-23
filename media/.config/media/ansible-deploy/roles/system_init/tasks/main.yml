@@ -290,6 +290,17 @@
     path: "{{ ansible_facts['env']['HOME'] }}/.config/starship.toml"
     create: yes
     block: |
+      right_format = """
+      $cmd_duration\
+      $time\
+      $status"""
+
+      [time]
+      disabled = false
+      format = "[$time]($style) "
+      time_format = "%R"
+      style = "bold white
+
       [character]
       success_symbol = "[❯](red)[❯](yellow)[❯](green)"
       error_symbol = "[❯](red)[❯](red)[❯](red)"
